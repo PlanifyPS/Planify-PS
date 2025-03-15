@@ -1,0 +1,166 @@
+body {
+    font-family: "Roboto Light";
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+
+.setting_container {
+    max-width: 70%;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    position: relative;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.tab {
+    cursor: pointer;
+    padding: 10px;
+    font-weight: bold;
+    color: gray;
+    position: relative;
+}
+
+.tab_active {
+    color: black;
+}
+
+.indicator {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 50%;
+    height: 3px;
+    background-color: green;
+    transition: transform 0.3s ease-in-out;
+}
+
+.content {
+    margin-top: 20px;
+}
+
+.form-grid {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-column {
+    width: 45%;
+    padding: 0px 20px 0px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button.btn-submit {
+    padding: 10px 15px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button.btn-submit:hover {
+    background-color: darkgreen;
+}
+
+#export-form {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
+}
+
+#export-form label {
+    margin-bottom: 5px;
+}
+
+#export-form select, #export-form input {
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+#mode-dark {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#mode-dark h2 {
+    margin-bottom: 10px;
+}
+
+#mode-dark label {
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+#mode-dark input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+#mode-dark .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: red;
+    transition: 0.4s;
+    border-radius: 50px;
+}
+
+#mode-dark .slider:before {
+    content: "";
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    border-radius: 50px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+}
+
+#mode-dark input:checked + .slider {
+    background-color: green;
+}
+
+#mode-dark input:checked + .slider:before {
+    transform: translateX(30px);
+}
+
+
