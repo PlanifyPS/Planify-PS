@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planify</title>
+    <link rel="stylesheet" href="../CSS/habits.css">
+    <script src="../JS/habits.js"></script>
+</head>
+<body class="habits-body">
+    <header class="sidebar"></header>
+    <div class="main-content">
+        <div class="header">
+            <button>Notification</button>
+            <button>messages</button>
+            <button>other</button>
+            <a href="#">
+                <img src="../../public/ejemplo.webp" alt="">
+            </a>
+        </div>
+
+        <div class="habits-content">
+            <div class="habits-list-header">
+                <div class="habits-list-title"><h2>Habits</h2></div>
+                <div class="habits-list-header-options">
+                    <button>Notification</button>
+                    <button>messages</button>
+                    <button>other</button>
+                </div>
+            </div>
+            <div id="habits-list" class="habits-list">
+
+
+                <section id="user-habits" class="user-habits"></section>
+                <div class="habits-item-description"></div>
+            </div>
+            <div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        loadHabits();
+    </script>
+
+</body>
+</html>
