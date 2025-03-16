@@ -1,2 +1,28 @@
 @import 'Setting.css';
 @import 'habits.css';
+@import 'variables.css';
+@import 'register.css';
+
+body {
+    font-family: var(--text-font), sans-serif;
+    background-color: var(--background-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--heading-font), sans-serif;
+}
+
+main {
+    width: min(95%, 1200px);
+    margin: 50px auto;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}

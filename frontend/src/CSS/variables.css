@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+:root {
+    --dark-blue: #03045E;
+    --main-blue: #0077B6;
+    --secondary-blue: #023E8A;
+    --light-blue: #90E0EF;
+    --dark-grey: #374151;
+    --light-grey: #F3F4F6;
+    --white: #FFFFFF;
+    --black: #000000;
+
+    --background-color: #ddd;
+
+    --bold: 700;
+    --regular: 400;
+
+    --tablet: 768px;
+    --mobile: 480px;
+    --desktop: 1024px;
+
+    --heading-font: 'Montserrat', sans-serif;
+    --text-font: 'Roboto', sans-serif;
+}
