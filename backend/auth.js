@@ -1,29 +1,34 @@
 // JS/auth.js
-import { auth } from "./firebase.js";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { auth, googleProvider } from "./firebase.js";
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signInWithPopup
+} from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
 
-// Función para registrar un nuevo usuario
 export const registerUser = async (email, password) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        console.log("Usuario registrado:", user);
-        return user;
+        return userCredential.user;
     } catch (error) {
-        console.error("Error al registrar usuario:", error.message);
-        throw error;
+        throw new Error(error.message);
     }
 };
 
-// Función para iniciar sesión
 export const loginUser = async (email, password) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        console.log("Usuario autenticado:", user);
-        return user;
+        return userCredential.user;
     } catch (error) {
-        console.error("Error al iniciar sesión:", error.message);
-        throw error;
+        throw new Error(error.message);
+    }
+};
+
+export const loginWithGoogle = async () => {
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+        return result.user;
+    } catch (error) {
+        throw new Error(error.message);
     }
 };

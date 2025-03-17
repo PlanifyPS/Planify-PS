@@ -183,3 +183,42 @@
         z-index: 5;
     }
 }
+
+.googleSignIn {
+    margin-top: 40px;
+    height: 50px;
+    width: 218px;
+    border-radius: 20px;
+    color: #4285f4;
+    box-shadow: 1px 1px 5px -1px rgba(0, 0, 0, 0.18), 0 1px 1px 0 rgba(0, 0, 0, 0.12);
+    border: 1px solid #f9f9f9;
+    display: flex;
+    background-color: #FFF;
+    padding:5px 5px 5px 13px;
+    transition: all 0.6s ease-in-out;
+    &:hover {	box-shadow: 1px 1px 5px -1px rgba(0, 0, 0, 0.18), 1px 2px 3px 0 rgba(0, 0, 0, 0.12); cursor: pointer; }
+    &:active {background: #3367D6;}
+}
+
+.googleSignIn--white {
+    background: #FFF;
+    color: #75797b;
+    &:active {background: #EEEEEE;}
+}
+
+.googleSignIn:disabled {
+    background: rgba(0,0,0,0.08);
+    color: rgba(0,0,0,0.4);
+    box-shadow: none;
+}
+
+.googleSignIn__text {
+    padding-left:15px;
+    font-size: 14.25px;
+    line-height: 37px;
+    font-family: Roboto,arial,sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.15px;
+    text-align: left;
+    white-space: nowrap;
+}

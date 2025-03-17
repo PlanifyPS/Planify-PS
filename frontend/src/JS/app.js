@@ -1,11 +1,14 @@
 // JS/app.js
-import { registerUser, loginUser } from "../../../backend/auth.js";
+import { registerUser, loginUser, loginWithGoogle } from "../../../backend/auth.js";
 
-// Elementos del DOM
 const signupForm = document.getElementById("signup-form");
 const loginForm = document.getElementById("login-form");
+const googleLoginButton = document.getElementById("google-login");
 
-// Registro de usuario
+const redirectToHome = () => {
+    window.location.href = "/home.html";
+};
+
 if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -22,13 +25,13 @@ if (signupForm) {
         try {
             await registerUser(email, password);
             alert("Registro exitoso.");
+            redirectToHome();
         } catch (error) {
             alert(error.message);
         }
     });
 }
 
-// Inicio de sesión
 if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -39,6 +42,19 @@ if (loginForm) {
         try {
             await loginUser(email, password);
             alert("Inicio de sesión exitoso.");
+            redirectToHome();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+}
+
+if (googleLoginButton) {
+    googleLoginButton.addEventListener("click", async () => {
+        try {
+            await loginWithGoogle();
+            alert("Inicio de sesión con Google exitoso.");
+            redirectToHome();
         } catch (error) {
             alert(error.message);
         }
