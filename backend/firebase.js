@@ -1,8 +1,11 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+// firebase.js
 
+// Importa Firebase desde el CDN
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
+
+// Tu configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCdglQenmZHjyETJKf-JYhLC5M65NRX8yA",
     authDomain: "planify-ps.firebaseapp.com",
@@ -13,11 +16,12 @@ const firebaseConfig = {
     measurementId: "G-WENQ178MXY"
 };
 
-// Initialize Firebase
+// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 console.log(app);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
 
-export { auth, googleProvider };
+// Obtén las instancias de Auth y Firestore
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+export { auth, db };
