@@ -1,6 +1,6 @@
 // JS/register.js
 import { auth, db } from "../../../backend/firebase.js";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
 
 
@@ -30,16 +30,6 @@ if (document.body.id === 'register') {
         if (password !== repeatPassword) {
             alert("Las contraseñas no coinciden.");
             return;
-        }
-
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-            console.log("Usuario registrado:", user);
-            alert("Registro exitoso.");
-        } catch (error) {
-            console.error("Error al registrar usuario:", error.message);
-            alert(error.message);
         }
     });
 
