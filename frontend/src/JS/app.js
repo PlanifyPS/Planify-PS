@@ -1,33 +1,62 @@
 // JS/app.js
 import { registerUser, loginUser, loginWithGoogle } from "../../../backend/auth.js";
 
+// Elementos del DOM
 const signupForm = document.getElementById("signup-form");
 const loginForm = document.getElementById("login-form");
 const googleLoginButton = document.getElementById("google-login");
 
 const redirectToHome = () => {
-    window.location.href = "/home.html";
+    window.location.href = "/frontend/src/HTML/home.html";
+};
+
+const showError = (message) => {
+    Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: message,
+    });
+};
+
+const showSuccess = (message) => {
+    Swal.fire({
+        icon: "success",
+        title: "Éxito",
+        text: message,
+    }).then(() => {
+        redirectToHome();
+    });
 };
 
 if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById("signup-email").value;
-        const password = document.getElementById("signup-password").value;
-        const repeatPassword = document.getElementById("signup-repeat-password").value;
+        const email = document.getElementById("signup-email").value.trim();
+        const username = document.getElementById("signup-username").value.trim();
+        const password = document.getElementById("signup-password").value.trim();
+        const repeatPassword = document.getElementById("signup-repeat-password").value.trim();
+
+        if (!email || !password || !repeatPassword || !username) {
+            showError("Todos los campos son obligatorios.");
+            return;
+        }
 
         if (password !== repeatPassword) {
-            alert("Las contraseñas no coinciden.");
+            showError("Las contraseñas no coinciden.");
+            return;
+        }
+
+        if (password.length < 6) {
+            showError("La contraseña debe tener al menos 6 caracteres.");
             return;
         }
 
         try {
             await registerUser(email, password);
-            alert("Registro exitoso.");
-            redirectToHome();
+            showSuccess("Registro exitoso. Redirigiendo...");
         } catch (error) {
-            alert(error.message);
+            showError(error.message);
         }
     });
 }
@@ -36,15 +65,19 @@ if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById("login-email").value;
-        const password = document.getElementById("login-password").value;
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value.trim();
+
+        if (!email || !password) {
+            showError("Todos los campos son obligatorios.");
+            return;
+        }
 
         try {
             await loginUser(email, password);
-            alert("Inicio de sesión exitoso.");
-            redirectToHome();
+            showSuccess("Inicio de sesión exitoso. Redirigiendo...");
         } catch (error) {
-            alert(error.message);
+            showError(error.message);
         }
     });
 }
@@ -53,10 +86,9 @@ if (googleLoginButton) {
     googleLoginButton.addEventListener("click", async () => {
         try {
             await loginWithGoogle();
-            alert("Inicio de sesión con Google exitoso.");
-            redirectToHome();
+            showSuccess("Inicio de sesión con Google exitoso. Redirigiendo...");
         } catch (error) {
-            alert(error.message);
+            showError(error.message);
         }
     });
 }
