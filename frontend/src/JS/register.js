@@ -11,4 +11,15 @@ if (document.body.id === 'register') {
     signUpBtn.addEventListener("click", () => {
         container.classList.add("right-panel-active");
     });
+
+    const switchToLoginBtn = document.getElementById("switchToLogin");
+    const switchToSignUpBtn = document.getElementById("switchToSignUp");
+
+    switchToLoginBtn.addEventListener("click", () => {
+        container.classList.remove("right-panel-active");
+    });
+
+    switchToSignUpBtn.addEventListener("click", () => {
+        container.classList.add("right-panel-active");
+    });
 }
