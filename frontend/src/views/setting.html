@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings & Profile</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../CSS/styles.css">
 </head>
 <body>
 <div class="setting_container">
@@ -24,29 +24,34 @@
                     <label for="export_format">Export Format:</label>
                     <select id="export_format">
                         <option value="pdf">PDF</option>
-                        <option value="excel">JSON</option>
+                        <option value="json">JSON</option>
                     </select>
-
                     <label for="start_date">Start date:</label>
                     <input type="date" id="start_date">
-
                     <label for="end_date">Finish date:</label>
                     <input type="date" id="end_date">
-
                     <button type="submit" class="btn-submit">Generate File</button>
                 </form>
                 <div id="export-message" class="message"></div>
             </div>
-            <div class="content" id="mode-dark">
-                <h2>Display Preferences</h2>
-                <p>Choose your preferred visual mode.</p>
-                <label for="mode-toggle" class="switch">
-                    <input type="checkbox" id="mode-toggle" onchange="toggleMode()">
-                    <span class="slider"></span>
-                </label>
+            <div class="content right-panel">
+                <div id="mode-dark">
+                    <h2>Display Preferences</h2>
+                    <p>Choose your preferred visual mode.</p>
+                    <label class="switch">
+                        <input type="checkbox" id="mode-toggle" onchange="toggleMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div id="notifications">
+                    <h2>Notifications</h2>
+                    <p>Enable or disable notifications.</p>
+                    <label class="switch">
+                        <input type="checkbox" id="notifications-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
-
-
         </div>
     </div>
     <div class="content" id="profile" style="display: none;">
@@ -73,9 +78,10 @@
                 <label for="Country">Country:</label>
                 <input type="text" id="Country" placeholder="Spain" required>
             </div>
-    </div>
+        </div>
         <button type="submit" class="btn-submit">Update</button>
+    </div>
 </div>
-<script src="../js/setting.js"></script>
+<script src="../JS/setting.js"></script>
 </body>
 </html>
