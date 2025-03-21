@@ -158,4 +158,94 @@ body.dark-mode {
 }
 
 
+#notifications {
+    text-align: center;
+    margin-top: 20px;
+}
 
+.delete-btn {
+    background-color: red;
+}
+
+.delete-btn:hover {
+    background-color: darkred;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-column {
+        width: 100%;
+        padding: 10px 0;
+    }
+}
+
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: red;
+    transition: 0.4s;
+    border-radius: 50px;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    border-radius: 50px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+}
+
+input:checked + .slider {
+    background-color: var(--secondary-blue);
+}
+
+input:checked + .slider:before {
+    transform: translateX(30px);
+}
+
+.form-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.export {
+    width: 45%;
+}
+
+.right-panel {
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.right-panel > div {
+    width: 100%;
+}

@@ -1,4 +1,4 @@
-// JS/register.js
+// js/register.js
 if (document.body.id === 'register') {
     const logInBtn = document.getElementById("logIn");
     const signUpBtn = document.getElementById("signUp");

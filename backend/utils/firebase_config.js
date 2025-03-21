@@ -1,6 +1,6 @@
-// JS/firebase.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
+// js/firebase_config.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-authFirebase.js";
+import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth_utils.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
 
 const firebaseConfig = {
