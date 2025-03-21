@@ -53,7 +53,7 @@ if (signupForm) {
         }
 
         try {
-            await registerUser(email, password);
+            await registerUser(email, password, username);
             showSuccess("Registro exitoso. Redirigiendo...");
         } catch (error) {
             showError(error.message);
