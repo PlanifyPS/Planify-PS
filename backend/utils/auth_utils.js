@@ -1,10 +1,10 @@
-// JS/auth.js
-import { auth, googleProvider } from "./firebase.js";
+// js/auth_utils.js
+import { auth, googleProvider } from "./firebase_config.js";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signInWithPopup
-} from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth_utils.js";
 
 export const registerUser = async (email, password) => {
     try {
