@@ -1,0 +1,36 @@
+.analytics-body{
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+    height: 100vh;
+    gap: 10px;
+    background-color: var(--light-bg);
+    width: 100vw;
+}
+#analytics-content{
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    gap: 10px
+}
+.analytics-header{
+    display: flex;
+    flex-direction: row;
+
+    padding: 10px 20px;
+    width: 100%;
+    justify-content: space-between;
+}
+.header-actions {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 10px 20px;
+}
+.analytics-user-graphics{
+    display: flex;
+
+
+    padding: 10px 20px;
+}
+
