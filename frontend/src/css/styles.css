@@ -4,7 +4,10 @@
 @import 'variables.css';
 @import 'register.css';
 @import 'home.css';
+@import 'dashboard.css';
+@import 'sidebar.css';
 @import 'analytics.css';
+
 body {
     font-family: var(--text-font), sans-serif;
     background-color: var(--background-color);

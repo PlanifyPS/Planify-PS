@@ -1,0 +1,17 @@
+#dashboard{
+    height: 100vh;
+    display: flex;
+}
+
+#app{
+    flex: 1;
+    overflow: scroll;
+    overflow-x:hidden
+}
+
+#sidebar-container{
+    height: 100%;
+    width: 300px;
+    overflow: hidden;
+    padding: 20px;
+}
