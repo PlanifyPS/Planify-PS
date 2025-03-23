@@ -18,3 +18,21 @@ function toggleMode() {
         document.body.classList.remove('dark-mode');
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const notificationsToggle = document.getElementById("notifications-toggle");
+
+    notificationsToggle.addEventListener("change", function () {
+        localStorage.setItem("notifications", notificationsToggle.checked);
+        alert(notificationsToggle.checked ? "Notifications Enabled" : "Notifications Disabled");
+    });
+
+    if (localStorage.getItem("notifications") === "true") {
+        notificationsToggle.checked = true;
+    }
+});
+
+
+
+
+

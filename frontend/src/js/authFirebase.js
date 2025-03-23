@@ -1,32 +1,10 @@
-// JS/app.js
-import { registerUser, loginUser, loginWithGoogle } from "../../../backend/auth.js";
+// js/authFirebase.js
+import { registerUser, loginUser, loginWithGoogle } from "../../../backend/utils/auth_utils.js";
 
 // Elementos del DOM
 const signupForm = document.getElementById("signup-form");
 const loginForm = document.getElementById("login-form");
 const googleLoginButton = document.getElementById("google-login");
-
-const redirectToHome = () => {
-    window.location.href = "/frontend/src/HTML/home.html";
-};
-
-const showError = (message) => {
-    Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: message,
-    });
-};
-
-const showSuccess = (message) => {
-    Swal.fire({
-        icon: "success",
-        title: "Éxito",
-        text: message,
-    }).then(() => {
-        redirectToHome();
-    });
-};
 
 if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
@@ -53,7 +31,7 @@ if (signupForm) {
         }
 
         try {
-            await registerUser(email, password);
+            await registerUser(email, password, username);
             showSuccess("Registro exitoso. Redirigiendo...");
         } catch (error) {
             showError(error.message);
