@@ -5,152 +5,311 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Template</title>
   <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/home.css">
+  <style>
+    .calendar-container {
+      height: auto !important;
+      display: block !important;
+      background-color: var(--white) !important;
+      border: 2px solid var(--blue-medium) !important;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .calendar-nav-btn {
+      background-color: var(--blue-medium);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: bold;
+      color: var(--blue-medium);
+      margin-bottom: 5px;
+    }
+
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-gap: 2px;
+    }
+
+    .day {
+      height: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 3px;
+      border-radius: 5px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .day:hover {
+      background-color: var(--gray-light);
+    }
+
+    .today {
+      background-color: var(--blue-lighter);
+      color: var(--blue-dark);
+      font-weight: bold;
+    }
+
+    .empty {
+      background-color: transparent;
+      cursor: default;
+    }
+
+    .has-events {
+      font-weight: bold;
+      color: var(--blue-medium);
+    }
+
+    .event-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--blue-medium);
+      margin-top: 2px;
+    }
+
+    .event-count {
+      font-size: 0.7rem;
+      color: var(--blue-medium);
+    }
+
+    .day-events {
+      display: flex;
+      justify-content: center;
+    }
+
+    #event-dialog {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: var(--white);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px var(--shadow);
+      z-index: 1000;
+      border: 3px solid var(--blue-medium);
+      display: none;
+    }
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .close-btn {
+      background-color: var(--blue-medium);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      cursor: pointer;
+    }
+
+    .event-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .event-form input, .event-form button {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid var(--gray-border);
+    }
+
+    .event-form button {
+      background-color: var(--blue-medium);
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body id="home">
-  <aside class="sidebar">
-    <div class="logo">Logo</div>
-    <div class="menu-item">
-      <div class="icon">📧</div>
-      <span>Lorem ipsum odor</span>
-    </div>
-    <div class="menu-item">
-      <div class="icon">📧</div>
-      <span>Consectetuer adi</span>
-    </div>
-    <div class="menu-item">
-      <div class="icon">📧</div>
-      <span>Facilisis convallis</span>
-    </div>
-    <div class="menu-item">
-      <div class="icon">📧</div>
-      <span>Litora etiam tempor</span>
-    </div>
-    <div class="menu-item">
-      <div class="icon">📧</div>
-      <span>Fermentum non</span>
-    </div>
-    <div class="menu-item">
-      <div class="icon">📧</div>
-      <span>Nullam rhoncus</span>
-    </div>
-    <div style="flex: 1;"></div>
-    <div class="menu-item">
-      <div class="icon">📧</div>
-      <span>Orci massa</span>
-    </div>
-  </aside>
+<aside class="sidebar">
+  <div class="logo">Logo</div>
+  <div class="menu-item">
+    <div class="icon">📧</div>
+    <span>Lorem ipsum odor</span>
+  </div>
+  <div class="menu-item">
+    <div class="icon">📧</div>
+    <span>Consectetuer adi</span>
+  </div>
+  <div class="menu-item">
+    <div class="icon">📧</div>
+    <span>Facilisis convallis</span>
+  </div>
+  <div class="menu-item">
+    <div class="icon">📧</div>
+    <span>Litora etiam tempor</span>
+  </div>
+  <div class="menu-item">
+    <div class="icon">📧</div>
+    <span>Fermentum non</span>
+  </div>
+  <div class="menu-item">
+    <div class="icon">📧</div>
+    <span>Nullam rhoncus</span>
+  </div>
+  <div style="flex: 1;"></div>
+  <div class="menu-item">
+    <div class="icon">📧</div>
+    <span>Orci massa</span>
+  </div>
+</aside>
 
-  <div class="header">
-    <div class="header-title">
-      <h1>Nullam rhoncus hendrerit eros placerat</h1>
-      <p class="subtitle">Litora etiam tempor duis ullamcorper ex leo vulputate fusce class</p>
-      <p>Lorem ipsum odor amet.</p>
+<div class="header">
+  <div class="header-title">
+    <h1>Nullam rhoncus hendrerit eros placerat</h1>
+    <p class="subtitle">Litora etiam tempor duis ullamcorper ex leo vulputate fusce class</p>
+    <p>Lorem ipsum odor amet.</p>
+  </div>
+</div>
+
+<section class="chart-section">
+  <div class="chart-container">
+    <div class="chart">Gráfica</div>
+  </div>
+</section>
+
+
+<section class="habits-section">
+  <div class="habits-grid">
+    <div class="habit-card">
+      <div class="habit-header">
+        <span>Lorem ipsum</span>
+        <div class="habit-icon">📧</div>
+      </div>
+      <div class="habit-image">Imagen</div>
+    </div>
+    <div class="habit-card">
+      <div class="habit-header">
+        <span>Lorem ipsum</span>
+        <div class="habit-icon">📧</div>
+      </div>
+      <div class="habit-image">Imagen</div>
+    </div>
+    <div class="habit-card">
+      <div class="habit-header">
+        <span>Lorem ipsum</span>
+        <div class="habit-icon">📧</div>
+      </div>
+      <div class="habit-image">Imagen</div>
+    </div>
+    <div class="habit-card">
+      <div class="habit-header">
+        <span>Lorem ipsum</span>
+        <div class="habit-icon">📧</div>
+      </div>
+      <div class="habit-image">Imagen</div>
+    </div>
+    <div class="habit-card">
+      <div class="habit-header">
+        <span>Lorem ipsum</span>
+        <div class="habit-icon">📧</div>
+      </div>
+      <div class="habit-image">Imagen</div>
+    </div>
+    <div class="habit-card">
+      <div class="habit-header">
+        <span>Lorem ipsum</span>
+        <div class="habit-icon">📧</div>
+      </div>
+      <div class="habit-image">Imagen</div>
+    </div>
+    <div class="habit-card">
+      <div class="habit-header">
+        <span>Lorem ipsum</span>
+        <div class="habit-icon">📧</div>
+      </div>
+      <div class="habit-image">Imagen</div>
+    </div>
+    <div class="habit-card">
+      <div class="habit-header">
+        <span>Lorem ipsum</span>
+        <div class="habit-icon">📧</div>
+      </div>
+      <div class="habit-image">Imagen</div>
     </div>
   </div>
+</section>
 
-  <section class="chart-section">
-    <div class="chart-container">
-      <div class="chart">Gráfica</div>
+<section class="calendar-section">
+  <div class="user-profile">
+    <div class="profile-icon">Perfil</div>
+    <p class="subtitle">Facilisis convallis dignissim</p>
+    <h3>Nullam rhoncus</h3>
+    <div class="calendar-image">Imagen</div>
+  </div>
+
+  <div class="calendar-box">
+    <div class="calendar-title">
+      <div class="habit-icon">📧</div>
+      <h3>Placerat malesuada</h3>
+      <div class="habit-icon">📧</div>
     </div>
-  </section>
+    <div id="calendar-container" class="calendar-image calendar-container"></div>
+    <p>Facilisis convallis</p>
 
+    <div class="task-list">
 
-  <section class="habits-section">
-    <div class="habits-grid">
-      <div class="habit-card">
-        <div class="habit-header">
-          <span>Lorem ipsum</span>
-          <div class="habit-icon">📧</div>
-        </div>
-        <div class="habit-image">Imagen</div>
+      <div class="task-item">
+        <div class="task-icon">📧</div>
+        <span>Litora etiam tempor</span>
+        <span>00:00 AM</span>
       </div>
-      <div class="habit-card">
-        <div class="habit-header">
-          <span>Lorem ipsum</span>
-          <div class="habit-icon">📧</div>
-        </div>
-        <div class="habit-image">Imagen</div>
+      <div class="task-item">
+        <div class="task-icon">📧</div>
+        <span>Litora etiam tempor</span>
+        <span>00:00 AM</span>
       </div>
-      <div class="habit-card">
-        <div class="habit-header">
-          <span>Lorem ipsum</span>
-          <div class="habit-icon">📧</div>
-        </div>
-        <div class="habit-image">Imagen</div>
-      </div>
-      <div class="habit-card">
-        <div class="habit-header">
-          <span>Lorem ipsum</span>
-          <div class="habit-icon">📧</div>
-        </div>
-        <div class="habit-image">Imagen</div>
-      </div>
-      <div class="habit-card">
-        <div class="habit-header">
-          <span>Lorem ipsum</span>
-          <div class="habit-icon">📧</div>
-        </div>
-        <div class="habit-image">Imagen</div>
-      </div>
-      <div class="habit-card">
-        <div class="habit-header">
-          <span>Lorem ipsum</span>
-          <div class="habit-icon">📧</div>
-        </div>
-        <div class="habit-image">Imagen</div>
-      </div>
-      <div class="habit-card">
-        <div class="habit-header">
-          <span>Lorem ipsum</span>
-          <div class="habit-icon">📧</div>
-        </div>
-        <div class="habit-image">Imagen</div>
-      </div>
-      <div class="habit-card">
-        <div class="habit-header">
-          <span>Lorem ipsum</span>
-          <div class="habit-icon">📧</div>
-        </div>
-        <div class="habit-image">Imagen</div>
+      <div class="task-item">
+        <div class="task-icon">📧</div>
+        <span>Litora etiam tempor</span>
+        <span>00:00 AM</span>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="calendar-section">
-    <div class="user-profile">
-      <div class="profile-icon">Perfil</div>
-      <p class="subtitle">Facilisis convallis dignissim</p>
-      <h3>Nullam rhoncus</h3>
-      <div class="calendar-image">Imagen</div>
-    </div>
+<div id="event-dialog">
+  <div class="dialog-header">
+    <h3>Añadir Evento</h3>
+    <button class="close-btn">&times;</button>
+  </div>
+  <form class="event-form">
+    <input type="hidden" id="event-date">
+    <input type="text" id="event-name" placeholder="Nombre del evento" required>
+    <input type="time" id="event-time" required>
+    <button type="submit">Guardar</button>
+  </form>
+</div>
 
-    <div class="calendar-box">
-      <div class="calendar-title">
-        <div class="habit-icon">📧</div>
-        <h3>Placerat malesuada</h3>
-        <div class="habit-icon">📧</div>
-      </div>
-      <div class="calendar-image">Calendario</div>
-      <p>Facilisis convallis</p>
-
-      <div class="task-list">
-        <div class="task-item">
-          <div class="task-icon">📧</div>
-          <span>Litora etiam tempor</span>
-          <span>00:00 AM</span>
-        </div>
-        <div class="task-item">
-          <div class="task-icon">📧</div>
-          <span>Litora etiam tempor</span>
-          <span>00:00 AM</span>
-        </div>
-        <div class="task-item">
-          <div class="task-icon">📧</div>
-          <span>Litora etiam tempor</span>
-          <span>00:00 AM</span>
-        </div>
-      </div>
-    </div>
-  </section>
+<script src="../js/home.js"></script>
 </body>
 </html>
