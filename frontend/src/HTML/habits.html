@@ -7,16 +7,49 @@
     <link rel="stylesheet" href="../CSS/styles.css">
     <script src="../JS/habits.js"></script>
 </head>
-<body class="habits-body">
-    <aside id="sidebar" class="sidebar"></aside>
-    <div class="main-content">
+<body id="habits">
+
+    <aside class="sidebar">
+    <div class="logo">Logo</div>
+    <div class="menu-item">
+        <div class="icon">📧</div>
+        <span>Lorem ipsum odor</span>
+    </div>
+    <div class="menu-item">
+        <div class="icon">📧</div>
+        <span>Consectetuer adi</span>
+    </div>
+    <div class="menu-item">
+        <div class="icon">📧</div>
+        <span>Facilisis convallis</span>
+    </div>
+    <div class="menu-item">
+        <div class="icon">📧</div>
+        <span>Litora etiam tempor</span>
+    </div>
+    <div class="menu-item">
+        <div class="icon">📧</div>
+        <span>Fermentum non</span>
+    </div>
+    <div class="menu-item">
+        <div class="icon">📧</div>
+        <span>Nullam rhoncus</span>
+    </div>
+    <div style="flex: 1;"></div>
+    <div class="menu-item">
+        <div class="icon">📧</div>
+        <span>Orci massa</span>
+    </div>
+  </aside>
+
+    <section class="main-content">
         <div class="habits-header">
-            <button>Notification</button>
-            <button>messages</button>
-            <button>other</button>
-            <a href="#">
-                <img src="../../public/ejemplo.webp" alt="">
-            </a>
+             <button>Notification</button>
+             <button>Messages</button>
+             <button>Other</button>
+             <a href="#">
+                 <img src="../../public/ejemplo.webp" alt="">
+             </a>
         </div>
 
         <div class="habits-content">
@@ -24,23 +57,38 @@
                 <div class="habits-list-header">
                     <div class="habits-list-title"><h2>Habits</h2></div>
                     <div class="habits-list-header-options">
-                        <button>Search</button>
-                        <button>Filter</button>
-                        <button>other</button>
+                         <button>Search</button>
+                         <button>Filter</button>
+                         <button>other</button>
                     </div>
                 </div>
-                <section id="user-habits" class="user-habits"></section>
-            </div>
-            <div class="habits-item-description"></div>
-            <div>
+                <div id="user-habits" class="user-habits"></div>
 
             </div>
-        </div>
-    </div>
+            <div class="habits-item-description">
+                <div class="habits-item-description_row_a">
+                    <div class="habits-item-description_4">Lorem ipsum</div>
+                </div>
 
-    <script>
-        loadHabits();
-    </script>
+                <div class="habits-item-description_row_b">
 
+                    <div class="habits-item-description_col_1">
+                        <div class="habits-item-description_1">tipo 1</div>
+                        <div class="habits-item-description_2">tipo 2</div>
+                    </div>
+                    <div class="habits-item-description_col_2">
+                        <div class="habits-item-description_1">tipo 1</div>
+                        <div class="habits-item-description_3">tipo 3</div>
+                        <div class="habits-item-description_3">tipo 3</div>
+                    </div>
+                </div>
+             </div>
+         </div>
+
+    </section>
+
+     <script>
+         loadHabits();
+     </script>
 </body>
 </html>
