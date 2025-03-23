@@ -164,6 +164,8 @@
     height: 30%;
     margin: 0;
     transition: transform 0.2s ease;
+    align-content: center;
+    text-align: center;
 }
 
 .habits-item-description_2 {
@@ -175,6 +177,8 @@
     height: 70%;
     margin: 0;
     transition: transform 0.2s ease;
+    align-content: center;
+    text-align: center;
 }
 
 .habits-item-description_3 {
@@ -186,19 +190,21 @@
     height: 34%;
     margin: 0;
     transition: transform 0.2s ease;
+    align-content: center;
+    text-align: center;
 }
 
 .habits-item-description_4 {
     background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-lighter) 100%);
     border-radius: 15px;
     padding: 12px;
-    display: flex;
-    flex-direction: column;
     gap: 8px;
     box-shadow: 0 4px 8px var(--shadow);
     height: 100%;
     margin: 0;
     transition: transform 0.2s ease;
+    align-content: center;
+    text-align: center;
 }
 
 .habits-item-description_1:hover,
