@@ -22,4 +22,21 @@
 
     --heading-font: 'Montserrat', sans-serif;
     --text-font: 'Roboto', sans-serif;
+
+    --blue-darkest: #03045E;  /* Federal blue */
+    --blue-dark: #023E8A;     /* Marian blue */
+    --blue-medium: #0077B6;   /* Honolulu Blue */
+    --blue-green: #0096C7;    /* Blue Green */
+    --cyan: #00B4D8;          /* Pacific cyan */
+    --sky-blue: #48CAE4;      /* Vivid sky blue */
+    --blue-light: #90E0EF;    /* Non Photo blue */
+    --blue-lighter: #ADE8F4;  /* Non Photo blue */
+    --cyan-lightest: #CAF0F8; /* Light cyan */
+
+    --light-bg: #f5f5f5;
+    --gray-light: #f0f0f0;
+    --gray-border: #e0e0e0;
+    --text-dark: #333333;
+    --text-medium: #555555;
+    --shadow: rgba(0, 119, 182, 0.1);
 }

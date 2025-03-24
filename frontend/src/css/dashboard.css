@@ -1,6 +1,7 @@
 #dashboard{
-    height: 100vh;
     display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 #app{
@@ -15,3 +16,18 @@
     overflow: hidden;
     padding: 20px;
 }
+
+#main-header {
+    color: var(--main-blue);
+    padding: 1rem;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    top: 0;
+    z-index: 100;
+}
+
+.main-container {
+    display: flex;
+    flex: 1;
+}
+
