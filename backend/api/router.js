@@ -74,6 +74,7 @@ class Router {
         this.addRoute("/setting", "../../frontend/src/views/setting.html");
         this.addRoute("/habits", "../../frontend/src/views/habits.html");
         this.addRoute("/challenges", "../../frontend/src/views/challenges.html");
+        this.addRoute('/analytics', '../../frontend/src/views/analytics.html');
 
         this.loadSidebar();
         this.loadHeader();

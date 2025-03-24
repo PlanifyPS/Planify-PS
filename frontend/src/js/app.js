@@ -3,3 +3,4 @@
 //import './register';
 //import './setting';
 import './challenges.js';
+import './analytics.js'

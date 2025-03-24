@@ -1,18 +1,17 @@
+import ProgressBar from 'https://cdn.jsdelivr.net/npm/progressbar.js/+esm';
 
+document.addEventListener("DOMContentLoaded", function () {
+    let container = document.getElementById("progress-circle");
 
-function loadTemplate(id, url) {
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Fail loading ${url}`);
-            }
-            return response.text();
-        })
-        .then(html => {
-            document.getElementById(id).innerHTML = html;
-        })
-        .catch(error => console.error(error));
-}
-function load(){
-    loadTemplate("analytics-sidebar-container", "../templates/sidebar.html");
-}
+    const bar = new ProgressBar.Circle(container, {
+        strokeWidth: 6,
+        easing: "easeInOut",
+        duration: 1400,
+        color: "#FFEA82",
+        trailColor: "#eee",
+        trailWidth: 1,
+        svgStyle: null
+    });
+
+    bar.animate(1.0);
+});
