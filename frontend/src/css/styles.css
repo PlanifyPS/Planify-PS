@@ -4,6 +4,7 @@
 @import 'variables.css';
 @import 'register.css';
 @import 'home.css';
+@import 'analytics.css';
 body {
     font-family: var(--text-font), sans-serif;
     background-color: var(--background-color);

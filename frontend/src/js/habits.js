@@ -18,7 +18,7 @@ function loadUserHabits(id, url) {
 function loadHabits(){
     loadTemplate("sidebar", "templates/sidebar.html");
     for (let i = 0; i < 15; i++) {
-        loadUserHabits("user-habits", "templates/habitsItem.html");
+        loadUserHabits("user-habits", "../templates/habitsItem.html");
     }
 }
 
