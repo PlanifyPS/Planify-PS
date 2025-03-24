@@ -42,6 +42,7 @@ class Router {
         this.addRoute('/register', '../../frontend/src/views/register.html');
         this.addRoute('/setting', '../../frontend/src/views/setting.html');
         this.addRoute('/habits', '../../frontend/src/views/habits.html');
+        this.addRoute('/challenges', '../../frontend/src/views/challenges.html');
 
         // Cargar el sidebar
         this.loadSidebar();
