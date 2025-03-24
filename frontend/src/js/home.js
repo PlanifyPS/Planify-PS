@@ -48,23 +48,8 @@ function createCalendar(year, month) {
     return calendarHTML;
 }
 
-function addEvent(date, eventName, time) {
-    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-
-    if (!events[date]) {
-        events[date] = [];
-    }
-
-    events[date].push({
-        name: eventName,
-        time: time
-    });
-
-    localStorage.setItem('calendarEvents', JSON.stringify(events));
-    displayEvents();
-}
-
 function displayEvents() {
+
     const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
     const days = document.querySelectorAll('.day:not(.empty)');
 
@@ -77,45 +62,35 @@ function displayEvents() {
 
         if (dayEvents.length > 0) {
             day.classList.add('has-events');
-            if (dayEvents.length === 1) {
-                eventsContainer.innerHTML = `<div class="event-dot" title="${dayEvents[0].name} - ${dayEvents[0].time}"></div>`;
-            } else {
-                eventsContainer.innerHTML = `<div class="event-count">+${dayEvents.length}</div>`;
-            }
+            eventsContainer.innerHTML = `<div class="event-dot" title="Hay eventos"></div>`;
         }
     });
-
-    updateTaskList();
 }
 
-function updateTaskList() {
+function updateTaskList(dateString) {
     const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
     const taskList = document.querySelector('.task-list');
-    const today = new Date();
-    const dateString = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
-
-    const todaysEvents = events[dateString] || [];
-
+    const dayEvents = events[dateString] || [];
     taskList.innerHTML = '';
 
-    todaysEvents.forEach(event => {
-        taskList.innerHTML += `
-      <div class="task-item">
-        <div class="task-icon">📆</div>
-        <span>${event.name}</span>
-        <span>${event.time}</span>
-      </div>
-    `;
-    });
-
-    if (todaysEvents.length === 0) {
+    if (dayEvents.length > 0) {
+        dayEvents.forEach(event => {
+            taskList.innerHTML += `
+              <div class="task-item">
+                <div class="task-icon">📆</div>
+                <span>${event.name}</span>
+                <span>${event.time}</span>
+              </div>
+            `;
+        });
+    } else {
         taskList.innerHTML = `
-      <div class="task-item">
-        <div class="task-icon">ℹ️</div>
-        <span>No hay tareas para hoy</span>
-        <span></span>
-      </div>
-    `;
+              <div class="task-item">
+                <div class="task-icon">ℹ️</div>
+                <span>No hay eventos programados para ${dateString}</span>
+                <span></span>
+              </div>
+        `;
     }
 }
 
@@ -124,6 +99,10 @@ function initCalendar() {
     const calendarContainer = document.getElementById('calendar-container');
 
     calendarContainer.innerHTML = createCalendar(today.getFullYear(), today.getMonth());
+    displayEvents();
+
+    const todayDateString = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+    updateTaskList(todayDateString);
 
     document.addEventListener('click', function(e) {
         const target = e.target;
@@ -148,30 +127,44 @@ function initCalendar() {
         }
 
         if (target.classList.contains('day') && !target.classList.contains('empty')) {
+
             const date = target.getAttribute('data-date');
             document.getElementById('event-date').value = date;
-            document.getElementById('event-dialog').style.display = 'block';
-        }
-
-        if (target.classList.contains('close-btn')) {
-            document.getElementById('event-dialog').style.display = 'none';
+            updateTaskList(date);
         }
     });
-
-    document.querySelector('.event-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const date = document.getElementById('event-date').value;
-        const name = document.getElementById('event-name').value;
-        const time = document.getElementById('event-time').value;
-
-        addEvent(date, name, time);
-        document.getElementById('event-dialog').style.display = 'none';
-
-        document.getElementById('event-name').value = '';
-    });
-
-    displayEvents();
 }
 
-document.addEventListener('DOMContentLoaded', initCalendar);
+document.addEventListener('DOMContentLoaded', function () {
+    initCalendar();
+
+    const eventForm = document.querySelector(".event-form");
+
+    eventForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const eventName = document.getElementById("event-name").value;
+        const eventTime = document.getElementById("event-time").value;
+        const eventDate = document.getElementById("event-date").value; // Utiliza la fecha seleccionada
+
+        if (eventName && eventTime && eventDate) {
+            const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+            if (!events[eventDate]) {
+                events[eventDate] = [];
+            }
+            events[eventDate].push({ name: eventName, time: eventTime });
+            localStorage.setItem('calendarEvents', JSON.stringify(events));
+
+            displayEvents();
+            updateTaskList(eventDate);
+
+            document.getElementById("event-name").value = "";
+            document.getElementById("event-time").value = "";
+            document.getElementById("event-dialog").style.display = "none";
+        }
+    });
+
+    document.querySelector(".close-btn").addEventListener("click", function () {
+        document.getElementById("event-dialog").style.display = "none";
+    });
+});
