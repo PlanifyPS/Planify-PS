@@ -1,4 +1,19 @@
 <main id="challenges">
-    <h1>Lorem Ipsum</h1>
-    <div id="cards-container" class="cards-grid"></div>
+    <h1>Desafíos</h1>
+    <div class="search-filter">
+        <input type="text" id="search-challenges" placeholder="Buscar desafío...">
+        <select id="filter-challenges">
+            <option value="all">Todos</option>
+            <option value="completed">Completados</option>
+            <option value="pending">Pendientes</option>
+        </select>
+    </div>
+    <div id="challenge-layout">
+        <div id="cards-container" class="cards-grid"></div>
+        <div id="challenge-detail" class="detail-card">
+            <h2>Detalle del Desafío</h2>
+            <p></p>
+            <span class="points"></span>
+        </div>
+    </div>
 </main>

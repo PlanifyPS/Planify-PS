@@ -4,62 +4,84 @@ class Router {
         this.init();
     }
 
-    // Método para agregar una ruta
     addRoute(path, view) {
         this.routes[path] = view;
     }
 
-    // Método para cargar una vista
     async loadView(view) {
         const response = await fetch(view);
         const html = await response.text();
-        document.getElementById('app').innerHTML = html;
+        const appContainer = document.getElementById("app");
+        appContainer.innerHTML = html;
+
+        // Esperar a que la vista se haya cargado antes de ejecutar scripts
+        this.handleScripts();
     }
 
-    // Método para cargar el sidebar
     async loadSidebar() {
-        const response = await fetch('../../frontend/src/templates/sidebar.html');
+        const response = await fetch("../../frontend/src/templates/sidebar.html");
         const html = await response.text();
-        document.getElementById('sidebar-container').innerHTML = html;
+        document.getElementById("sidebar-container").innerHTML = html;
     }
 
     async loadHeader() {
-        const response = await fetch('../../frontend/src/templates/header.html');
+        const response = await fetch("../../frontend/src/templates/header.html");
         const html = await response.text();
-        document.getElementById('main-header').innerHTML = html;  // Asegúrate que coincide con el ID del HTML
+        document.getElementById("main-header").innerHTML = html;
     }
 
     handleRoute() {
-        const path = window.location.hash.slice(1) || '/home'; // Obtener el hash sin el "#"
-        const view = this.routes[path]; // Obtener la vista correspondiente
+        const path = window.location.hash.slice(1) || "/home";
+        const view = this.routes[path];
 
         if (view) {
-            this.loadView(view); // Cargar la vista
+            this.loadView(view);
         } else {
-            document.getElementById('app').innerHTML = '<h1>404 - Página no encontrada</h1>';
+            document.getElementById("app").innerHTML = "<h1>404 - Página no encontrada</h1>";
         }
     }
 
-    // Método para inicializar el router
-    init() {
-        // Definir las rutas y sus vistas
-        this.addRoute('/home', '../../frontend/src/views/home.html');
-        this.addRoute('/register', '../../frontend/src/views/register.html');
-        this.addRoute('/setting', '../../frontend/src/views/setting.html');
-        this.addRoute('/habits', '../../frontend/src/views/habits.html');
-        this.addRoute('/challenges', '../../frontend/src/views/challenges.html');
+    handleScripts() {
+        const currentPath = window.location.hash.slice(1);
 
-        // Cargar el sidebar
+        // Si estamos en la página de desafíos, cargamos el JS de desafíos
+        if (currentPath === "/challenges") {
+            this.loadChallengeScript();
+        }
+    }
+
+    loadChallengeScript() {
+        const scriptId = "challenge-script";
+
+        // Si el script ya está cargado, lo eliminamos para recargarlo
+        let oldScript = document.getElementById(scriptId);
+        if (oldScript) {
+            oldScript.remove();
+        }
+
+        // Crear un nuevo script y adjuntarlo al body
+        let newScript = document.createElement("script");
+        newScript.id = scriptId;
+        newScript.src = "../../frontend/src/js/challenges.js";
+        newScript.defer = true;
+
+        document.body.appendChild(newScript);
+    }
+
+    init() {
+        this.addRoute("/home", "../../frontend/src/views/home.html");
+        this.addRoute("/register", "../../frontend/src/views/register.html");
+        this.addRoute("/setting", "../../frontend/src/views/setting.html");
+        this.addRoute("/habits", "../../frontend/src/views/habits.html");
+        this.addRoute("/challenges", "../../frontend/src/views/challenges.html");
+
         this.loadSidebar();
         this.loadHeader();
 
-        // Escuchar cambios en el hash
-        window.addEventListener('hashchange', () => this.handleRoute());
+        window.addEventListener("hashchange", () => this.handleRoute());
 
-        // Manejar la ruta inicial al cargar la página
         this.handleRoute();
     }
 }
 
-// Inicializar el router
 new Router();

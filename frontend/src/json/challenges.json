@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Primer Paso",
+    "description": "Completa tu primer registro de hábito.",
+    "points": 50,
+    "level": "Fácil",
+    "completed": false
+  },
+  {
+    "id": 2,
+    "name": "Constancia",
+    "description": "Registra un hábito por 7 días seguidos.",
+    "points": 150,
+    "level": "Medio",
+    "completed": false
+  },
+  {
+    "id": 3,
+    "name": "Maestro del Tiempo",
+    "description": "Completa 5 tareas en un solo día.",
+    "points": 200,
+    "level": "Difícil",
+    "completed": false
+  },
+  {
+    "id": 4,
+    "name": "Desafío Nocturno",
+    "description": "Registra un hábito después de las 10 PM.",
+    "points": 80,
+    "level": "Fácil",
+    "completed": false
+  },
+  {
+    "id": 5,
+    "name": "Rutina Matutina",
+    "description": "Realiza tu primer hábito antes de las 8 AM.",
+    "points": 100,
+    "level": "Medio",
+    "completed": false
+  },
+  {
+    "id": 6,
+    "name": "Disciplina Diaria",
+    "description": "Registra un hábito durante 30 días consecutivos.",
+    "points": 500,
+    "level": "Difícil",
+    "completed": false
+  }
+]

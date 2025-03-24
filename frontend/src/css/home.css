@@ -13,23 +13,6 @@
     background-color: var(--light-bg);
 }
 
-.header {
-    grid-area: header;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 10px 20px;
-}
-
-.header-title {
-    text-align: left;
-}
-
-.header-title h1 {
-    color: var(--blue-medium);
-    margin-bottom: 8px;
-}
-
 .subtitle {
     font-size: 0.9rem;
     color: var(--text-medium);

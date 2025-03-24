@@ -8,6 +8,7 @@
 @import 'sidebar.css';
 @import 'challenges.css';
 @import 'analytics.css';
+@import 'header.css';
 
 body {
     font-family: var(--text-font), sans-serif;
