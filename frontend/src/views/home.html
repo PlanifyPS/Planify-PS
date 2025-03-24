@@ -1,60 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Template</title>
-  <link rel="stylesheet" href="../css/styles.css">
-</head>
-<body id="home">
-<aside class="sidebar">
-  <div class="logo">Logo</div>
-  <div class="menu-item">
-    <div class="icon">📧</div>
-    <span>Lorem ipsum odor</span>
-  </div>
-  <div class="menu-item">
-    <div class="icon">📧</div>
-    <span>Consectetuer adi</span>
-  </div>
-  <div class="menu-item">
-    <div class="icon">📧</div>
-    <span>Facilisis convallis</span>
-  </div>
-  <div class="menu-item">
-    <div class="icon">📧</div>
-    <span>Litora etiam tempor</span>
-  </div>
-  <div class="menu-item">
-    <div class="icon">📧</div>
-    <span>Fermentum non</span>
-  </div>
-  <div class="menu-item">
-    <div class="icon">📧</div>
-    <span>Nullam rhoncus</span>
-  </div>
-  <div style="flex: 1;"></div>
-  <div class="menu-item">
-    <div class="icon">📧</div>
-    <span>Orci massa</span>
-  </div>
-</aside>
-
-<div class="header">
-  <div class="header-title">
-    <h1>Nullam rhoncus hendrerit eros placerat</h1>
-    <p class="subtitle">Litora etiam tempor duis ullamcorper ex leo vulputate fusce class</p>
-    <p>Lorem ipsum odor amet.</p>
-  </div>
-</div>
-
+<div id="home">
 <section class="chart-section">
   <div class="chart-container">
     <div class="chart">Gráfica</div>
   </div>
 </section>
-
-
 <section class="habits-section">
   <div class="habits-grid">
     <div class="habit-card">
@@ -152,19 +101,16 @@
   </div>
 </section>
 
-<div id="event-dialog">
-  <div class="dialog-header">
-    <h3>Añadir Evento</h3>
-    <button class="close-btn">&times;</button>
+  <div id="event-dialog">
+    <div class="dialog-header">
+      <h3>Añadir Evento</h3>
+      <button class="close-btn">&times;</button>
+    </div>
+    <form class="event-form">
+      <input type="hidden" id="event-date">
+      <input type="text" id="event-name" placeholder="Nombre del evento" required>
+      <input type="time" id="event-time" required>
+      <button type="submit">Guardar</button>
+    </form>
   </div>
-  <form class="event-form">
-    <input type="hidden" id="event-date">
-    <input type="text" id="event-name" placeholder="Nombre del evento" required>
-    <input type="time" id="event-time" required>
-    <button type="submit">Guardar</button>
-  </form>
 </div>
-
-<script src="../js/home.js"></script>
-</body>
-</html>

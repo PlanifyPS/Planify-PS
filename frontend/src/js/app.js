@@ -4,3 +4,4 @@
 //import './setting';
 import './challenges.js';
 import './analytics.js'
+import './home.js';
