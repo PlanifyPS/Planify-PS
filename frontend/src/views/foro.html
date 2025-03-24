@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foro</title>
+  <link rel="stylesheet" href="../CSS/styles.css">
+  <script defer src="../JS/foro.js"></script>
+</head>
+<body>
+<div class="contenderforo">
+  <header>
+    <h1 id="forumName">Nombre del Foro</h1>
+    <input type="text" id="searchForum" placeholder="Buscar foros...">
+    <button id="searchButton">Buscar</button>
+    <div id="searchResults" class="search-results"></div>
+  </header>
+  <div class="container">
+    <main>
+      <button id="createForum">Crear Foro</button>
+      <button id="addPost">Añadir</button>
+      <section id="forumContainer">
+        <!-- Aquí se añadirán los posts dinámicamente -->
+      </section>
+    </main>
+    <aside>
+      <h2>Foros de Interés</h2>
+      <ul id="forumList"></ul>
+    </aside>
+  </div>
+
+  <div id="postModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Crear Nuevo Post</h2>
+      <input type="text" id="postTitle" placeholder="Asunto">
+      <textarea id="postContent" placeholder="Escribe tu mensaje..."></textarea>
+      <button id="savePost">Guardar</button>
+    </div>
+  </div>
+
+  <div id="forumModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Crear Nuevo Foro</h2>
+      <input type="text" id="forumTitle" placeholder="Nombre del Foro">
+      <button id="saveForum">Guardar</button>
+    </div>
+  </div>
+
+  <template id="postTemplate">
+    <article class="post">
+      <h3 class="post-title"></h3>
+      <p class="post-content"></p>
+      <div class="post-footer">
+        <div class="user-info">
+          <img src="user.png" alt="Usuario" class="user-photo">
+          <span class="user-name">Usuario Demo</span>
+        </div>
+        <span class="post-date"></span>
+      </div>
+    </article>
+  </template>
+</div>
+<script src="../JS/foro.js"></script>
+</body>
+</html>
