@@ -1,12 +1,14 @@
 import ProgressBar from 'https://cdn.jsdelivr.net/npm/progressbar.js/+esm';
 
-/// REVISAR: LAS GRAFICAS SOLO CARGAN AL REFRESCAR LA PAGINA Y NO CUANDO SE ACCEDE A ELLA
-document.addEventListener("DOMContentLoaded", function () {
 
+/// REVISAR: LAS GRAFICAS SOLO CARGAN AL REFRESCAR LA PAGINA Y NO CUANDO SE ACCEDE A ELLA(el js se ejecuta en todas las paginas)
+document.addEventListener("DOMContentLoaded", function () {
+    console.log(document.location.pathname.split("/").pop());
+    
     localStorage.setItem("habitsJson", JSON.stringify(0.8))
     localStorage.setItem("tasksJson", JSON.stringify(0.6))
-    let habits = document.getElementById("habits-circle-progress");
-    let tasks = document.getElementById("tasks-circle-progress");
+    const habits = document.getElementById("habits-circle-progress");
+    const tasks = document.getElementById("tasks-circle-progress");
 
     const habitsCircleBar = new ProgressBar.Circle(habits, {
         strokeWidth: 15,
