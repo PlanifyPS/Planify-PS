@@ -1,152 +1,53 @@
-document.addEventListener("DOMContentLoaded", () => {
-    checkChallengesSection();
-});
+alert("challenges.js cargado!"); // Depuración
 
-window.addEventListener("hashchange", () => {
-    checkChallengesSection();
-});
-
-function checkChallengesSection() {
-    const challengesSection = document.getElementById("challenges");
-    if (challengesSection) {
-        initChallenges();
+// Función principal exportada
+export function initChallenges() {
+    alert("initChallenges ejecutado"); // Depuración
+    try {
+        loadChallenges();
+    } catch (error) {
+        alert(`Error en initChallenges: ${error.message}`); // Depuración
+        console.error(error);
     }
 }
 
-function initChallenges() {
-    const challengesSection = document.getElementById("challenges");
-    const challengesContainer = document.getElementById("cards-container");
-    const challengeDetail = document.getElementById("challenge-detail");
-    const closeDetailBtn = document.getElementById("close-detail");
+async function loadChallenges() {
+    alert("Intentando cargar challenges.json"); // Depuración
+    try {
+        const response = await fetch('../../frontend/src/json/challenges.json');
+        if (!response.ok) throw new Error("Error en la respuesta");
 
-    let challenges = [];
+        const data = await response.json();
+        alert(`Cargados ${data.length} desafíos`); // Depuración
+        renderChallenges(data);
+    } catch (error) {
+        alert(`Error cargando desafíos: ${error.message}`); // Depuración
+        throw error;
+    }
+}
 
-    async function loadChallenges() {
-        try {
-            const response = await fetch("../src/json/challenges.json");
-            if (!response.ok) throw new Error("No se pudo cargar el archivo JSON");
-            challenges = await response.json();
-            loadStatus();
-            renderChallenges();
-        } catch (error) {
-            console.error("Error al cargar los desafíos:", error);
-        }
+function renderChallenges(challenges) {
+    alert("Intentando renderizar desafíos"); // Depuración
+    const container = document.getElementById('cards-container');
+
+    if (!container) {
+        alert("No se encontró cards-container"); // Depuración
+        return;
     }
 
-    function loadStatus() {
-        const completedStatus = JSON.parse(localStorage.getItem("completedChallenges")) || {};
-        const pinnedStatus = JSON.parse(localStorage.getItem("pinnedChallenges")) || {};
-
-        challenges.forEach(challenge => {
-            challenge.completed = completedStatus[challenge.id] || false;
-            challenge.pinned = pinnedStatus[challenge.id] || false;
-        });
-
-        challenges.sort((a, b) => b.pinned - a.pinned); // Poner los fijados arriba
-    }
-
-    function saveStatus() {
-        const completedStatus = {};
-        const pinnedStatus = {};
-
-        challenges.forEach(challenge => {
-            completedStatus[challenge.id] = challenge.completed;
-            pinnedStatus[challenge.id] = challenge.pinned;
-        });
-
-        localStorage.setItem("completedChallenges", JSON.stringify(completedStatus));
-        localStorage.setItem("pinnedChallenges", JSON.stringify(pinnedStatus));
-    }
-
-    function renderChallenges() {
-        if (!challengesContainer) return;
-
-        challengesContainer.innerHTML = "";
-        challenges.forEach(challenge => {
-            const challengeCard = document.createElement("article");
-            challengeCard.className = `card ${challenge.completed ? "completed" : ""} ${challenge.pinned ? "pinned" : ""}`;
-            challengeCard.dataset.id = challenge.id;
-
-            challengeCard.innerHTML = `
-                <div class="card-header">
-                    <h2>${challenge.name}</h2>
-                    <div class="card-actions">
-                        <button class="icon-btn pin-btn"><i class="fas fa-thumbtack"></i></button>
-                        <button class="icon-btn complete-btn"><i class="fas ${challenge.completed ? "fa-check-circle" : "fa-circle"}"></i></button>
-                        <button class="icon-btn close-btn"><i class="fas fa-xmark"></i></button>
-                    </div>
-                </div>
-                <p>${challenge.description}</p>
-                <div class="card-footer">
-                    <span class="tag">${challenge.level}</span>
-                    <span class="card-date">${challenge.points} Pts</span>
-                </div>
-            `;
-
-            challengesContainer.appendChild(challengeCard);
-        });
-
-        setupCardEvents();
-    }
-
-    function setupCardEvents() {
-        document.querySelectorAll(".close-btn").forEach(button => {
-            button.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const card = e.target.closest(".card");
-                card.remove();
-            });
-        });
-
-        document.querySelectorAll(".complete-btn").forEach(button => {
-            button.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const card = e.target.closest(".card");
-                const challengeId = parseInt(card.dataset.id);
-                const challenge = challenges.find(c => c.id === challengeId);
-                challenge.completed = !challenge.completed;
-                saveStatus();
-                renderChallenges();
-            });
-        });
-
-        document.querySelectorAll(".pin-btn").forEach(button => {
-            button.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const card = e.target.closest(".card");
-                const challengeId = parseInt(card.dataset.id);
-                const challenge = challenges.find(c => c.id === challengeId);
-                challenge.pinned = !challenge.pinned;
-                saveStatus();
-                renderChallenges();
-            });
-        });
-
-        document.querySelectorAll(".card").forEach(card => {
-            card.addEventListener("click", () => openChallengeDetail(card));
-        });
-    }
-
-    function openChallengeDetail(card) {
-        const challengeId = parseInt(card.dataset.id);
-        const challenge = challenges.find(c => c.id === challengeId);
-
-        challengeDetail.innerHTML = `
-            <div class="detail-header">
-                <h2>${challenge.name}</h2>
-                <button id="close-detail" class="icon-btn"><i class="fas fa-xmark"></i></button>
-            </div>
+    container.innerHTML = challenges.map(challenge => `
+        <div class="challenge-card">
+            <h3>${challenge.name}</h3>
             <p>${challenge.description}</p>
-            <div class="points">${challenge.points} Pts</div>
-        `;
+            <span>${challenge.points} puntos</span>
+        </div>
+    `).join('');
 
-        document.getElementById("close-detail").addEventListener("click", closeChallengeDetail);
-        challengesSection.classList.add("expanded");
-    }
+    alert("Desafíos renderizados"); // Depuración
+}
 
-    function closeChallengeDetail() {
-        challengesSection.classList.remove("expanded");
-    }
-
-    loadChallenges();
+// Llamada automática si estamos en la página de desafíos
+if (window.location.hash.includes('challenges')) {
+    alert("Página de desafíos detectada, iniciando..."); // Depuración
+    initChallenges();
 }

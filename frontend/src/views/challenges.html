@@ -1,19 +1,29 @@
 <main id="challenges">
-    <h1>Desafíos</h1>
-    <div class="search-filter">
-        <input type="text" id="search-challenges" placeholder="Buscar desafío...">
-        <select id="filter-challenges">
-            <option value="all">Todos</option>
-            <option value="completed">Completados</option>
-            <option value="pending">Pendientes</option>
-        </select>
+    <div class="challenges-header">
+        <h1><i class="fas fa-trophy"></i> Desafíos Semanales</h1>
+        <div class="challenges-controls">
+            <div class="search-filter">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-challenges" placeholder="Buscar desafío...">
+                </div>
+                <select id="filter-challenges">
+                    <option value="all">Todos</option>
+                    <option value="completed">Completados</option>
+                    <option value="pending">Pendientes</option>
+                </select>
+            </div>
+        </div>
     </div>
+
     <div id="challenge-layout">
         <div id="cards-container" class="cards-grid"></div>
         <div id="challenge-detail" class="detail-card">
-            <h2>Detalle del Desafío</h2>
-            <p></p>
-            <span class="points"></span>
+            <div class="empty-detail">
+                <i class="fas fa-flag"></i>
+                <h2>Selecciona un desafío</h2>
+                <p>Haz clic en cualquier desafío para ver sus detalles</p>
+            </div>
         </div>
     </div>
 </main>

@@ -1,36 +1,34 @@
-@import 'foro.css';
-@import 'setting.css';
-@import 'habits.css';
+/* Importación de estilos */
 @import 'variables.css';
-@import 'register.css';
-@import 'home.css';
-@import 'dashboard.css';
+@import 'header.css';
 @import 'sidebar.css';
+@import 'dashboard.css';
+@import 'home.css';
+@import 'register.css';
+@import 'habits.css';
+@import 'setting.css';
 @import 'challenges.css';
 @import 'analytics.css';
-@import 'header.css';
+@import 'foro.css';
+@import 'loading.css';
 
 body {
     font-family: var(--text-font), sans-serif;
     background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--heading-font), sans-serif;
-}
-
-main {
-    width: min(95%, 1200px);
-    margin: 0 auto;
-}
-
-*{
     margin: 0;
     padding: 0;
 }
 
 *, *:before, *:after {
-    box-sizing: inherit;
+    box-sizing: border-box;
 }
 
 img {
@@ -38,8 +36,51 @@ img {
     height: auto;
 }
 
-html {
-    box-sizing: border-box;
-    width: 100%;
-    overflow-x: hidden;
+.register-view #sidebar-container,
+.register-view #main-header {
+    display: none !important;
+}
+
+.register-view #content {
+    margin-left: 0 !important;
+    width: 100% !important;
+}
+
+/* Mensajes de error */
+.error-container {
+    text-align: center;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 2rem auto;
+    background: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+}
+
+.error-container h1 {
+    color: red;
+    margin-bottom: 1rem;
+}
+
+.error-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: darkred;
+    color: var(--white);
+    text-decoration: none;
+    border-radius: .5rem;
+    transition: background 0.3s;
+}
+
+.error-link:hover {
+    background: darkred;
+}
+
+#app {
+    transition: opacity 0.3s ease;
+}
+
+#app.loading {
+    opacity: 0.5;
 }
