@@ -2,12 +2,140 @@ const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
 export function initHome() {
-    // Esperar a que el DOM esté listo
     if (document.readyState === 'complete') {
         initCalendar();
+        setupEventDialogListeners();
     } else {
-        document.addEventListener('DOMContentLoaded', initCalendar);
+        document.addEventListener('DOMContentLoaded', () => {
+            initCalendar();
+            setupEventDialogListeners();
+        });
     }
+}
+
+function setupEventDialogListeners() {
+    const eventDialog = document.getElementById('event-dialog');
+    const eventForm = document.querySelector('.event-form');
+    const closeBtn = document.querySelector('.close-btn');
+    const eventDate = document.getElementById('event-date');
+    const eventName = document.getElementById('event-name');
+    const eventTime = document.getElementById('event-time');
+    const addEventBtn = document.getElementById('add-event-btn');
+
+    addEventBtn.addEventListener('click', () => {
+
+        const selectedDay = document.querySelector('.day.selected');
+
+        if (selectedDay) {
+            const date = selectedDay.getAttribute('data-date');
+            eventDate.value = date;
+        } else {
+
+            const today = new Date();
+            const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+            eventDate.value = formattedDate;
+        }
+
+
+        eventName.value = '';
+        eventTime.value = '';
+        eventDialog.style.display = 'block';
+    });
+
+
+    closeBtn.addEventListener('click', () => {
+        eventDialog.style.display = 'none';
+    });
+
+
+    eventForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const date = eventDate.value;
+        const name = eventName.value;
+        const time = eventTime.value;
+
+
+        const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+
+
+        const newEvent = { name, time, id: Date.now() };
+
+
+        if (!events[date]) {
+            events[date] = [];
+        }
+        events[date].push(newEvent);
+
+
+        localStorage.setItem('calendarEvents', JSON.stringify(events));
+
+
+        displayEvents();
+        updateTaskList(date);
+        eventDialog.style.display = 'none';
+    });
+
+
+    const taskList = document.querySelector('.task-list');
+    taskList.addEventListener('click', (e) => {
+        const taskItem = e.target.closest('.task-item');
+        if (!taskItem) return;
+
+        const dateString = document.querySelector('.day.selected')?.getAttribute('data-date');
+        if (!dateString) return;
+
+        const eventName = taskItem.querySelector('span:nth-child(2)').textContent;
+        const eventTime = taskItem.querySelector('span:nth-child(3)').textContent;
+
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = '✏️';
+        editBtn.classList.add('edit-task-btn');
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '🗑️';
+        deleteBtn.classList.add('delete-task-btn');
+
+
+        taskItem.querySelector('.edit-task-btn')?.remove();
+        taskItem.querySelector('.delete-task-btn')?.remove();
+
+
+        taskItem.appendChild(editBtn);
+        taskItem.appendChild(deleteBtn);
+
+
+        editBtn.addEventListener('click', () => {
+
+            eventDate.value = dateString;
+            eventName.value = eventName;
+            eventTime.value = eventTime;
+            eventDialog.style.display = 'block';
+
+
+            const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+            const dateEvents = events[dateString] || [];
+            const updatedEvents = dateEvents.filter(event =>
+                event.name !== eventName || event.time !== eventTime
+            );
+            events[dateString] = updatedEvents;
+            localStorage.setItem('calendarEvents', JSON.stringify(events));
+        });
+
+
+        deleteBtn.addEventListener('click', () => {
+            const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+            const dateEvents = events[dateString] || [];
+            const updatedEvents = dateEvents.filter(event =>
+                event.name !== eventName || event.time !== eventTime
+            );
+            events[dateString] = updatedEvents;
+            localStorage.setItem('calendarEvents', JSON.stringify(events));
+
+            displayEvents();
+            updateTaskList(dateString);
+        });
+    });
 }
 
 function createCalendar(year, month) {
@@ -33,15 +161,12 @@ function createCalendar(year, month) {
         <div class="days">
     `;
 
-    // Ajustar para que la semana empiece en lunes
     let startingDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
 
-    // Días vacíos al inicio
     for (let i = 0; i < startingDay; i++) {
         calendarHTML += `<div class="day empty"></div>`;
     }
 
-    // Días del mes
     for (let day = 1; day <= daysInMonth; day++) {
         const isToday = day === today.getDate() &&
             month === today.getMonth() &&
@@ -68,7 +193,6 @@ function initCalendar() {
         return;
     }
 
-    // Generar calendario inicial
     calendarContainer.innerHTML = createCalendar(today.getFullYear(), today.getMonth());
     displayEvents();
     setupEventListeners();
@@ -91,7 +215,6 @@ function displayEvents() {
 }
 
 function setupEventListeners() {
-    // Navegación entre meses
     document.addEventListener('click', (e) => {
         if (e.target.id === 'prev-month' || e.target.id === 'next-month') {
             const header = document.querySelector('.calendar-header h3');
@@ -114,7 +237,6 @@ function setupEventListeners() {
             displayEvents();
         }
 
-        // Selección de día
         if (e.target.classList.contains('day') && !e.target.classList.contains('empty')) {
             const date = e.target.getAttribute('data-date');
             updateTaskList(date);
@@ -126,6 +248,12 @@ function updateTaskList(dateString) {
     const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
     const dayEvents = events[dateString] || [];
     const taskList = document.querySelector('.task-list');
+
+
+    document.querySelector('.day.selected')?.classList.remove('selected');
+
+    const selectedDay = document.querySelector(`.day[data-date="${dateString}"]`);
+    selectedDay?.classList.add('selected');
 
     if (!taskList) return;
 
@@ -144,5 +272,4 @@ function updateTaskList(dateString) {
           </div>`;
 }
 
-// Iniciar cuando se carga la página
 initHome();
