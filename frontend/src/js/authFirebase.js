@@ -65,6 +65,7 @@ if (googleLoginButton) {
         try {
             await loginWithGoogle();
             showSuccess("Inicio de sesión con Google exitoso. Redirigiendo...");
+            window.location.href = "/";
         } catch (error) {
             showError(error.message);
         }
