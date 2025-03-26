@@ -66,5 +66,5 @@ document.querySelector('.complete-task-button').addEventListener('click', functi
     addToStreak();
 });
 
-document.addEventListener('taskCompleted', incrementPoints);
+//document.addEventListener('taskCompleted', incrementPoints);
 initPoints();
