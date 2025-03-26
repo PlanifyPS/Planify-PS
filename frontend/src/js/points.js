@@ -1,27 +1,59 @@
-if (!localStorage.getItem('points')) {
-    localStorage.setItem('points', '0');
-}
-
-function updatePoints() {
-    const points = localStorage.getItem('points');
-    document.getElementById('points').innerText = `${points}pts`;
-}
-
-function incrementPoints() {
-    let points = parseInt(localStorage.getItem('points')) || 0;
-    points += 1;
-    localStorage.setItem('points', points.toString());
-    updatePoints();
-}
 
 document.addEventListener('DOMContentLoaded', function() {
-    updatePoints();
-    document.querySelectorAll('.complete-task-button').forEach(button => {
-        button.addEventListener('click', function() {
 
-            document.dispatchEvent(new CustomEvent('taskCompleted'));
-        });
+    if (!localStorage.getItem('points')) {
+        localStorage.setItem('points', '0');
+    }
+
+    function updatePoints() {
+        document.getElementById('points').textContent = localStorage.getItem('points') + 'pts';
+    }
+
+    if (!localStorage.getItem('streak')) {
+        localStorage.setItem('streak', '0');
+        localStorage.setItem('lastTaskDate', '');
+    }
+
+    function updateStreakUI() {
+        document.getElementById('streak').textContent = localStorage.getItem('streak');
+    }
+
+    function checkStreak() {
+        const lastDate = localStorage.getItem('lastTaskDate');
+        const today = new Date().toDateString();
+
+        if (!lastDate) return;
+
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        if (lastDate !== yesterday.toDateString() && lastDate !== today) {
+            localStorage.setItem('streak', '0');
+            updateStreakUI();
+        }
+    }
+
+    function addToStreak() {
+        const today = new Date().toDateString();
+        const lastDate = localStorage.getItem('lastTaskDate');
+
+        if (lastDate !== today) {
+            const newStreak = parseInt(localStorage.getItem('streak')) + 1;
+            localStorage.setItem('streak', newStreak.toString());
+            localStorage.setItem('lastTaskDate', today);
+            updateStreakUI();
+        }
+    }
+
+    document.querySelector('.complete-task-button').addEventListener('click', function() {
+        const newPoints = parseInt(localStorage.getItem('points')) + 1;
+        localStorage.setItem('points', newPoints.toString());
+        updatePoints();
+
+        addToStreak();
     });
-});
 
-document.addEventListener('taskCompleted', incrementPoints);
+    updatePoints();
+    checkStreak();
+    updateStreakUI();
+});
