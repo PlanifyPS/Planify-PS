@@ -3,7 +3,7 @@
     "id": 1,
     "name": "Primer Paso",
     "description": "Completa tu primer registro de hábito esta semana.",
-    "points": 50,
+    "points": 5,
     "level": "Fácil",
     "completed": false
   },
@@ -11,7 +11,7 @@
     "id": 2,
     "name": "Constancia Semanal",
     "description": "Registra un hábito por 5 días seguidos esta semana.",
-    "points": 150,
+    "points": 15,
     "level": "Medio",
     "completed": false
   },
@@ -19,7 +19,7 @@
     "id": 3,
     "name": "Maestro del Tiempo",
     "description": "Completa 5 tareas en un solo día esta semana.",
-    "points": 200,
+    "points": 20,
     "level": "Difícil",
     "completed": false
   },
@@ -27,7 +27,7 @@
     "id": 4,
     "name": "Desafío Nocturno",
     "description": "Registra un hábito después de las 10 PM al menos 3 veces esta semana.",
-    "points": 80,
+    "points": 8,
     "level": "Fácil",
     "completed": false
   },
@@ -35,7 +35,7 @@
     "id": 5,
     "name": "Rutina Matutina",
     "description": "Realiza tu primer hábito antes de las 8 AM al menos 4 días esta semana.",
-    "points": 100,
+    "points": 10,
     "level": "Medio",
     "completed": false
   },
@@ -43,7 +43,7 @@
     "id": 6,
     "name": "Equilibrio Perfecto",
     "description": "Mantén un balance entre hábitos físicos y mentales todos los días esta semana.",
-    "points": 120,
+    "points": 12,
     "level": "Medio",
     "completed": false
   }
