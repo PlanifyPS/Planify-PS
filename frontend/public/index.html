@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Ruta corregida -->
     <link rel="stylesheet" href="../src/css/styles.css">
     <script src="https://kit.fontawesome.com/0034963f89.js" crossorigin="anonymous"></script>
-    <title>Routing Personalizado con Sidebar</title>
+    <title>Planify</title>
 </head>
 <body id="dashboard">
-
 <div id="sidebar-container"></div>
 
 <div id="content">
     <header id="main-header"></header>
-    <main id="app"></main>
+    <main id="app">
+        <p>Cargando aplicación...</p>
+    </main>
 </div>
 
+<!-- Solo cargamos el router -->
 <script src="../../backend/api/router.js"></script>
-<script type="module" src="../src/js/app.js"></script>
 </body>
 </html>

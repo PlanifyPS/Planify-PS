@@ -1,88 +1,108 @@
 class Router {
     constructor() {
-        this.routes = {}; // Almacenará las rutas y sus vistas
+        alert("Router inicializado"); // Depuración
+        this.routes = {
+            '/home': 'home.html',
+            '/register': 'register.html',
+            '/setting': 'setting.html',
+            '/habits': 'habits.html',
+            '/challenges': 'challenges.html',
+            '/analytics': 'analytics.html'
+        };
+        this.basePath = '../../frontend/src';
         this.init();
     }
 
-    addRoute(path, view) {
-        this.routes[path] = view;
+    async init() {
+        alert("Iniciando router"); // Depuración
+        await this.loadComponents();
+        this.setupEvents();
+        this.handleRoute();
+    }
+
+    async loadComponents() {
+        try {
+            alert("Cargando sidebar y header"); // Depuración
+            await Promise.all([
+                this.loadFile('templates/sidebar.html', 'sidebar-container'),
+                this.loadFile('templates/header.html', 'main-header')
+            ]);
+        } catch (error) {
+            alert(`Error cargando componentes: ${error.message}`); // Depuración
+            console.error(error);
+        }
+    }
+
+    async loadFile(path, targetId) {
+        const fullPath = `${this.basePath}/${path}`;
+        alert(`Intentando cargar: ${fullPath}`); // Depuración
+
+        const response = await fetch(fullPath);
+        if (!response.ok) throw new Error(`Error loading ${path}`);
+
+        const html = await response.text();
+        document.getElementById(targetId).innerHTML = html;
+        alert(`${path} cargado correctamente`); // Depuración
+    }
+
+    async handleRoute() {
+        const path = window.location.hash.slice(1) || '/home';
+        alert(`Manejando ruta: ${path}`); // Depuracion
+
+        if (this.routes[path]) {
+            await this.loadView(this.routes[path]);
+            this.loadScript(path);
+        } else {
+            alert(`Ruta no encontrada: ${path}`); // Depuración
+            this.showError();
+        }
     }
 
     async loadView(view) {
-        const response = await fetch(view);
-        const html = await response.text();
-        const appContainer = document.getElementById("app");
-        appContainer.innerHTML = html;
-
-        // Esperar a que la vista se haya cargado antes de ejecutar scripts
-        this.handleScripts();
-    }
-
-    async loadSidebar() {
-        const response = await fetch("../../frontend/src/templates/sidebar.html");
-        const html = await response.text();
-        document.getElementById("sidebar-container").innerHTML = html;
-    }
-
-    async loadHeader() {
-        const response = await fetch("../../frontend/src/templates/header.html");
-        const html = await response.text();
-        document.getElementById("main-header").innerHTML = html;
-    }
-
-    handleRoute() {
-        const path = window.location.hash.slice(1) || "/home";
-        const view = this.routes[path];
-
-        if (view) {
-            this.loadView(view);
-        } else {
-            document.getElementById("app").innerHTML = "<h1>404 - Página no encontrada</h1>";
+        try {
+            alert(`Cargando vista: ${view}`); // Depuración
+            await this.loadFile(`views/${view}`, 'app');
+        } catch (error) {
+            alert(`Error cargando vista: ${error.message}`); // Depuración
+            this.showError();
         }
     }
 
-    handleScripts() {
-        const currentPath = window.location.hash.slice(1);
+    loadScript(path) {
+        const scriptMap = {
+            '/challenges': 'challenges.js',
+            '/habits': 'habits.js',
+            '/setting': 'setting.js',
+            '/analytics': 'analytics.js'
+        };
 
-        // Si estamos en la página de desafíos, cargamos el JS de desafíos
-        if (currentPath === "/challenges") {
-            this.loadChallengeScript();
+        if (scriptMap[path]) {
+            alert(`Cargando script: ${scriptMap[path]}`); // Depuración
+            const script = document.createElement('script');
+            script.src = `${this.basePath}/js/${scriptMap[path]}`;
+            script.type = 'module';
+            script.onload = () => alert(`${scriptMap[path]} cargado correctamente`); // Depuración
+            script.onerror = () => alert(`Error cargando ${scriptMap[path]}`); // Depuración
+            document.body.appendChild(script);
         }
     }
 
-    loadChallengeScript() {
-        const scriptId = "challenge-script";
-
-        // Si el script ya está cargado, lo eliminamos para recargarlo
-        let oldScript = document.getElementById(scriptId);
-        if (oldScript) {
-            oldScript.remove();
-        }
-
-        // Crear un nuevo script y adjuntarlo al body
-        let newScript = document.createElement("script");
-        newScript.id = scriptId;
-        newScript.src = "../../frontend/src/js/challenges.js";
-        newScript.defer = true;
-
-        document.body.appendChild(newScript);
+    setupEvents() {
+        window.addEventListener('hashchange', () => {
+            alert('Cambio de hash detectado'); // Depuración
+            this.handleRoute();
+        });
     }
 
-    init() {
-        this.addRoute("/home", "../../frontend/src/views/home.html");
-        this.addRoute("/register", "../../frontend/src/views/register.html");
-        this.addRoute("/setting", "../../frontend/src/views/setting.html");
-        this.addRoute("/habits", "../../frontend/src/views/habits.html");
-        this.addRoute("/challenges", "../../frontend/src/views/challenges.html");
-        this.addRoute('/analytics', '../../frontend/src/views/analytics.html');
-
-        this.loadSidebar();
-        this.loadHeader();
-
-        window.addEventListener("hashchange", () => this.handleRoute());
-
-        this.handleRoute();
+    showError() {
+        document.getElementById('app').innerHTML = `
+            <div class="error">
+                <h2>Error al cargar la página</h2>
+                <a href="#/home">Volver al inicio</a>
+            </div>
+        `;
     }
 }
 
+// Inicialización
 new Router();
