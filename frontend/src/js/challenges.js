@@ -1,53 +1,87 @@
-alert("challenges.js cargado!"); // Depuración
+// Ruta al archivo JSON
+const JSON_PATH = '../../frontend/src/json/challenges.json';
 
-// Función principal exportada
+// Función principal que se ejecuta al cargar la página
 export function initChallenges() {
-    alert("initChallenges ejecutado"); // Depuración
-    try {
+    // Esperar a que el DOM esté listo
+    if (document.readyState === 'complete') {
         loadChallenges();
-    } catch (error) {
-        alert(`Error en initChallenges: ${error.message}`); // Depuración
-        console.error(error);
+    } else {
+        document.addEventListener('DOMContentLoaded', loadChallenges);
     }
 }
 
+// Cargar los challenges desde el JSON
 async function loadChallenges() {
-    alert("Intentando cargar challenges.json"); // Depuración
     try {
-        const response = await fetch('../../frontend/src/json/challenges.json');
-        if (!response.ok) throw new Error("Error en la respuesta");
+        // Mostrar estado de carga
+        const container = document.getElementById('cards-container');
+        if (container) container.innerHTML = '<p>Cargando desafíos...</p>';
 
-        const data = await response.json();
-        alert(`Cargados ${data.length} desafíos`); // Depuración
-        renderChallenges(data);
+        // Hacer la petición al JSON
+        const response = await fetch(JSON_PATH);
+
+        // Verificar si la respuesta es correcta
+        if (!response.ok) {
+            throw new Error('No se pudieron cargar los desafíos');
+        }
+
+        // Convertir la respuesta a JSON
+        const challenges = await response.json();
+
+        // Mostrar los challenges en la página
+        renderChallenges(challenges);
     } catch (error) {
-        alert(`Error cargando desafíos: ${error.message}`); // Depuración
-        throw error;
+        console.error('Error:', error);
+        showError('Error al cargar los desafíos');
     }
 }
 
+// Mostrar los challenges en el HTML
 function renderChallenges(challenges) {
-    alert("Intentando renderizar desafíos"); // Depuración
     const container = document.getElementById('cards-container');
+    if (!container) return;
 
-    if (!container) {
-        alert("No se encontró cards-container"); // Depuración
+    // Si no hay challenges, mostrar mensaje
+    if (!challenges || challenges.length === 0) {
+        container.innerHTML = '<p>No hay desafíos disponibles</p>';
         return;
     }
 
+    // Generar el HTML para cada challenge
     container.innerHTML = challenges.map(challenge => `
-        <div class="challenge-card">
-            <h3>${challenge.name}</h3>
+        <article class="card" data-id="${challenge.id}">
+            <div class="card-header">
+                <h2>${challenge.name}</h2>
+            </div>
             <p>${challenge.description}</p>
-            <span>${challenge.points} puntos</span>
-        </div>
+            <div class="card-footer">
+                <span class="tag ${challenge.level.toLowerCase()}">${challenge.level}</span>
+                <span class="points">${challenge.points} pts</span>
+            </div>
+        </article>
     `).join('');
-
-    alert("Desafíos renderizados"); // Depuración
 }
 
-// Llamada automática si estamos en la página de desafíos
-if (window.location.hash.includes('challenges')) {
-    alert("Página de desafíos detectada, iniciando..."); // Depuración
-    initChallenges();
+// Mostrar mensaje de error
+function showError(message) {
+    const container = document.getElementById('cards-container');
+    if (container) {
+        container.innerHTML = `
+            <div class="error">
+                <p>${message}</p>
+                <button onclick="window.location.reload()">Reintentar</button>
+            </div>
+        `;
+    }
 }
+
+// Escuchar cambios en la URL
+window.addEventListener('hashchange', () => {
+    if (window.location.hash.includes('challenges')) {
+        initChallenges();
+    }
+});
+
+// Iniciar cuando se carga la página
+initChallenges();

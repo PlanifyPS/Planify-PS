@@ -1,108 +1,126 @@
 class Router {
     constructor() {
-        alert("Router inicializado"); // Depuración
         this.routes = {
-            '/home': 'home.html',
-            '/register': 'register.html',
-            '/setting': 'setting.html',
-            '/habits': 'habits.html',
-            '/challenges': 'challenges.html',
-            '/analytics': 'analytics.html'
+            '/register': { view: 'register.html', title: 'Registro', script: 'register.js', },
+            '/home': { view: 'home.html', title: 'Inicio', script: 'home.js', },
+            '/setting': { view: 'setting.html', title: 'Configuración', script: 'setting.js', },
+            '/habits': { view: 'habits.html', title: 'Mis Hábitos', script: 'habits.js' },
+            '/challenges': {
+                view: 'challenges.html',
+                title: 'Desafíos Semanales',
+                script: 'challenges.js',
+            },
+            '/analytics': { view: 'analytics.html', title: 'Analíticas', script: 'analytics.js' },
+            '/forums': { view: 'foro.html', title: 'Foros', script: 'foro.js' }
         };
         this.basePath = '../../frontend/src';
+        this.currentScript = null;
+        this.currentStyle = null;
         this.init();
     }
 
     async init() {
-        alert("Iniciando router"); // Depuración
-        await this.loadComponents();
-        this.setupEvents();
-        this.handleRoute();
+        try {
+            await this.loadComponents();
+            this.setupEvents();
+            await this.handleRoute();
+        } catch (error) {
+            this.showError(error);
+        }
     }
 
     async loadComponents() {
-        try {
-            alert("Cargando sidebar y header"); // Depuración
-            await Promise.all([
-                this.loadFile('templates/sidebar.html', 'sidebar-container'),
-                this.loadFile('templates/header.html', 'main-header')
-            ]);
-        } catch (error) {
-            alert(`Error cargando componentes: ${error.message}`); // Depuración
-            console.error(error);
-        }
+        await Promise.all([
+            this.loadFile('templates/sidebar.html', 'sidebar-container'),
+            this.loadFile('templates/header.html', 'main-header')
+        ]);
     }
 
     async loadFile(path, targetId) {
         const fullPath = `${this.basePath}/${path}`;
-        alert(`Intentando cargar: ${fullPath}`); // Depuración
 
         const response = await fetch(fullPath);
         if (!response.ok) throw new Error(`Error loading ${path}`);
 
         const html = await response.text();
         document.getElementById(targetId).innerHTML = html;
-        alert(`${path} cargado correctamente`); // Depuración
     }
 
     async handleRoute() {
         const path = window.location.hash.slice(1) || '/home';
-        alert(`Manejando ruta: ${path}`); // Depuracion
+        const route = this.routes[path];
 
-        if (this.routes[path]) {
-            await this.loadView(this.routes[path]);
-            this.loadScript(path);
+        if (route) {
+            document.title = `Planify - ${route.title}`;
+            document.getElementById('app').innerHTML = '';
+            await this.loadView(route);
+            await this.loadAssets(route);
+
+            if (path !== '/register') {
+                await this.loadComponents();
+            }
         } else {
-            alert(`Ruta no encontrada: ${path}`); // Depuración
-            this.showError();
+            this.showError(new Error('Página no encontrada'));
         }
     }
 
-    async loadView(view) {
+    async loadView(route) {
         try {
-            alert(`Cargando vista: ${view}`); // Depuración
-            await this.loadFile(`views/${view}`, 'app');
+            await this.loadFile(`views/${route.view}`, 'app');
         } catch (error) {
-            alert(`Error cargando vista: ${error.message}`); // Depuración
-            this.showError();
+            throw error;
         }
     }
 
-    loadScript(path) {
-        const scriptMap = {
-            '/challenges': 'challenges.js',
-            '/habits': 'habits.js',
-            '/setting': 'setting.js',
-            '/analytics': 'analytics.js'
-        };
-
-        if (scriptMap[path]) {
-            alert(`Cargando script: ${scriptMap[path]}`); // Depuración
-            const script = document.createElement('script');
-            script.src = `${this.basePath}/js/${scriptMap[path]}`;
-            script.type = 'module';
-            script.onload = () => alert(`${scriptMap[path]} cargado correctamente`); // Depuración
-            script.onerror = () => alert(`Error cargando ${scriptMap[path]}`); // Depuración
-            document.body.appendChild(script);
+    async loadAssets(route) {
+        if (this.currentScript) {
+            this.currentScript.remove();
+            this.currentScript = null;
         }
+        if (this.currentStyle) {
+            this.currentStyle.remove();
+            this.currentStyle = null;
+        }
+
+        if (route.styles) {
+            this.currentStyle = document.createElement('link');
+            this.currentStyle.rel = 'stylesheet';
+            this.currentStyle.href = `${this.basePath}/css/${route.styles}`;
+            document.head.appendChild(this.currentStyle);
+        }
+
+        if (route.script) {
+            return new Promise((resolve) => {
+                this.currentScript = document.createElement('script');
+                this.currentScript.src = `${this.basePath}/js/${route.script}`;
+                this.currentScript.type = 'module';
+                this.currentScript.onload = () => {
+                    resolve();
+                };
+                this.currentScript.onerror = (err) => {
+                    resolve();
+                };
+                document.body.appendChild(this.currentScript);
+            });
+        }
+        return Promise.resolve();
     }
 
     setupEvents() {
         window.addEventListener('hashchange', () => {
-            alert('Cambio de hash detectado'); // Depuración
             this.handleRoute();
         });
     }
 
-    showError() {
+    showError(error) {
         document.getElementById('app').innerHTML = `
             <div class="error">
                 <h2>Error al cargar la página</h2>
+                <p>${error.message}</p>
                 <a href="#/home">Volver al inicio</a>
             </div>
         `;
     }
 }
 
-// Inicialización
 new Router();

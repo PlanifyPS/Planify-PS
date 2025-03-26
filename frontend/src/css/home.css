@@ -156,9 +156,25 @@
 
 .calendar-title {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+}
+
+.add-event-btn {
+    background-color: var(--blue-medium);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.add-event-btn:hover {
+    background-color: var(--blue-dark);
 }
 
 .calendar-title h3 {
@@ -239,6 +255,13 @@
     background-color: var(--gray-light);
 }
 
+.day.selected {
+    background-color: var(--blue-dark);
+    color: var(--white);
+    border: 2px solid var(--blue-medium);
+}
+
+
 .today {
     background-color: var(--blue-lighter);
     color: var(--blue-dark);
@@ -285,6 +308,7 @@
     z-index: 1000;
     border: 3px solid var(--blue-medium);
     display: none;
+    width: 400px;
 }
 
 .dialog-header {
