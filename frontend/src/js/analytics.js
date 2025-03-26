@@ -1,9 +1,18 @@
 import ProgressBar from 'https://cdn.jsdelivr.net/npm/progressbar.js/+esm';
-
-
+function initHome() {
+    if (document.readyState === 'complete') {
+        loadAnalytics();
+    } else {
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAnalytics();
+            
+        });
+    }
+}
 /// REVISAR: LAS GRAFICAS SOLO CARGAN AL REFRESCAR LA PAGINA Y NO CUANDO SE ACCEDE A ELLA(el js se ejecuta en todas las paginas)
-document.addEventListener("DOMContentLoaded", function () {
-    console.log(document.location.pathname.split("/").pop());
+function loadAnalytics() {
+    
     
     localStorage.setItem("habitsJson", JSON.stringify(0.8))
     localStorage.setItem("tasksJson", JSON.stringify(0.6))
@@ -49,4 +58,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 bar.setText(Math.round(bar.value() * 100) + '%');
             }
         })
-});
+}
+initHome();
