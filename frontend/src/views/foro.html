@@ -1,18 +1,10 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Foro</title>
-  <link rel="stylesheet" href="../CSS/styles.css">
-  <script defer src="../JS/foro.js"></script>
-</head>
-<body>
-<div class="contenderforo">
+<main class="contenderforo">
   <header>
     <h1 id="forumName">Nombre del Foro</h1>
-    <input type="text" id="searchForum" placeholder="Buscar foros...">
-    <button id="searchButton">Buscar</button>
+    <div class="foro-search">
+      <input type="text" id="searchForum" placeholder="Buscar foros...">
+      <button id="searchButton">Buscar</button>
+    </div>
     <div id="searchResults" class="search-results"></div>
   </header>
   <div class="container">
@@ -20,10 +12,9 @@
       <button id="createForum">Crear Foro</button>
       <button id="addPost">Añadir</button>
       <section id="forumContainer">
-        <!-- Aquí se añadirán los posts dinámicamente -->
       </section>
     </main>
-    <aside>
+    <aside class="interest-forum">
       <h2>Foros de Interés</h2>
       <ul id="forumList"></ul>
     </aside>
@@ -61,7 +52,4 @@
       </div>
     </article>
   </template>
-</div>
-<script src="../JS/foro.js"></script>
-</body>
-</html>
+</main>

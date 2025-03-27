@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings & Profile</title>
-</head>
-<body>
-<div class="setting_container">
+<main class="setting_container">
     <div class="tabs">
-        <div class="tab" onclick="showTab('settings')">Settings</div>
-        <div class="tab" onclick="showTab('profile')">Profile</div>
+        <div class="tab" data-tab="settings">Settings</div>
+        <div class="tab" data-tab="profile">Profile</div>
         <div class="indicator"></div>
     </div>
     <div class="content" id="settings">
@@ -80,7 +72,4 @@
         </div>
         <button type="submit" class="btn-submit">Update</button>
     </div>
-</div>
-<script src="../JS/setting.js"></script>
-</body>
-</html>
+</main>

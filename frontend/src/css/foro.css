@@ -3,13 +3,16 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 70%;
+    width: 100%;
     padding: 20px;
+    background-color: var(--light-grey);
 }
 
 .container {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     width: 100%;
+    padding: 20px;
 }
 
 #addPost, #savePost, #createForum, #saveForum, #searchButton {
@@ -74,4 +77,16 @@
 }
 .search-results div:hover {
     background: #f1f1f1;
+}
+
+.foro-search{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.interest-forum{
+    border-left: 1px solid var(--grey);
+    padding: 10px;
 }

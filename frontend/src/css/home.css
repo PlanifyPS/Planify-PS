@@ -6,8 +6,8 @@
       "chart calendar"
       "habits calendar"
       ". calendar";
-    height: 100vh;
     gap: 10px;
+    padding: 20px;
     background-color: var(--light-bg);
 }
 #home::before {
