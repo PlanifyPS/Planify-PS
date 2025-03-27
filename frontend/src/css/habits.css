@@ -35,7 +35,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 1.5rem;
+    padding-bottom: 20px;
 
 
 }
@@ -47,14 +47,34 @@
 .habits-list-header-options{
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
 
 }
 
-.habits-list-header-options button{
-    padding: 5px;
+.options-button{
+    padding: 10px;
     min-width: 4rem;
+    background-color: var(--blue-medium); /* Azul similar al tema */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
+/* Efecto hover */
+.options-button:hover {
+    background-color: #0056b3; /* Azul más oscuro */
+    transform: scale(1.05); /* Ligero aumento */
+}
+
+/* Efecto activo (cuando se presiona el botón) */
+.options-button:active {
+    background-color: #004494;
+    transform: scale(0.95);
+}
+
+
 
 .user-habits{
     display: flex;
@@ -181,4 +201,65 @@
 .habits-item-description_3:hover,
 .habits-item-description_4:hover {
     transform: translateY(-3px);
+}
+
+.TaskModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+}
+.Task-modal-content{
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+
+}
+.closeTask{
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+.Task-modal-content input,
+.Task-modal-content textarea,
+.Task-modal-content select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+.Task-modal-content textarea {
+    resize: none;
+    height: 80px;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+#saveTask {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+#saveTask:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
 }

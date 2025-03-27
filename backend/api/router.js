@@ -21,6 +21,11 @@ class Router {
                 title: 'Mis Hábitos',
                 scripts: ['habits.js', 'points.js']
             },
+            '/tasks': {
+                view: 'habits.html',
+                title: 'Mis Tareas',
+                scripts: ['tasks.js', 'points.js']
+            },
             '/challenges': {
                 view: 'challenges.html',
                 title: 'Desafíos Semanales',

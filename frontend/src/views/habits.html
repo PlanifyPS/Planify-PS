@@ -3,11 +3,12 @@
         <div class="habits-content">
             <div id="habits-list" class="habits-list">
                 <div class="habits-list-header">
-                    <div class="habits-list-title"><h2>Habits</h2></div>
+                    <div class="habits-list-title"><h2 id="TitleHabitsTasks">Habits</h2></div>
                     <div class="habits-list-header-options">
-                        <button>Search</button>
-                        <button>Filter</button>
-                        <button>Other</button>
+                        <button class="options-button">Search</button>
+                        <button id="add-button" class="options-button">Add Habit</button>
+                        <button class="options-button">Filter</button>
+
                     </div>
                 </div>
                 <div id="user-habits" class="user-habits"></div>
@@ -33,4 +34,21 @@
             </div>
         </div>
     </section>
+    <div id="AddTaskModal" class="TaskModal">
+        <div class="Task-modal-content">
+            <button id="closeTaskButton" class="closeTask">&times;</button>
+            <h2 id="addNewTitle">Add New Habit</h2>
+
+            <label for="NewTaskTitle">Title</label>
+            <input type="text" id="NewTaskTitle" placeholder="My New Task">
+
+            <label for="TaskDescription">Description</label>
+            <textarea id="TaskDescription" placeholder="Describe your Task..."></textarea>
+
+
+
+
+            <button id="saveTask">Save Task</button>
+        </div>
+    </div>
 </main>
