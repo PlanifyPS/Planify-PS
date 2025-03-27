@@ -6,6 +6,14 @@ document.getElementById('createForum').addEventListener('click', function() {
     document.getElementById('forumModal').style.display = 'flex';
 });
 
+
+document.querySelectorAll('.close').forEach(button => {
+    button.addEventListener('click', function() {
+        this.closest('.modal').style.display = 'none';
+    });
+});
+
+
 document.getElementById('saveForum').addEventListener('click', function() {
     const forumTitle = document.getElementById('forumTitle').value;
     if (forumTitle) {
