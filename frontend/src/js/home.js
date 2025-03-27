@@ -1,14 +1,22 @@
 const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-export function initHome() {
+function initHome() {
     if (document.readyState === 'complete') {
         initCalendar();
         setupEventDialogListeners();
+
+        const today = new Date();
+        const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+        updateTaskList(formattedDate);
     } else {
         document.addEventListener('DOMContentLoaded', () => {
             initCalendar();
             setupEventDialogListeners();
+
+            const today = new Date();
+            const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+            updateTaskList(formattedDate);
         });
     }
 }
