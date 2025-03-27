@@ -21,9 +21,15 @@ async function loadChallenges() {
         if (!response.ok) throw new Error('No se pudieron cargar los desafíos');
 
         challengesData = await response.json();
+        challengesData.forEach(challenge => {
+            if (challenge.pinned === undefined) challenge.pinned = false;
+            if (challenge.accepted === undefined) challenge.accepted = false;
+            if (challenge.completed === undefined) challenge.completed = false;
+        });
+
         renderChallenges(challengesData);
         setupCardClickListeners();
-        setupFilterEvents(); // Añade esta línea
+        setupFilterEvents();
     } catch (error) {
         console.error('Error:', error);
         showError('Error al cargar los desafíos');
@@ -52,18 +58,17 @@ function filterChallenges() {
     const levelFilter = document.getElementById('filter-level').value;
 
     const filtered = challengesData.filter(challenge => {
-        // Filtro por búsqueda (nombre)
         const matchesSearch = challenge.name.toLowerCase().includes(searchTerm);
 
-        // Filtro por estado
         let matchesStatus = true;
         if (statusFilter === 'completed') {
             matchesStatus = challenge.completed === true;
         } else if (statusFilter === 'pending') {
-            matchesStatus = !challenge.completed;
+            matchesStatus = !challenge.completed && !challenge.accepted;
+        } else if (statusFilter === 'in-progress') {
+            matchesStatus = challenge.accepted && !challenge.completed;
         }
 
-        // Filtro por nivel
         let matchesLevel = true;
         if (levelFilter !== 'all') {
             matchesLevel = challenge.level.toLowerCase() === levelFilter;
@@ -84,11 +89,20 @@ function renderChallenges(challenges) {
         return;
     }
 
-    container.innerHTML = challenges.map(challenge => `
-        <article class="card" data-id="${challenge.id}">
+    const sortedChallenges = [...challenges].sort((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return 0;
+    });
+
+    container.innerHTML = sortedChallenges.map(challenge => `
+        <article class="card ${challenge.pinned ? 'pinned' : ''}" data-id="${challenge.id}">
             <div class="card-header">
                 <h2>${challenge.name}</h2>
                 <span class="tag ${challenge.level.toLowerCase()}">${challenge.level}</span>
+                <button class="pin-challenge" data-id="${challenge.id}">
+                    <i class="fas fa-thumbtack ${challenge.pinned ? 'active' : ''}"></i>
+                </button>
                 <button class="delete-challenge" data-id="${challenge.id}">
                     <i class="fas fa-times"></i>
                 </button>
@@ -101,17 +115,47 @@ function renderChallenges(challenges) {
         </article>
     `).join('');
 
+    setupCardClickListeners();
     setupDeleteButtons();
+    setupPinButtons();
+}
+
+function togglePinChallenge(challengeId) {
+    const challenge = challengesData.find(c => c.id == challengeId);
+    if (!challenge) return;
+
+    challenge.pinned = !challenge.pinned;
+
+    filterChallenges();
+}
+
+function setupPinButtons() {
+    const pinButtons = document.querySelectorAll('.pin-challenge');
+    pinButtons.forEach(button => {
+        button.removeEventListener('click', button.clickHandler);
+
+        button.clickHandler = (e) => {
+            e.stopPropagation();
+            const challengeId = button.getAttribute('data-id');
+            togglePinChallenge(challengeId);
+        };
+
+        button.addEventListener('click', button.clickHandler);
+    });
 }
 
 function setupDeleteButtons() {
     const deleteButtons = document.querySelectorAll('.delete-challenge');
     deleteButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evita que el click se propague a la tarjeta
+        button.removeEventListener('click', button.clickHandler);
+
+        button.clickHandler = (e) => {
+            e.stopPropagation();
             const challengeId = button.getAttribute('data-id');
             removeChallengeFromView(challengeId);
-        });
+        };
+
+        button.addEventListener('click', button.clickHandler);
     });
 }
 
@@ -139,13 +183,16 @@ function removeChallengeFromView(challengeId) {
 function setupCardClickListeners() {
     const cards = document.querySelectorAll('.card');
     cards.forEach(card => {
-        card.addEventListener('click', (e) => {
-            // Solo mostrar detalles si el click no fue en el botón de eliminar
-            if (!e.target.closest('.delete-challenge')) {
+        card.removeEventListener('click', card.clickHandler);
+
+        card.clickHandler = (e) => {
+            if (!e.target.closest('.delete-challenge') && !e.target.closest('.pin-challenge')) {
                 const challengeId = card.getAttribute('data-id');
                 showChallengeDetails(challengeId);
             }
-        });
+        };
+
+        card.addEventListener('click', card.clickHandler);
     });
 }
 
@@ -189,9 +236,18 @@ function showChallengeDetails(challengeId) {
                 ` : ''}
 
                 <div class="actions-section">
-                    <button class="btn accept-challenge">
-                        <i class="fas fa-check-circle"></i> Aceptar Desafío
-                    </button>
+                    ${!challenge.accepted && !challenge.completed ? `
+                        <button class="btn accept-challenge">
+                            <i class="fas fa-check-circle"></i> Aceptar Desafío
+                        </button>
+                    ` : ''}
+                    
+                    ${challenge.accepted && !challenge.completed ? `
+                        <button class="btn complete-challenge">
+                            <i class="fas fa-flag-checkered"></i> Marcar como Completado
+                        </button>
+                    ` : ''}
+                    
                     ${challenge.completed ? '<span class="completed-badge">Completado</span>' : ''}
                 </div>
             </div>
@@ -204,27 +260,74 @@ function showChallengeDetails(challengeId) {
             acceptChallenge(challengeId);
         });
     }
+
+    const completeBtn = detailContainer.querySelector('.complete-challenge');
+    if (completeBtn) {
+        completeBtn.addEventListener('click', () => {
+            completeChallenge(challengeId);
+        });
+    }
 }
 
 function acceptChallenge(challengeId) {
     const challenge = challengesData.find(c => c.id == challengeId);
     if (!challenge) return;
 
+    challenge.accepted = true;
+    challenge.acceptedDate = new Date().toISOString();
+
+    // Actualizar la vista
+    showChallengeDetails(challengeId);
+    filterChallenges(); // Para actualizar la lista si hay filtros aplicados
+
+    console.log(`Desafío "${challenge.name}" aceptado`);
+}
+
+function completeChallenge(challengeId) {
+    const challenge = challengesData.find(c => c.id == challengeId);
+    if (!challenge) return;
+
     challenge.completed = true;
+    challenge.completedDate = new Date().toISOString();
 
-    const detailContainer = document.getElementById('challenge-detail');
-    if (detailContainer) {
-        const completedBadge = document.createElement('span');
-        completedBadge.className = 'completed-badge';
-        completedBadge.textContent = 'Completado';
+    addPointsToLocalStorage(challenge.points);
+    addToStreak();
+    showChallengeDetails(challengeId);
+    filterChallenges();
 
-        const actionsSection = detailContainer.querySelector('.actions-section');
-        if (actionsSection) {
-            actionsSection.appendChild(completedBadge);
-        }
+    console.log(`Desafío "${challenge.name}" completado. Puntos añadidos: ${challenge.points}`);
+}
+
+function addToStreak() {
+    const today = new Date().toDateString();
+    const lastDate = localStorage.getItem('lastTaskDate');
+
+    if (lastDate !== today) {
+        const newStreak = parseInt(localStorage.getItem('streak')) + 1;
+        localStorage.setItem('streak', newStreak.toString());
+        localStorage.setItem('lastTaskDate', today);
+
+        // Disparar evento para actualizar UI
+        const streakUpdatedEvent = new CustomEvent('streakUpdated');
+        document.dispatchEvent(streakUpdatedEvent);
     }
+}
 
-    console.log(`Desafío "${challenge.name}" aceptado y marcado como completado`);
+function addPointsToLocalStorage(pointsToAdd) {
+    try {
+        let points = parseInt(localStorage.getItem('points')) || 0;
+        points += pointsToAdd;
+        localStorage.setItem('points', points.toString());
+        console.log(`Puntos actualizados en localStorage. Total: ${points}`);
+
+        const pointsUpdatedEvent = new CustomEvent('pointsUpdated', {
+            detail: { points }
+        });
+        document.dispatchEvent(pointsUpdatedEvent);
+
+    } catch (error) {
+        console.error('Error al actualizar puntos en localStorage:', error);
+    }
 }
 
 function showError(message) {
