@@ -3,7 +3,7 @@
         <div class="habits-content">
             <div id="habits-list" class="habits-list">
                 <div class="habits-list-header">
-                    <div class="habits-list-title"><h2 id="TitleHabitsTasks">Habits</h2></div>
+                    <div class="habits-list-title"><h2 id="TitleHabitsTasks"></h2></div>
                     <div class="habits-list-header-options">
                         <button class="options-button">Search</button>
                         <button id="add-button" class="options-button">Add Habit</button>
@@ -11,7 +11,7 @@
 
                     </div>
                 </div>
-                <div id="user-habits" class="user-habits"></div>
+                <div id="user-content" class="user-habits"></div>
 
             </div>
             <div class="habits-item-description">
@@ -45,10 +45,32 @@
             <label for="TaskDescription">Description</label>
             <textarea id="TaskDescription" placeholder="Describe your Task..."></textarea>
 
-
-
+            <label for="TaskDueDate">Due Date</label>
+            <input type="date" id="TaskDueDate">
 
             <button id="saveTask">Save Task</button>
         </div>
     </div>
+    <div id="AddHabitModal" class="TaskModal">
+        <div class="Task-modal-content">
+            <button id="closeHabitButton" class="closeTask">&times;</button>
+            <h2 >Add New Habit</h2>
+
+            <label for="NewHabitTitle">Title</label>
+            <input type="text" id="NewHabitTitle" placeholder="My New Habit">
+
+            <label for="HabitDescription">Description</label>
+            <textarea id="HabitDescription" placeholder="Describe your Habit..."></textarea>
+
+            <label for="HabitFrequency">Frequency</label>
+            <select id="HabitFrequency">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+            </select>
+
+            <button id="saveHabit">Save Habit</button>
+        </div>
+    </div>
+
 </main>

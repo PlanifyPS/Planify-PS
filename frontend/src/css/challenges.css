@@ -1,8 +1,8 @@
 #challenges {
     width: 100%;
-    padding: 1.5rem;
+    padding: 30px;
     background-color: var(--light-bg);
-    border-radius: 0.5rem;
+    border-radius: 15px;
     box-shadow: 0 2px 8px var(--shadow);
 }
 
@@ -49,7 +49,7 @@
 
 #filter-challenges, #filter-level {
     padding: 0.75rem 1rem;
-    border: 1px solid var(--gray-border);
+    border: 1px solid var(--bo);
     border-radius: 0.5rem;
     font-family: var(--text-font), sans-serif;
     background-color: var(--white);
