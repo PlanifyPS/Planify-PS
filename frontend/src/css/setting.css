@@ -1,4 +1,4 @@
-.setting_container {
+.setting_content {
     width: 70%;
     margin: 50px auto;
     padding: 20px;
@@ -6,6 +6,13 @@
     border: 1px solid #777777;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.setting_container{
+    background-color: var(--light-bg);
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 30px;
 }
 
 .tabs {
@@ -130,7 +137,7 @@ button.btn-submit:hover {
 }
 
 
-#notifications {
+#notifications, #mode-dark {
     text-align: center;
     margin-top: 20px;
 }

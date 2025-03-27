@@ -67,20 +67,19 @@ class Router {
         }
 
         document.title = `Planify - ${route.title}`;
-
-        // Limpiar el contenido anterior
         document.getElementById('app').innerHTML = '';
 
-        // Cargar la vista primero
         await this.loadView(route);
 
-        // Cargar componentes comunes (excepto en register)
         if (path !== '/register') {
             await this.loadComponents();
         }
 
-        // Cargar todos los scripts necesarios
         await this.loadScripts(route.scripts);
+
+        if (route.scripts.includes('points.js') && window.initPoints) {
+            window.initPoints();
+        }
     }
 
     async loadComponents() {
@@ -110,50 +109,39 @@ class Router {
     }
 
     async loadScripts(scriptNames) {
-        // Limpiar solo los scripts que no se van a usar nuevamente
         this.cleanupUnusedScripts(scriptNames);
 
-        // Cargar cada script secuencialmente
         for (const scriptName of scriptNames) {
-            // Si ya está cargado, no lo cargamos de nuevo
             if (!this.loadedScripts.has(scriptName)) {
                 await this.loadScript(scriptName);
+            }
+
+            const module = this.loadedScripts.get(scriptName);
+            if (module && typeof module.init === 'function') {
+                module.init();
             }
         }
     }
 
+
     async loadScript(scriptName) {
-        return new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = `${this.basePath}/js/${scriptName}`;
-            script.type = 'module';
-
-            script.onload = () => {
-                this.loadedScripts.set(scriptName, script);
-                resolve();
-            };
-
-            script.onerror = (err) => {
-                console.error(`Error loading script ${scriptName}:`, err);
-                resolve();
-            };
-
-            document.body.appendChild(script);
-        });
+        try {
+            const module = await import(`${this.basePath}/js/${scriptName}?t=${Date.now()}`);
+            this.loadedScripts.set(scriptName, module);
+        } catch (error) {
+            console.error(`Error loading script ${scriptName}:`, error);
+        }
     }
 
+
     cleanupUnusedScripts(neededScripts) {
-        // Eliminar scripts que no se necesitan en esta ruta
-        Array.from(this.loadedScripts.keys()).forEach(loadedScript => {
-            if (!neededScripts.includes(loadedScript)) {
-                const scriptElement = this.loadedScripts.get(loadedScript);
-                if (scriptElement && scriptElement.parentNode) {
-                    scriptElement.parentNode.removeChild(scriptElement);
-                }
-                this.loadedScripts.delete(loadedScript);
+        this.loadedScripts.forEach((_, scriptName) => {
+            if (!neededScripts.includes(scriptName)) {
+                this.loadedScripts.delete(scriptName);
             }
         });
     }
+
 
     setupEvents() {
         window.addEventListener('hashchange', () => this.handleRoute());

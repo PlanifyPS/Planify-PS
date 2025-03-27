@@ -94,3 +94,4 @@ document.querySelector('.complete-task-button')?.addEventListener('click', funct
 
 initPoints();
 document.addEventListener('streakUpdated', updateStreakUI);
+window.initPoints = initPoints;
