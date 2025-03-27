@@ -4,7 +4,7 @@ function initHome() {
         loadHabits();
     } else {
         document.addEventListener('DOMContentLoaded', () => {
-           loadHabits();
+            loadHabits();
         });
     }
 }
@@ -18,8 +18,8 @@ function loadUserHabits(id, url) {
         })
         .then(html => {
             const container = document.getElementById(id);
-            const newElement = document.createElement('div'); 
-            newElement.innerHTML = html; 
+            const newElement = document.createElement('div');
+            newElement.innerHTML = html;
             container.appendChild(newElement);
         })
         .catch(error => console.error(error));
