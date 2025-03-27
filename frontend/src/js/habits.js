@@ -7,7 +7,7 @@ function initHome() {
         });
     }
 }
-function loadUserHabits(id, url) {
+async function loadTemplate(id, url) {
     fetch(url)
         .then(response => {
             if (!response.ok) {
@@ -26,7 +26,7 @@ function loadUserHabits(id, url) {
 
 function loadHabits(){
     for (let i = 0; i < 15; i++) {
-        loadUserHabits("user-habits", "../src/templates/habitsItem.html");
+        loadTemplate("user-content", "../src/templates/habitsItem.html").then();
     }
 }
 
