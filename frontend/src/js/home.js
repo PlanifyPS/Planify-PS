@@ -14,6 +14,7 @@ export function initHome() {
 }
 
 function setupEventDialogListeners() {
+    const home = document.getElementById('home');
     const eventDialog = document.getElementById('event-dialog');
     const eventForm = document.querySelector('.event-form');
     const closeBtn = document.querySelector('.close-btn');
@@ -23,30 +24,27 @@ function setupEventDialogListeners() {
     const addEventBtn = document.getElementById('add-event-btn');
 
     addEventBtn.addEventListener('click', () => {
-
         const selectedDay = document.querySelector('.day.selected');
 
         if (selectedDay) {
             const date = selectedDay.getAttribute('data-date');
             eventDate.value = date;
         } else {
-
             const today = new Date();
             const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
             eventDate.value = formattedDate;
         }
 
-
         eventName.value = '';
         eventTime.value = '';
         eventDialog.style.display = 'block';
+        home.classList.add('modal-open');
     });
-
 
     closeBtn.addEventListener('click', () => {
         eventDialog.style.display = 'none';
+        home.classList.remove('modal-open');
     });
-
 
     eventForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -73,6 +71,7 @@ function setupEventDialogListeners() {
         displayEvents();
         updateTaskList(date);
         eventDialog.style.display = 'none';
+        home.classList.remove('modal-open');
     });
 
 
