@@ -2,49 +2,103 @@
   {
     "id": 1,
     "name": "Primer Paso",
-    "description": "Completa tu primer registro de hábito esta semana.",
+    "description": "Completa tu primer registro de hábito esta semana. Este desafío te ayudará a comenzar tu viaje de desarrollo personal. Registra cualquier hábito que quieras mejorar, desde beber más agua hasta leer diariamente.",
+    "shortDescription": "Completa tu primer registro de hábito",
     "points": 5,
     "level": "Fácil",
+    "duration": 7,
+    "category": "Iniciación",
+    "tips": [
+      "Elige un hábito sencillo para empezar",
+      "Configura recordatorios en tu teléfono",
+      "Celebra tu primer registro"
+    ],
+    "details": "<p>Este desafío está diseñado para iniciarte en el seguimiento de hábitos. No importa cuán pequeño sea el hábito, lo importante es comenzar.</p>",
     "completed": false
   },
   {
     "id": 2,
     "name": "Constancia Semanal",
-    "description": "Registra un hábito por 5 días seguidos esta semana.",
+    "description": "Registra un hábito por 5 días seguidos esta semana. La consistencia es clave para formar nuevos hábitos. Este desafío te ayudará a desarrollar disciplina y compromiso con tus metas.",
+    "shortDescription": "5 días consecutivos de registro",
     "points": 15,
     "level": "Medio",
+    "duration": 7,
+    "category": "Consistencia",
+    "tips": [
+      "Elige un horario fijo cada día",
+      "Usa la función de recordatorios",
+      "Visualiza tu progreso en el calendario"
+    ],
+    "details": "<p>La repetición diaria es fundamental para convertir acciones en hábitos. Este desafío te premia por mantener la regularidad durante la semana.</p>",
     "completed": false
   },
   {
     "id": 3,
     "name": "Maestro del Tiempo",
-    "description": "Completa 5 tareas en un solo día esta semana.",
+    "description": "Completa 5 tareas en un solo día esta semana. Organiza tu tiempo eficientemente y demuestra tu capacidad de productividad concentrada.",
+    "shortDescription": "5 tareas en un día",
     "points": 20,
     "level": "Difícil",
+    "duration": 1,
+    "category": "Productividad",
+    "tips": [
+      "Planifica tu día con anticipación",
+      "Prioriza tareas importantes",
+      "Usa la técnica Pomodoro"
+    ],
+    "details": "<p>Este desafío prueba tu habilidad para gestionar múltiples tareas en un período corto. Ideal para días especialmente ocupados.</p>",
     "completed": false
   },
   {
     "id": 4,
     "name": "Desafío Nocturno",
-    "description": "Registra un hábito después de las 10 PM al menos 3 veces esta semana.",
+    "description": "Registra un hábito después de las 10 PM al menos 3 veces esta semana. Ideal para aquellos que tienen más energía por la noche o quieren establecer rutinas nocturnas.",
+    "shortDescription": "Hábitos nocturnos 3 veces",
     "points": 8,
     "level": "Fácil",
+    "duration": 7,
+    "category": "Rutinas",
+    "tips": [
+      "Prepara tu ambiente para el hábito nocturno",
+      "Evita pantallas antes del hábito",
+      "Relájate y disfruta el proceso"
+    ],
+    "details": "<p>Las rutinas nocturnas pueden mejorar tu calidad de sueño y prepararte para el día siguiente. Este desafío fomenta la reflexión y relajación nocturna.</p>",
     "completed": false
   },
   {
     "id": 5,
     "name": "Rutina Matutina",
-    "description": "Realiza tu primer hábito antes de las 8 AM al menos 4 días esta semana.",
+    "description": "Realiza tu primer hábito antes de las 8 AM al menos 4 días esta semana. Comenzar el día con propósito establece un tono positivo para las horas siguientes.",
+    "shortDescription": "Hábitos matutinos 4 días",
     "points": 10,
     "level": "Medio",
+    "duration": 7,
+    "category": "Rutinas",
+    "tips": [
+      "Prepara todo la noche anterior",
+      "Establece una alarma motivadora",
+      "Comienza con hábitos sencillos"
+    ],
+    "details": "<p>Las mañanas productivas generan días productivos. Este desafío te ayuda a construir una rutina matutina efectiva.</p>",
     "completed": false
   },
   {
     "id": 6,
     "name": "Equilibrio Perfecto",
-    "description": "Mantén un balance entre hábitos físicos y mentales todos los días esta semana.",
+    "description": "Mantén un balance entre hábitos físicos y mentales todos los días esta semana. La verdadera productividad viene del equilibrio entre cuerpo y mente.",
+    "shortDescription": "Balance físico/mental diario",
     "points": 12,
     "level": "Medio",
+    "duration": 7,
+    "category": "Bienestar",
+    "tips": [
+      "Alterna entre hábitos físicos y mentales",
+      "Combina hábitos cuando sea posible",
+      "Reflexiona sobre tu equilibrio diario"
+    ],
+    "details": "<p>Este desafío promueve un enfoque holístico del desarrollo personal, asegurando que no descuides ninguna área importante de tu vida.</p>",
     "completed": false
   }
 ]
