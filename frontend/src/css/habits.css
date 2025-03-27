@@ -249,7 +249,7 @@
     overflow-y: auto;
 }
 
-#saveTask {
+#saveTask,#saveHabit {
     background-color: #007bff;
     color: white;
     border: none;

@@ -76,7 +76,7 @@ async function loadUserTasks() {
 async function addTemplate(id, url, item) {
     try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`Fail loading ${url}`);
+        if (!response.ok) new Error(`Fail loading ${url}`);
 
         const container = document.getElementById(id);
         const newElement = document.createElement("div");
