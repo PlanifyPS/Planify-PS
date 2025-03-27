@@ -51,7 +51,7 @@
     padding: 0.75rem 1rem;
     border: 1px solid var(--gray-border);
     border-radius: 0.5rem;
-    font-family: var(--text-font);
+    font-family: var(--text-font), sans-serif;
     background-color: var(--white);
     cursor: pointer;
     transition: all 0.3s ease;
@@ -112,11 +112,11 @@
 
 .card-header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
+    align-items: center;
     gap: 0.75rem;
+    margin-bottom: 1rem;
     flex-wrap: wrap;
+    position: relative;
 }
 
 .card-header h2 {
@@ -124,21 +124,12 @@
     margin: 0;
     font-size: 1.25rem;
     flex: 1;
-    min-width: calc(100% - 100px);
-    font-family: var(--heading-font);
+    min-width: calc(100% - 150px);
+    font-family: var(--heading-font), sans-serif;
     font-weight: var(--bold);
-    padding-right: 1rem;
 }
 
-.card-header {
-    position: relative;
-    padding-right: 2rem;
-}
-
-.delete-challenge {
-    position: absolute;
-    top: 0;
-    right: 0;
+.pin-challenge {
     background: none;
     border: none;
     color: var(--grey);
@@ -150,19 +141,59 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    opacity: 0;
-    transform: translateY(-5px);
+    order: 3;
+    margin-left: auto;
+}
+
+.pin-challenge i {
+    transition: all 0.3s ease;
+    transform: rotate(45deg);
+}
+
+.pin-challenge .active {
+    color: var(--blue-medium);
+}
+
+.pin-challenge:hover i {
+    color: var(--blue-medium);
+}
+
+.delete-challenge {
+    background: none;
+    border: none;
+    color: var(--grey);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    order: 4;
+}
+
+.delete-challenge:hover {
+    color: #ff4444;
+}
+
+.tag {
+    order: 2;
+    margin-left: 0.5rem;
+}
+
+.card.pinned {
+    border-left: 3px solid var(--blue-medium);
+    background-color: rgba(0, 119, 182, 0.05);
+}
+
+.card.pinned .pin-challenge i {
+    color: var(--blue-medium);
 }
 
 .card:hover .delete-challenge {
     opacity: 1;
     transform: translateY(0);
-}
-
-.delete-challenge:hover {
-    color: #ff4444;
-    background-color: rgba(255, 68, 68, 0.1);
 }
 
 .card.completed .delete-challenge {
@@ -280,7 +311,7 @@
 .detail-header h2 {
     color: var(--dark-blue);
     margin: 0;
-    font-family: var(--heading-font);
+    font-family: var(--heading-font), sans-serif;
     font-size: 1.5rem;
 }
 
@@ -369,13 +400,13 @@
     border-top: 1px solid var(--gray-border);
 }
 
-.btn.accept-challenge {
+.btn.accept-challenge, .retry-btn, .complete-challenge {
     background-color: var(--blue-medium);
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
     border-radius: 0.5rem;
-    font-family: var(--text-font);
+    font-family: var(--text-font), sans-serif;
     font-weight: var(--bold);
     cursor: pointer;
     transition: all 0.3s ease;
@@ -384,12 +415,12 @@
     gap: 0.5rem;
 }
 
-.btn.accept-challenge:hover {
-    background-color: var(--blue-dark);
-}
-
 .btn.accept-challenge i {
     font-size: 1rem;
+}
+
+.btn.complete-challenge:hover {
+    background-color: #00a896;
 }
 
 .completed-badge {
@@ -419,23 +450,16 @@
 }
 
 .retry-btn {
-    background: var(--blue-medium);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-family: var(--text-font);
-    font-weight: var(--bold);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
     margin-top: 1rem;
 }
 
 .retry-btn:hover {
     background: var(--blue-dark);
+}
+
+.card.pinned {
+    border-left: 3px solid var(--blue-medium);
+    background-color: rgba(0, 119, 182, 0.05);
 }
 
 @media (max-width: 768px) {

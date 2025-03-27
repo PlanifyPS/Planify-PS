@@ -4,6 +4,11 @@ export function initPoints() {
     } else {
         document.addEventListener('DOMContentLoaded', loadPoints);
     }
+
+    // Escuchar el evento de actualización de puntos
+    document.addEventListener('pointsUpdated', (e) => {
+        updatePoints();
+    });
 }
 
 function loadPoints(){
@@ -19,7 +24,9 @@ if (!localStorage.getItem('points')) {
 function updatePoints() {
     const points = localStorage.getItem('points');
     const textPoints = document.getElementById('points');
-    textPoints.textContent = points + 'pts';
+    if (textPoints) {
+        textPoints.textContent = points + 'pts';
+    }
 
     updateMedals(parseInt(points));
 }
@@ -28,10 +35,8 @@ function updateMedals(points) {
     const medalsContainer = document.getElementById('medals-container');
     if (!medalsContainer) return;
 
-    // Limpiar medallas previas
     medalsContainer.innerHTML = "";
 
-    // Calcular número de medallas (una cada 50 puntos)
     const medalCount = Math.floor(points / 50);
 
     for (let i = 0; i < medalCount; i++) {
@@ -41,14 +46,16 @@ function updateMedals(points) {
     }
 }
 
-
 if (!localStorage.getItem('streak')) {
     localStorage.setItem('streak', '0');
     localStorage.setItem('lastTaskDate', '');
 }
 
 function updateStreakUI() {
-    document.getElementById('streak').textContent = localStorage.getItem('streak');
+    const streakElement = document.getElementById('streak');
+    if (streakElement) {
+        streakElement.textContent = localStorage.getItem('streak');
+    }
 }
 
 function checkStreak() {
@@ -78,13 +85,12 @@ function addToStreak() {
     }
 }
 
-document.querySelector('.complete-task-button').addEventListener('click', function() {
+document.querySelector('.complete-task-button')?.addEventListener('click', function() {
     const newPoints = parseInt(localStorage.getItem('points')) + 1;
     localStorage.setItem('points', newPoints.toString());
     updatePoints();
     addToStreak();
 });
 
-
-//document.addEventListener('taskCompleted', incrementPoints);
 initPoints();
+document.addEventListener('streakUpdated', updateStreakUI);
