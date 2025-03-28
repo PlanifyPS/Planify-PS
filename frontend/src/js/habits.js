@@ -79,6 +79,23 @@ async function loadUserHabit() {
             completeHabit(habitTitle);
         });
     });
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const habitItem = this.closest('.habits-list-item');
+            const habitId = parseInt(habitItem.getAttribute('data-id'));
+            const habitTitle = habitItem.querySelector('.habits-task-title').textContent;
+            if(confirm(`¿Estás seguro que quieres eliminar el hábito "${habitTitle}"?`)) {
+                deleteHabit(habitId);
+            }
+        });
+    });
+}
+
+function deleteHabit(habitId) {
+    let userHabits = JSON.parse(localStorage.getItem("UserHabits")) || [];
+    const updatedHabits = userHabits.filter(habit => habit.id !== habitId);
+    localStorage.setItem("UserHabits", JSON.stringify(updatedHabits));
+    reloadUserHabits();
 }
 
 function completeHabit(habitTitle) {
@@ -118,21 +135,18 @@ async function addTemplate(id, url, item) {
     try {
         const response = await fetch(url);
         if (!response.ok) new Error(`Fail loading ${url}`);
-
         const container = document.getElementById(id);
         const newElement = document.createElement("div");
         newElement.innerHTML = await response.text();
         newElement.querySelector(".habits-task-title").textContent = item.title;
-
+        newElement.querySelector(".habits-list-item").setAttribute("data-id", item.id);
         if (item.completed) {
             const habitItem = newElement.querySelector(".habits-list-item");
             habitItem.classList.add("completed");
             const completeBtn = habitItem.querySelector(".complete-btn");
             if (completeBtn) completeBtn.style.display = 'none';
         }
-
         container.appendChild(newElement);
-
     } catch (error) {
         console.log(error);
     }
