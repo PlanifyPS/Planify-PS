@@ -1,7 +1,6 @@
 // js/authFirebase.js
-import { registerUser, loginUser, loginWithGoogle } from "../../../backend/utils/auth_utils.js";
+import { registerUser, loginUser, loginWithGoogle, handleLogout } from "../../../backend/utils/auth_utils.js";
 
-// Elementos del DOM
 const signupForm = document.getElementById("signup-form");
 const loginForm = document.getElementById("login-form");
 const googleLoginButton = document.getElementById("google-login");
@@ -65,9 +64,37 @@ if (googleLoginButton) {
         try {
             await loginWithGoogle();
             showSuccess("Inicio de sesión con Google exitoso. Redirigiendo...");
-            window.location.href = "/";
         } catch (error) {
             showError(error.message);
         }
+    });
+}
+
+const logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleLogout);
+}
+
+function showSuccess(message, title = 'Éxito') {
+    return Swal.fire({
+        title: title,
+        text: message,
+        icon: 'success',
+        confirmButtonColor: '#dc3545',
+        confirmButtonText: 'Entendido',
+        background: 'var(--bg-primary)',
+        color: 'var(--text-primary)'
+    }).then(isConfirm => {window.location.href = "#/home";});
+}
+
+function showError(message, title = 'Error') {
+    return Swal.fire({
+        title: title,
+        text: message,
+        icon: 'error',
+        confirmButtonColor: '#dc3545',
+        confirmButtonText: 'Entendido',
+        background: 'var(--bg-primary)',
+        color: 'var(--text-primary)'
     });
 }

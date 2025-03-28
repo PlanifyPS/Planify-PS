@@ -1,11 +1,11 @@
 // js/auth_utils.js
-import { auth, googleProvider,db } from "./firebase_config.js";
+import { auth, googleProvider,db, signOut } from "./firebase_config.js";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signInWithPopup
-} from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
-import { doc,setDoc,addDoc, collection}  from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+import { doc,setDoc,addDoc, collection}  from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 export const registerUser = async (email, password, username) => {
     try {
@@ -47,5 +47,15 @@ const createUserInDataBase = async (email, username, password, userCredential) =
         console.log("Document written with ID: ", userCredential.id);
     } catch (e) {
         console.error("Error adding document: ", e);
+    }
+}
+
+export const handleLogout = async function handleLogout() {
+    try {
+        await signOut(auth);
+        window.location.href = '#/register';
+
+    } catch (error) {
+        console.error('Error en logout:', error);
     }
 }

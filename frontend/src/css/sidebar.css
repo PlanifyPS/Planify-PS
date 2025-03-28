@@ -23,6 +23,12 @@
     border-radius: 50%;
 }
 
+.sidebar-button{
+    border: none;
+    background: none;
+    font-size: 15px;
+}
+
 .menu-item {
     display: flex;
     align-items: center;

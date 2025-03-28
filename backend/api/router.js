@@ -4,42 +4,42 @@ class Router {
             '/register': {
                 view: 'register.html',
                 title: 'Registro',
-                scripts: ['register.js'] // Solo register.js
+                scripts: ['register.js', 'authFirebase.js']
             },
             '/home': {
                 view: 'home.html',
                 title: 'Inicio',
-                scripts: ['home.js', 'points.js'] // Script principal + points.js
+                scripts: ['home.js', 'points.js', 'authFirebase.js']
             },
             '/setting': {
                 view: 'setting.html',
                 title: 'Configuración',
-                scripts: ['setting.js', 'points.js']
+                scripts: ['setting.js', 'points.js', 'authFirebase.js']
             },
             '/habits': {
                 view: 'habits.html',
                 title: 'Mis Hábitos',
-                scripts: ['habits.js', 'points.js']
+                scripts: ['habits.js', 'points.js', 'authFirebase.js']
             },
             '/tasks': {
                 view: 'habits.html',
                 title: 'Mis Tareas',
-                scripts: ['tasks.js', 'points.js']
+                scripts: ['tasks.js', 'points.js', 'authFirebase.js']
             },
             '/challenges': {
                 view: 'challenges.html',
                 title: 'Desafíos Semanales',
-                scripts: ['challenges.js', 'points.js']
+                scripts: ['challenges.js', 'points.js', 'authFirebase.js']
             },
             '/analytics': {
                 view: 'analytics.html',
                 title: 'Analíticas',
-                scripts: ['analytics.js', 'points.js']
+                scripts: ['analytics.js', 'points.js', 'authFirebase.js']
             },
             '/forums': {
                 view: 'foro.html',
                 title: 'Foros',
-                scripts: ['foro.js', 'points.js']
+                scripts: ['foro.js', 'points.js', 'authFirebase.js']
             }
         };
         this.basePath = '../../frontend/src';
@@ -58,7 +58,7 @@ class Router {
     }
 
     async handleRoute() {
-        const path = window.location.hash.slice(1) || '/home';
+        const path = window.location.hash.slice(1) || '/register';
         const route = this.routes[path];
 
         if (!route) {
@@ -69,11 +69,19 @@ class Router {
         document.title = `Planify - ${route.title}`;
         document.getElementById('app').innerHTML = '';
 
+        if (path === '/register') {
+            document.body.classList.add('full-screen');
+        } else {
+            document.body.classList.remove('full-screen');
+        }
+
         await this.loadView(route);
 
         if (path !== '/register') {
             await this.loadComponents();
         }
+
+        await this.loadScripts(route.scripts);
 
         if (route.scripts.includes('points.js') && window.initPoints) {
             window.initPoints();
@@ -83,8 +91,9 @@ class Router {
         if (window.setupTaskButton) {
             window.setupTaskButton();
         }
-
     }
+
+
 
     async loadComponents() {
         try {
