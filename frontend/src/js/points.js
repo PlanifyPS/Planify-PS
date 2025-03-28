@@ -5,7 +5,6 @@ export function initPoints() {
         document.addEventListener('DOMContentLoaded', loadPoints);
     }
 
-    // Escuchar el evento de actualización de puntos
     document.addEventListener('pointsUpdated', (e) => {
         updatePoints();
     });
@@ -15,6 +14,7 @@ function loadPoints(){
     updatePoints();
     checkStreak();
     updateStreakUI();
+    setupTaskButton();
 }
 
 if (!localStorage.getItem('points')) {
@@ -22,11 +22,10 @@ if (!localStorage.getItem('points')) {
 }
 
 function updatePoints() {
-    const points = localStorage.getItem('points');
-    const textPoints = document.getElementById('points');
-    if (textPoints) {
-        textPoints.textContent = points + 'pts';
-    }
+    const points = localStorage.getItem('points') || '0';
+    document.querySelectorAll('#points').forEach(el => {
+        el.textContent = points + 'pts';
+    });
 
     updateMedals(parseInt(points));
 }
@@ -85,12 +84,16 @@ function addToStreak() {
     }
 }
 
-document.querySelector('.complete-task-button')?.addEventListener('click', function() {
-    const newPoints = parseInt(localStorage.getItem('points')) + 1;
-    localStorage.setItem('points', newPoints.toString());
-    updatePoints();
-    addToStreak();
-});
+function setupTaskButton() {
+    document.querySelectorAll('.complete-task-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const newPoints = parseInt(localStorage.getItem('points') || '0') + 1;
+            localStorage.setItem('points', newPoints.toString());
+            updatePoints();
+            addToStreak();
+        });
+    });
+}
 
 initPoints();
 document.addEventListener('streakUpdated', updateStreakUI);

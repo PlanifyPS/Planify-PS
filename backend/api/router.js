@@ -43,7 +43,7 @@ class Router {
             }
         };
         this.basePath = '../../frontend/src';
-        this.loadedScripts = new Map(); // Para manejar múltiples scripts
+        this.loadedScripts = new Map();
         this.currentStyle = null;
         this.init();
     }
@@ -75,11 +75,15 @@ class Router {
             await this.loadComponents();
         }
 
-        await this.loadScripts(route.scripts);
-
         if (route.scripts.includes('points.js') && window.initPoints) {
             window.initPoints();
         }
+
+        await this.loadScripts(route.scripts);
+        if (window.setupTaskButton) {
+            window.setupTaskButton();
+        }
+
     }
 
     async loadComponents() {
