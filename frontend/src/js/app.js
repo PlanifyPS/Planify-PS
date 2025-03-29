@@ -5,3 +5,4 @@
 import './challenges.js';
 import './analytics.js'
 import './home.js';
+import './habits.js'

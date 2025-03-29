@@ -1,3 +1,13 @@
+
+function initHome() {
+    if (document.readyState === 'complete') {
+        loadHabits();
+    } else {
+        document.addEventListener('DOMContentLoaded', () => {
+           loadHabits();
+        });
+    }
+}
 function loadUserHabits(id, url) {
     fetch(url)
         .then(response => {
@@ -16,9 +26,9 @@ function loadUserHabits(id, url) {
 }
 
 function loadHabits(){
-    loadTemplate("sidebar", "templates/sidebar.html");
     for (let i = 0; i < 15; i++) {
-        loadUserHabits("user-habits", "../templates/habitsItem.html");
+        console.log("hostia")
+        loadUserHabits("user-habits", "../src/templates/habitsItem.html");
     }
 }
 
@@ -35,3 +45,4 @@ function loadTemplate(id, url) {
         })
         .catch(error => console.error(error));
 }
+initHome();
