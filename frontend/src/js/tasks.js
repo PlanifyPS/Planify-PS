@@ -13,79 +13,145 @@ function initHome() {
 }
 
 function initTextContent() {
-    document.getElementById("TitleHabitsTasks").textContent = "Tasks"
-    document.getElementById("add-button").textContent = "Add Tasks"
-    document.getElementById("addNewTitle").textContent = "Add New Task"
+    document.getElementById("TitleHabitsTasks").textContent = "Tasks";
 }
 
 function initModal() {
     let openModalButton = document.getElementById('add-button');
     let modal = document.getElementById('AddTaskModal');
-    let closeTaskButton = document.getElementById('closeTaskButton')
+    let closeTaskButton = document.getElementById('closeTaskButton');
     let saveTaskButton = document.getElementById('saveTask');
-    
-    openModalButton.addEventListener('click', () => {modal.style.display = 'flex';});
-    closeTaskButton.addEventListener('click', () => {modal.style.display = 'none'; clearInputs()});
-    saveTaskButton.addEventListener('click', () => {saveHabit();});
+
+    openModalButton.addEventListener('click', () => { modal.style.display = 'flex'; });
+    closeTaskButton.addEventListener('click', () => { modal.style.display = 'none'; clearInputs(); });
+    saveTaskButton.addEventListener('click', () => { saveTask(); });
 }
 
 function clearInputs() {
     document.getElementById('NewTaskTitle').value = '';
     document.getElementById('TaskDescription').value = '';
+    document.getElementById('TaskDueDate').value = '';
 }
 
 function reloadUserTasks() {
-     document.getElementById("user-content").innerHTML = '';
-     loadUserTasks().then();
+    document.getElementById("user-content").innerHTML = '';
+    loadUserTasks().then();
 }
 
-function saveHabit() {
-    
+function saveTask() {
     const title = document.getElementById("NewTaskTitle").value.trim().toString();
     const description = document.getElementById("TaskDescription").value.trim().toString();
     const dueDate = document.getElementById("TaskDueDate").value;
+    const points = 1;
 
-    if (!title  || !description) {
+    if (!title || !description || !dueDate) {
         alert("Por favor, completa todos los campos.");
         return;
     }
 
     const tasks = JSON.parse(localStorage.getItem("UserTasks")) || [];
-    const newTask = { title, description, dueDate };
+    const newTask = {
+        title,
+        description,
+        dueDate,
+        points,
+        completed: false,
+        id: Date.now()
+    };
+
     tasks.push(newTask);
     localStorage.setItem("UserTasks", JSON.stringify(tasks));
     document.getElementById('AddTaskModal').style.display = 'none';
     clearInputs();
     reloadUserTasks();
-    
-
 }
 
 async function loadUserTasks() {
-
     let userTasks = localStorage.getItem('UserTasks');
-    userTasks = JSON.parse(userTasks);
-    console.log(userTasks);
+    userTasks = JSON.parse(userTasks) || [];
+
     for (const task of userTasks) {
-        await addTemplate("user-content", "../src/templates/habitsItem.html", task)
-        
+        await addTemplate("user-content", "../src/templates/habitsItem.html", task);
     }
+
+    document.querySelectorAll('.complete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const taskItem = this.closest('.habits-list-item');
+            const taskTitle = taskItem.querySelector('.habits-task-title').textContent;
+            completeTask(taskTitle);
+        });
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const taskItem = this.closest('.habits-list-item');
+            const taskId = parseInt(taskItem.getAttribute('data-id'));
+            const taskTitle = taskItem.querySelector('.habits-task-title').textContent;
+            if (confirm(`¿Estás seguro que quieres eliminar la tarea "${taskTitle}"?`)) {
+                deleteTask(taskId);
+            }
+        });
+    });
 }
 
+function deleteTask(taskId) {
+    let userTasks = JSON.parse(localStorage.getItem("UserTasks")) || [];
+    const updatedTasks = userTasks.filter(task => task.id !== taskId);
+    localStorage.setItem("UserTasks", JSON.stringify(updatedTasks));
+    reloadUserTasks();
+}
+
+function completeTask(taskTitle) {
+    let userTasks = JSON.parse(localStorage.getItem("UserTasks")) || [];
+    const taskIndex = userTasks.findIndex(t => t.title === taskTitle);
+
+    if (taskIndex !== -1 && !userTasks[taskIndex].completed) {
+        const taskPoints = userTasks[taskIndex].points || 5;
+
+        const newPoints = parseInt(localStorage.getItem('points')) + taskPoints;
+        localStorage.setItem('points', newPoints.toString());
+
+        const today = new Date().toDateString();
+        const lastDate = localStorage.getItem('lastTaskDate');
+        if (lastDate !== today) {
+            const newStreak = parseInt(localStorage.getItem('streak')) + 1;
+            localStorage.setItem('streak', newStreak.toString());
+            localStorage.setItem('lastTaskDate', today);
+        }
+
+        userTasks[taskIndex].completed = true;
+        localStorage.setItem("UserTasks", JSON.stringify(userTasks));
+
+        document.dispatchEvent(new Event('pointsUpdated'));
+        document.dispatchEvent(new Event('streakUpdated'));
+
+        reloadUserTasks();
+
+        alert(`¡Tarea completada! Ganaste ${taskPoints} puntos.`);
+    } else if (userTasks[taskIndex]?.completed) {
+        alert("Esta tarea ya fue completada.");
+    }
+}
 
 async function addTemplate(id, url, item) {
     try {
         const response = await fetch(url);
-        if (!response.ok) new Error(`Fail loading ${url}`);
-
+        if (!response.ok) throw new Error(`Fail loading ${url}`);
         const container = document.getElementById(id);
         const newElement = document.createElement("div");
         newElement.innerHTML = await response.text();
         newElement.querySelector(".habits-task-title").textContent = item.title;
+        newElement.querySelector(".habits-list-item").setAttribute("data-id", item.id);
+        if (item.completed) {
+            const taskItem = newElement.querySelector(".habits-list-item");
+            taskItem.classList.add("completed");
+            const completeBtn = taskItem.querySelector(".complete-btn");
+            if (completeBtn) completeBtn.style.display = 'none';
+        }
         container.appendChild(newElement);
-
     } catch (error) {
         console.log(error);
     }
 }
+
 initHome();
