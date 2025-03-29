@@ -20,6 +20,25 @@ function updatePoints() {
     const points = localStorage.getItem('points');
     const textPoints = document.getElementById('points');
     textPoints.textContent = points + 'pts';
+
+    updateMedals(parseInt(points));
+}
+
+function updateMedals(points) {
+    const medalsContainer = document.getElementById('medals-container');
+    if (!medalsContainer) return;
+
+    // Limpiar medallas previas
+    medalsContainer.innerHTML = "";
+
+    // Calcular número de medallas (una cada 50 puntos)
+    const medalCount = Math.floor(points / 50);
+
+    for (let i = 0; i < medalCount; i++) {
+        const medalIcon = document.createElement('i');
+        medalIcon.className = "fa-solid fa-medal";
+        medalsContainer.appendChild(medalIcon);
+    }
 }
 
 
@@ -65,6 +84,7 @@ document.querySelector('.complete-task-button').addEventListener('click', functi
     updatePoints();
     addToStreak();
 });
+
 
 //document.addEventListener('taskCompleted', incrementPoints);
 initPoints();
