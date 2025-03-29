@@ -17,11 +17,30 @@ if (!localStorage.getItem('points')) {
 }
 
 function updatePoints() {
-    const points = localStorage.getItem('points');
-    const textPoints = document.getElementById('points');
-    textPoints.textContent = points + 'pts';
+    const points = localStorage.getItem('points') || '0';
+    const pointsElement = document.getElementById('points');
+    const medalsContainer = document.getElementById('medals-container');
+
+    if (pointsElement) {
+        pointsElement.textContent = `${points}pts`;
+    }
+
+    updateMedals(parseInt(points));
 }
 
+function updateMedals(points) {
+    const medalsContainer = document.getElementById('medals-container');
+    if (!medalsContainer) return;
+
+    const medalCount = Math.floor(points / 50);
+    medalsContainer.innerHTML = "";
+
+    for (let i = 0; i < medalCount; i++) {
+        const medalIcon = document.createElement('i');
+        medalIcon.className = "fa-solid fa-medal";
+        medalsContainer.appendChild(medalIcon);
+    }
+}
 
 if (!localStorage.getItem('streak')) {
     localStorage.setItem('streak', '0');
@@ -65,6 +84,17 @@ document.querySelector('.complete-task-button').addEventListener('click', functi
     updatePoints();
     addToStreak();
 });
+
+function incrementPoints() {
+    let points = parseInt(localStorage.getItem('points')) || 0;
+    points += 1;
+    localStorage.setItem('points', points.toString());
+    updatePoints();
+
+    console.log("Disparando evento taskCompleted");
+    document.dispatchEvent(new CustomEvent('taskCompleted'));
+}
+
 
 document.addEventListener('taskCompleted', incrementPoints);
 initPoints();
