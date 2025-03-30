@@ -41,13 +41,13 @@
 .habits-list-header-options{
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 2rem;
 
 }
 
 .options-button{
     padding: 10px;
-    min-width: 4rem;
+    min-width: 5.5rem;
     background-color: var(--blue-medium); /* Azul similar al tema */
     color: white;
     border: none;
@@ -55,6 +55,7 @@
     font-size: 14px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
+
 }
 /* Efecto hover */
 .options-button:hover {
@@ -84,14 +85,30 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px;
-    background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-lighter) 100%);
-    border-radius: 15px;
-    box-shadow: 0 4px 8px var(--shadow);
+    background-color: var( --white);
+    border-radius: 0.5rem;
+    box-shadow: 3px 5px 10px var(--shadow);
     transition: transform 0.2s ease;
 }
 .habits-list-item:hover {
     transform: translateY(-3px);
 }
+.habits-list-item-options button {
+    border: none;
+    background: none;
+}
+.habits-task-title{
+    color: var(--dark-blue);
+    font-size: 1.2rem;
+    font-family: var(--heading-font), sans-serif;
+    font-weight: var(--semibold);
+}
+
+#search-HabitsTasks{
+    display: flex;
+    margin: 0;
+}
+
 .habits-list-item-logo {
     display: flex;
     align-items: center;
@@ -197,7 +214,7 @@
     transform: translateY(-3px);
 }
 
-.TaskModal {
+.TaskModal{
     display: none;
     position: fixed;
     top: 0;
@@ -207,6 +224,7 @@
     background: rgba(0,0,0,0.7);
     justify-content: center;
     align-items: center;
+    z-index: 999;
 }
 .Task-modal-content{
     background: white;
@@ -256,4 +274,14 @@
 #saveTask:hover {
     background-color: #0056b3;
     transform: scale(1.05);
+}
+.habitTask-options-icon{
+    font-size: 1.2rem;
+    color: var(--secondary-blue);
+ }
+#check{
+    font-size: 1.5rem;
+}
+#cross{
+    font-size: 1.5rem;
 }

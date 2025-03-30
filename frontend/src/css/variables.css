@@ -27,6 +27,7 @@
 
     /* Tipografía */
     --bold: 700;
+    --semibold: 600;
     --regular: 400;
     --heading-font: 'Montserrat', sans-serif;
     --text-font: 'Roboto', sans-serif;
