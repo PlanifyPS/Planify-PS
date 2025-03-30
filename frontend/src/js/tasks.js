@@ -14,6 +14,7 @@ function initHome() {
 
 function initTextContent() {
     document.getElementById("TitleHabitsTasks").textContent = "Tasks";
+    document.getElementById("add-button").textContent = "Add Task"
 }
 
 function initModal() {
@@ -74,7 +75,7 @@ async function loadUserTasks() {
         await addTemplate("user-content", "../src/templates/habitsItem.html", task);
     }
 
-    document.querySelectorAll('.complete-btn').forEach(button => {
+    document.querySelectorAll('.Task-Habit-complete-btn').forEach(button => {
         button.addEventListener('click', function() {
             const taskItem = this.closest('.habits-list-item');
             const taskTitle = taskItem.querySelector('.habits-task-title').textContent;
@@ -82,7 +83,7 @@ async function loadUserTasks() {
         });
     });
 
-    document.querySelectorAll('.delete-btn').forEach(button => {
+    document.querySelectorAll('.Task-Habit-delete-btn').forEach(button => {
         button.addEventListener('click', function() {
             const taskItem = this.closest('.habits-list-item');
             const taskId = parseInt(taskItem.getAttribute('data-id'));

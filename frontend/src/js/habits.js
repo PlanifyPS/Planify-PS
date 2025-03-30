@@ -72,14 +72,14 @@ async function loadUserHabit() {
         await addTemplate("user-content", "../src/templates/habitsItem.html", habit);
     }
 
-    document.querySelectorAll('.complete-btn').forEach(button => {
+    document.querySelectorAll('.Task-Habit-complete-btn').forEach(button => {
         button.addEventListener('click', function() {
             const habitItem = this.closest('.habits-list-item');
             const habitTitle = habitItem.querySelector('.habits-task-title').textContent;
             completeHabit(habitTitle);
         });
     });
-    document.querySelectorAll('.delete-btn').forEach(button => {
+    document.querySelectorAll('.Task-Habit-delete-btn').forEach(button => {
         button.addEventListener('click', function() {
             const habitItem = this.closest('.habits-list-item');
             const habitId = parseInt(habitItem.getAttribute('data-id'));
