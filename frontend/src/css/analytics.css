@@ -1,29 +1,25 @@
-.analytics-content{
+.analytics-content {
     display: flex;
     flex-direction: column;
     gap: 10px;
     border-radius: 15px;
-    padding: 30px;
+    padding: 20px;
     background-color: var(--light-bg);
     height: 100%;
 }
 
-.analytics-user-graphics{
+.analytics-user-graphics {
     display: flex;
     flex-direction: column;
-    padding: 10px 20px;
+    padding: 5px 10px;
     flex-grow: 1;
-    gap: 15px;
-
-}
-.analytics-user-graphics h2{
-    padding: 5px 20px;
+    gap: 10px;
 }
 
-.graphics-container {
-    display: flex;
-    gap: 20px;
-    flex-grow: 1;
+.analytics-user-graphics h2 {
+    padding: 3px 10px;
+    margin: 0;
+    font-size: 18px;
 }
 
 .large-analytics {
@@ -34,51 +30,124 @@
     padding: 10px;
     gap: 10px;
     flex-grow: 2;
-    min-height: 200px;
+    min-height: 280px;
     background-color: #0077B4;
     border-radius: 10px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    width:100%;
+    width: 100%;
     height: 100%;
 }
 
-.habits-BarChart{
+.graphics-container {
     display: flex;
-    flex-direction: row;
-
-    width: 75%;
-    height: 100%;
-    background-color: grey;
+    gap: 15px;
+    flex-grow: 1;
+    margin-bottom: 20px;
 }
-.tasks-BarChart{
+
+#habits-BarChart, #tasks-BarChart {
     display: flex;
-    flex-direction: row;
-
-    width: 75%;
+    flex-direction: column;
+    width: 80%;
     height: 100%;
-    background-color: grey;
+    background-color: transparent;
+    position: relative;
+    padding: 20px 15px 10px 10px;
 }
-.TasksHabits-counter{
+
+.bars-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 90%;
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+.days-labels-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 20px;
+    margin-top: 5px;
+}
+
+.day-label {
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    width: 14%;
+}
+
+.bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 14%;
+    position: relative;
+}
+
+.bar-container {
+    width: 28px;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.value-label {
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    position: absolute;
+    top: -20px;
+}
+
+.y-axis-label {
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: rotate(-90deg);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding-bottom: 20px;
+}
+
+.TasksHabits-counter {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 10px;
-    width: 25%;
+    padding: 5px;
+    width: 20%;
     height: 100%;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    padding-left: 10px;
 }
-.counter-container{
+
+.counter-container {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
     height: 100%;
+    width: 100%;
 }
-.counter-container div{
-    font-size: 30px;
+
+.counter-container div {
+    font-size: 24px;
+    text-align: center;
+    margin: 5px 0;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
-.counter-container i{
-    font-size: 30px;
-    padding: 10px;
+
+.counter-container i {
+    font-size: 22px;
+    padding: 5px;
 }
 
 .circle-analytics {
@@ -89,40 +158,44 @@
     background-color: #0077B4;
     border-radius: 10px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    min-height: 200px;
+    min-height: 180px;
     width: 60%;
+    padding: 10px;
+}
 
-}
 #habits-circle-progress, #tasks-circle-progress {
-        margin: 20px;
-        width: 200px;
-        height: 200px;
+    margin: 10px;
+    width: 200px;
+    height: 200px;
 }
+
 .circle-progress-text {
-    font-size: 35px;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.bars-container::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 .CurrentHabitStreak-counter i {
-    color: #FF5733; /* Color rojo (fuego) */
-
+    color: #FF5733;
 }
 
 .HabitsCompletedToday-counter i {
-    color: #4CAF50; /* Color verde (hecho) */
+    color: #4CAF50;
 }
 
 .TotalHabits-counter i {
-    color: #FFD700; /* Color dorado (trofeo) */
+    color: #FFD700;
 }
 
 .InProgressHabits-counter i {
-    color: #FFC107; /* Color ámbar (en progreso) */
-}
-
-.HabitsCompletedToday-counter i:nth-child(2) i {
-    color: #2196F3; /* Color azul (gráfico circular) */
-}
-
-.HabitsCompletedToday-counter i:nth-child(3) i {
-    color: #9E9E9E; /* Color gris (gráfico de línea) */
+    color: #FFC107;
 }
