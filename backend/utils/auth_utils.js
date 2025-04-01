@@ -5,12 +5,12 @@ import {
     signInWithEmailAndPassword,
     signInWithPopup
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
-import {createUserInDataBase, saveUserData, test} from "./firestore_utils.js";
+import {saveUserData} from "./firestore_utils.js";
 
 export const registerUser = async (email, password, username) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await test(userCredential, {
+        await saveUserData(userCredential, {
             userName: username,
             email: email,
         });
