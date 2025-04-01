@@ -6,9 +6,10 @@
       "chart calendar"
       "habits calendar"
       ". calendar";
-    gap: 10px;
+    gap: 15px;
     padding: 20px;
     background-color: var(--light-bg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 #home::before {
     content: '';
@@ -28,7 +29,6 @@
 
 .subtitle {
     font-size: 0.9rem;
-    color: var(--text-medium);
     margin-bottom: 5px;
 }
 
@@ -48,7 +48,7 @@
 .profile-icon {
     width: 120px;
     height: 80px;
-    background-color: var(--gray-light);
+    background-color: var(--grey);
     color: var(--blue-medium);
     margin: 10px auto;
     display: flex;
@@ -72,20 +72,67 @@
     justify-content: center;
     box-shadow: 0 4px 8px var(--shadow);
     height: 100%;
-    border: 3px solid var(--blue-medium);
 }
 
 .chart {
     width: 90%;
     height: 90%;
-    border: 1px solid var(--gray-border);
+    border: 1px solid var(--blue-medium);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     color: var(--blue-medium);
     font-weight: bold;
-    background-color: var(--gray-light);
     border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-title {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    color: var(--blue-dark);
+}
+
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    height: 70%;
+    padding: 0 10px;
+}
+
+.chart-bar {
+    width: 30px;
+    background-color: var(--blue-medium);
+    margin: 0 10px;
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    transition: height 0.5s ease;
+}
+
+.chart-bar::after {
+    content: attr(data-value);
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+}
+
+.chart-labels {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.chart-label {
+    width: 50px;
+    text-align: center;
+    font-size: 0.8rem;
 }
 
 .habits-section {
@@ -109,7 +156,6 @@
     box-shadow: 0 4px 8px var(--shadow);
     height: 180px;
     margin: 0;
-    border: 2px solid var(--blue-medium);
     transition: transform 0.2s ease;
 }
 
@@ -126,27 +172,74 @@
 }
 
 .habit-icon {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     border: none;
-    background-color: var(--gray-light);
+    background-color: var(--blue-lighter);
     color: var(--blue-medium);
-    border-radius: 4px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.habit-icon:hover {
+    transform: scale(1.1);
+    background-color: var(--blue-medium);
+    color: white;
 }
 
 .habit-image {
     width: 100%;
     height: 100px;
-    border: 1px solid var(--gray-border);
+    border: 1px solid var(--blue-medium);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: var(--blue-medium);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.habit-image:hover {
+    background-color: var(--blue-lighter);
+}
+
+.habit-icon-large {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+    color: var(--blue-medium);
+}
+
+.habit-label {
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.progress-circle {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: conic-gradient(var(--blue-medium) 0%, var(--blue-medium) var(--progress, 70%), var(--grey) var(--progress, 70%), var(--grey) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--gray-light);
-    border-radius: 8px;
-    color: var(--text-medium);
+}
+
+.progress-circle::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
 }
 
 .calendar-section {
@@ -166,7 +259,6 @@
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
-    border: 3px solid var(--blue-medium);
 }
 
 .calendar-title {
@@ -193,7 +285,7 @@
 }
 
 .calendar-title h3 {
-    color: var(--blue-medium);
+    color: var(--blue-dark);
     margin: 0;
 }
 
@@ -203,11 +295,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--gray-light);
+    background-color: var(--grey);
     border-radius: 8px;
-    color: var(--text-medium);
     font-weight: bold;
-    border: 3px solid var(--blue-medium);
     margin-bottom: 10px;
 }
 
@@ -215,7 +305,7 @@
     height: auto !important;
     display: block !important;
     background-color: var(--white) !important;
-    border: 2px solid var(--blue-medium) !important;
+    border: 1px solid var(--blue-medium) !important;
 }
 
 .calendar-header {
@@ -267,7 +357,7 @@
 }
 
 .day:hover {
-    background-color: var(--gray-light);
+    background-color: var(--grey);
 }
 
 .day.selected {
@@ -351,7 +441,7 @@
 .event-form input, .event-form button {
     padding: 8px;
     border-radius: 5px;
-    border: 1px solid var(--gray-border);
+    border: 1px solid var(--grey);
 }
 
 .event-form button {
@@ -376,11 +466,11 @@
     padding: 10px;
     border-radius: 5px;
     transition: background-color 0.2s ease;
-    border: 3px solid var(--blue-medium);
+    border: 1px solid var(--blue-medium);
 }
 
 .task-item:hover {
-    background-color: var(--gray-light);
+    background-color: var(--grey);
 }
 
 .task-item span:nth-child(3) {
@@ -392,7 +482,7 @@
     width: 20px;
     height: 20px;
     border: none;
-    background-color: var(--gray-light);
+    background-color: var(--grey);
     color: var(--blue-medium);
     border-radius: 4px;
     display: flex;

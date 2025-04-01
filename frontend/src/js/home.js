@@ -1,5 +1,5 @@
-const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
 
 function initHome() {
     if (document.readyState === 'complete') {
@@ -157,13 +157,13 @@ function createCalendar(year, month) {
             <button id="next-month" class="calendar-nav-btn">→</button>
         </div>
         <div class="weekdays">
-            <div>Lun</div>
-            <div>Mar</div>
-            <div>Mié</div>
-            <div>Jue</div>
-            <div>Vie</div>
-            <div>Sáb</div>
-            <div>Dom</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+            <div>Sun</div>
         </div>
         <div class="days">
     `;
@@ -274,7 +274,7 @@ function updateTaskList(dateString) {
         `).join('')
         : `<div class="task-item">
             <div class="task-icon">ℹ️</div>
-            <span>No hay eventos</span>
+            <span>There are no events</span>
             <span></span>
           </div>`;
 }

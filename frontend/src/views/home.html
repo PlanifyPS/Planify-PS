@@ -1,94 +1,192 @@
 <div id="home">
-<section class="chart-section">
-  <div class="chart-container">
-    <div class="chart">Gráfica</div>
-  </div>
-</section>
-<section class="habits-section">
-  <div class="habits-grid">
-    <div class="habit-card">
-      <div class="habit-header">
-        <span>Lorem ipsum</span>
-        <div class="habit-icon">📧</div>
+  <section class="chart-section">
+    <div class="chart-container">
+      <div class="chart">
+        <div class="chart-title">Weekly Progress</div>
+        <div class="chart-bars">
+          <div class="chart-bar" style="height: 60%;" data-value="60%"></div>
+          <div class="chart-bar" style="height: 75%;" data-value="75%"></div>
+          <div class="chart-bar" style="height: 45%;" data-value="45%"></div>
+          <div class="chart-bar" style="height: 90%;" data-value="90%"></div>
+          <div class="chart-bar" style="height: 65%;" data-value="65%"></div>
+          <div class="chart-bar" style="height: 30%;" data-value="30%"></div>
+          <div class="chart-bar" style="height: 50%;" data-value="50%"></div>
+        </div>
+        <div class="chart-labels">
+          <div class="chart-label">Mon</div>
+          <div class="chart-label">Tue</div>
+          <div class="chart-label">Wed</div>
+          <div class="chart-label">Thu</div>
+          <div class="chart-label">Fri</div>
+          <div class="chart-label">Sat</div>
+          <div class="chart-label">Sun</div>
+        </div>
       </div>
-      <div class="habit-image">Imagen</div>
     </div>
-    <div class="habit-card">
-      <div class="habit-header">
-        <span>Lorem ipsum</span>
-        <div class="habit-icon">📧</div>
-      </div>
-      <div class="habit-image">Imagen</div>
-    </div>
-    <div class="habit-card">
-      <div class="habit-header">
-        <span>Lorem ipsum</span>
-        <div class="habit-icon">📧</div>
-      </div>
-      <div class="habit-image">Imagen</div>
-    </div>
-    <div class="habit-card">
-      <div class="habit-header">
-        <span>Lorem ipsum</span>
-        <div class="habit-icon">📧</div>
-      </div>
-      <div class="habit-image">Imagen</div>
-    </div>
-    <div class="habit-card">
-      <div class="habit-header">
-        <span>Lorem ipsum</span>
-        <div class="habit-icon">📧</div>
-      </div>
-      <div class="habit-image">Imagen</div>
-    </div>
-    <div class="habit-card">
-      <div class="habit-header">
-        <span>Lorem ipsum</span>
-        <div class="habit-icon">📧</div>
-      </div>
-      <div class="habit-image">Imagen</div>
-    </div>
-    <div class="habit-card">
-      <div class="habit-header">
-        <span>Lorem ipsum</span>
-        <div class="habit-icon">📧</div>
-      </div>
-      <div class="habit-image">Imagen</div>
-    </div>
-    <div class="habit-card">
-      <div class="habit-header">
-        <span>Lorem ipsum</span>
-        <div class="habit-icon">📧</div>
-      </div>
-      <div class="habit-image">Imagen</div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section class="calendar-section">
-  <div class="calendar-box">
-    <div class="calendar-title">
-      <h3>Calendar</h3>
-      <button id="add-event-btn" class="add-event-btn">+ Añadir Evento</button>
+  <section class="habits-section">
+    <div class="habits-grid">
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Exercise</span>
+          <div class="habit-icon"><i class="fas fa-dumbbell"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-running habit-icon-large"></i>
+          <span class="habit-label">30 min daily</span>
+          <div class="progress-circle" style="--progress: 70%"></div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Meditation</span>
+          <div class="habit-icon"><i class="fas fa-spa"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-om habit-icon-large"></i>
+          <span class="habit-label">15 min morning</span>
+          <div class="progress-circle" style="--progress: 85%"></div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Reading</span>
+          <div class="habit-icon"><i class="fas fa-book"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-book-open habit-icon-large"></i>
+          <span class="habit-label">20 pages/day</span>
+          <div class="progress-circle" style="--progress: 50%"></div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Water</span>
+          <div class="habit-icon"><i class="fas fa-tint"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-glass-water habit-icon-large"></i>
+          <span class="habit-label">2L daily</span>
+          <div class="progress-circle" style="--progress: 65%"></div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Programming</span>
+          <div class="habit-icon"><i class="fas fa-code"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-laptop-code habit-icon-large"></i>
+          <span class="habit-label">1h practice</span>
+          <div class="progress-circle" style="--progress: 90%"></div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Journal</span>
+          <div class="habit-icon"><i class="fas fa-pen"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-journal-whills habit-icon-large"></i>
+          <span class="habit-label">Daily reflection</span>
+          <div class="progress-circle" style="--progress: 40%"></div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Cooking</span>
+          <div class="habit-icon"><i class="fas fa-utensils"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-cookie habit-icon-large"></i>
+          <span class="habit-label">New recipe/week</span>
+          <div class="progress-circle" style="--progress: 25%"></div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Languages</span>
+          <div class="habit-icon"><i class="fas fa-language"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-globe-americas habit-icon-large"></i>
+          <span class="habit-label">20 min daily</span>
+          <div class="progress-circle" style="--progress: 55%"></div>
+        </div>
+      </div>
+      <!-- Added four new habit cards -->
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Stretching</span>
+          <div class="habit-icon"><i class="fas fa-child"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-child habit-icon-large"></i>
+          <span class="habit-label">10 min daily</span>
+          <div class="progress-circle" style="--progress: 45%"></div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Sleep</span>
+          <div class="habit-icon"><i class="fas fa-bed"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-moon habit-icon-large"></i>
+          <span class="habit-label">8h nightly</span>
+          <div class="progress-circle" style="--progress: 60%"></div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Organization</span>
+          <div class="habit-icon"><i class="fas fa-heart"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-sitemap habit-icon-large"></i>
+          <span class="habit-label">1 for day</span>
+          <div class="progress-circle" style="--progress: 75%"></div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <span>Networking</span>
+          <div class="habit-icon"><i class="fas fa-users"></i></div>
+        </div>
+        <div class="habit-image">
+          <i class="fas fa-comments habit-icon-large"></i>
+          <span class="habit-label">1 connection/week</span>
+          <div class="progress-circle" style="--progress: 35%"></div>
+        </div>
+      </div>
     </div>
-    <div id="calendar-container" class="calendar-image calendar-container"></div>
-    <h5>Pending tasks</h5>
+  </section>
 
-    <div class="task-list">
+  <section class="calendar-section">
+    <div class="calendar-box">
+      <div class="calendar-title">
+        <h3>Calendar</h3>
+        <button id="add-event-btn" class="add-event-btn">+ Add Event</button>
+      </div>
+      <div id="calendar-container" class="calendar-image calendar-container"></div>
+      <h5>Pending tasks</h5>
+
+      <div class="task-list">
+      </div>
     </div>
-  </div>
   </section>
 
   <div id="event-dialog">
     <div class="dialog-header">
-      <h3>Añadir Evento</h3>
+      <h3>Add Event</h3>
       <button class="close-btn">&times;</button>
     </div>
     <form class="event-form">
       <input type="hidden" id="event-date">
-      <input type="text" id="event-name" placeholder="Nombre del evento" required>
+      <input type="text" id="event-name" placeholder="Event name" required>
       <input type="time" id="event-time" required>
-      <button type="submit">Guardar</button>
+      <button type="submit">Save</button>
     </form>
   </div>
 </div>
