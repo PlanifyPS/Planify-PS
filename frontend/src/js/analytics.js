@@ -34,9 +34,7 @@ function loadCircleProgressBars() {
         strokeWidth: 12,
         easing: "easeInOut",
         duration: 1000,
-        color: "#FFEA82",
-        trailColor: "#0077B4",
-        trailWidth: 1,
+        color: "#0077B6",
         svgStyle: null,
         text:{
             value: '0%',
@@ -48,9 +46,7 @@ function loadCircleProgressBars() {
         strokeWidth: 12,
         easing: "easeInOut",
         duration: 1000,
-        color: "#FFEA82",
-        trailColor: "#0077B4",
-        trailWidth: 1,
+        color: "#0077B6",
         svgStyle: null,
         text:{
             value: '0%',
@@ -126,11 +122,11 @@ function createBarChart(containerId, data, label) {
         barWrapper.appendChild(barContainer);
 
         const bar = new ProgressBar.Line(barContainer, {
-            strokeWidth: 8,
+            strokeWidth: 10,
             easing: 'easeInOut',
             duration: 1000,
-            color: '#FFEA82',
-            trailColor: 'rgba(255, 255, 255, 0.2)',
+            color: '#0077B6',
+            trailColor: '#E5F8FC',
             trailWidth: 8,
             svgStyle: { width: '100%', height: '100%' },
             vertical: true
