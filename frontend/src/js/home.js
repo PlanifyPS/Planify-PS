@@ -31,6 +31,73 @@ function setupEventDialogListeners() {
     const eventTime = document.getElementById('event-time');
     const addEventBtn = document.getElementById('add-event-btn');
 
+    // Crear un nuevo modal para editar eventos siguiendo el mismo formato
+    const editDialog = document.createElement('div');
+    editDialog.id = 'edit-event-dialog';
+    editDialog.className = 'dialog';
+    editDialog.innerHTML = `
+        <div class="dialog-header">
+            <h3>Edit Event</h3>
+            <button class="close-btn close-edit-btn">&times;</button>
+        </div>
+        <form class="event-form edit-event-form">
+            <input type="hidden" id="edit-event-id">
+            <input type="hidden" id="edit-event-date">
+            <div class="form-group">
+                <label for="edit-event-name">Event Name:</label>
+                <input type="text" id="edit-event-name" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-event-time">Time:</label>
+                <input type="time" id="edit-event-time">
+            </div>
+            <button type="submit" class="save-btn">Save Changes</button>
+        </form>
+    `;
+    document.body.appendChild(editDialog);
+
+    // Referencias al nuevo modal de edición
+    const editEventForm = document.querySelector('.edit-event-form');
+    const closeEditBtn = document.querySelector('.close-edit-btn');
+    const editEventId = document.getElementById('edit-event-id');
+    const editEventDate = document.getElementById('edit-event-date');
+    const editEventName = document.getElementById('edit-event-name');
+    const editEventTime = document.getElementById('edit-event-time');
+
+    // Event listener para cerrar el modal de edición
+    closeEditBtn.addEventListener('click', () => {
+        editDialog.style.display = 'none';
+        home.classList.remove('modal-open');
+    });
+
+    // Event listener para guardar los cambios del evento
+    editEventForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const eventId = parseInt(editEventId.value);
+        const date = editEventDate.value;
+        const name = editEventName.value;
+        const time = editEventTime.value;
+
+        const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+
+        if (events[date]) {
+            const eventIndex = events[date].findIndex(event => event.id === eventId);
+            if (eventIndex !== -1) {
+                events[date][eventIndex] = {
+                    name,
+                    time,
+                    id: eventId
+                };
+                localStorage.setItem('calendarEvents', JSON.stringify(events));
+
+                displayEvents();
+                updateTaskList(date);
+                editDialog.style.display = 'none';
+                home.classList.remove('modal-open');
+            }
+        }
+    });
+
     addEventBtn.addEventListener('click', () => {
         const selectedDay = document.querySelector('.day.selected');
 
@@ -60,28 +127,21 @@ function setupEventDialogListeners() {
         const name = eventName.value;
         const time = eventTime.value;
 
-
         const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-
-
         const newEvent = { name, time, id: Date.now() };
-
 
         if (!events[date]) {
             events[date] = [];
         }
         events[date].push(newEvent);
 
-
         localStorage.setItem('calendarEvents', JSON.stringify(events));
-
 
         displayEvents();
         updateTaskList(date);
         eventDialog.style.display = 'none';
         home.classList.remove('modal-open');
     });
-
 
     const taskList = document.querySelector('.task-list');
     taskList.addEventListener('click', (e) => {
@@ -94,7 +154,6 @@ function setupEventDialogListeners() {
         const eventName = taskItem.querySelector('span:nth-child(2)').textContent;
         const eventTime = taskItem.querySelector('span:nth-child(3)').textContent;
 
-
         const editBtn = document.createElement('button');
         editBtn.textContent = '✏️';
         editBtn.classList.add('edit-task-btn');
@@ -103,32 +162,33 @@ function setupEventDialogListeners() {
         deleteBtn.textContent = '🗑️';
         deleteBtn.classList.add('delete-task-btn');
 
-
         taskItem.querySelector('.edit-task-btn')?.remove();
         taskItem.querySelector('.delete-task-btn')?.remove();
-
 
         taskItem.appendChild(editBtn);
         taskItem.appendChild(deleteBtn);
 
-
         editBtn.addEventListener('click', () => {
-
-            eventDate.value = dateString;
-            eventName.value = eventName;
-            eventTime.value = eventTime;
-            eventDialog.style.display = 'block';
-
-
             const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
             const dateEvents = events[dateString] || [];
-            const updatedEvents = dateEvents.filter(event =>
-                event.name !== eventName || event.time !== eventTime
-            );
-            events[dateString] = updatedEvents;
-            localStorage.setItem('calendarEvents', JSON.stringify(events));
-        });
 
+            // Encontrar el evento que coincide con el nombre y la hora
+            const eventToEdit = dateEvents.find(event =>
+                event.name === eventName && event.time === eventTime
+            );
+
+            if (eventToEdit) {
+                // Rellenar el formulario de edición con los valores actuales
+                editEventId.value = eventToEdit.id;
+                editEventDate.value = dateString;
+                editEventName.value = eventToEdit.name;
+                editEventTime.value = eventToEdit.time;
+
+                // Mostrar el modal de edición
+                editDialog.style.display = 'block';
+                home.classList.add('modal-open');
+            }
+        });
 
         deleteBtn.addEventListener('click', () => {
             const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
