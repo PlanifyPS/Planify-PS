@@ -40,7 +40,7 @@ export const loginWithGoogle = async () => {
 };
 
 
-export const handleLogout = async function handleLogout() {
+export const handleLogout = async () => {
     try {
         await signOut(auth);
         window.location.href = '#/register';
