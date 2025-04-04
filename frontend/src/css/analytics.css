@@ -106,12 +106,12 @@
 .y-axis-label {
     position: absolute;
     left: -20px;
-    top: 50%;
+    top: 40%;
     transform: rotate(-90deg);
     color: #0077B6;
     font-size: 12px;
     font-weight: bold;
-    padding-bottom: 20px;
+    padding-bottom: 45px;
 }
 
 .TasksHabits-counter {
@@ -120,7 +120,6 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px;
-    width: 20%;
     height: 100%;
     gap:10px
 
