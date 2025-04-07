@@ -505,7 +505,7 @@
 }
 
 .task-item:hover {
-    background-color: var(--grey);
+    background-color: var(--blue-light);
 }
 
 .task-item span:nth-child(3) {
@@ -517,7 +517,6 @@
     width: 20px;
     height: 20px;
     border: none;
-    background-color: var(--grey);
     color: var(--blue-medium);
     border-radius: 4px;
     display: flex;
