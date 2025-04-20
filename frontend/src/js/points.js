@@ -14,8 +14,12 @@ function loadPoints(){
     updatePoints();
     checkStreak();
     updateStreakUI();
+    const points = parseInt(localStorage.getItem('points') || '0');
+    const medalCount = Math.floor(points / 50);
+    updateRank(medalCount);
     setupTaskButton();
 }
+
 
 if (!localStorage.getItem('points')) {
     localStorage.setItem('points', '0');
@@ -26,7 +30,6 @@ function updatePoints() {
     document.querySelectorAll('#points').forEach(el => {
         el.textContent = points + 'pts';
     });
-
     updateMedals(parseInt(points));
 }
 
@@ -35,7 +38,6 @@ function updateMedals(points) {
     if (!medalsContainer) return;
 
     medalsContainer.innerHTML = "";
-
     const medalCount = Math.floor(points / 50);
 
     for (let i = 0; i < medalCount; i++) {
@@ -43,7 +45,23 @@ function updateMedals(points) {
         medalIcon.className = "fa-solid fa-medal";
         medalsContainer.appendChild(medalIcon);
     }
+    updateRank(medalCount);
 }
+
+
+function updateRank(medalCount) {
+    const rankDisplay = document.getElementById('rank-display');
+    if (!rankDisplay) return;
+    const ranks = ["Beginner", "Apprentice", "Novice", "Intermediate",
+        "Advanced", "Expert", "Master", "Elite", "Legend", "Mythical"];
+
+    const rankIndex = Math.min(Math.floor(medalCount / 3), ranks.length - 1);
+    const currentRank = ranks[rankIndex];
+    rankDisplay.textContent = `Range: ${currentRank}`;
+    localStorage.setItem('rank', currentRank);
+}
+
+
 
 if (!localStorage.getItem('streak')) {
     localStorage.setItem('streak', '0');
