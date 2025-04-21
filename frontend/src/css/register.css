@@ -78,7 +78,7 @@
 }
 
 .overlay {
-    background: var(--light-blue) url("../../public/assets/register.jpg") no-repeat fixed center;
+    background: var(--light-blue) no-repeat fixed center;
     background-size: cover;
     background-position: center center;
     height: 100%;
