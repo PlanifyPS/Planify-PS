@@ -14,7 +14,7 @@ class Router {
             '/setting': {
                 view: 'setting.html',
                 title: 'Configuración',
-                scripts: ['setting.js', 'points.js', 'authFirebase.js']
+                scripts: ['setting.js', 'points.js', 'authFirebase.js', 'profile.js']
             },
             '/habits': {
                 view: 'habits.html',
@@ -41,6 +41,7 @@ class Router {
                 title: 'Foros',
                 scripts: ['foro.js', 'points.js', 'authFirebase.js']
             }
+
         };
         this.basePath = '../../frontend/src';
         this.loadedScripts = new Map();
