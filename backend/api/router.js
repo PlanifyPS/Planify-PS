@@ -3,43 +3,48 @@ class Router {
         this.routes = {
             '/register': {
                 view: 'register.html',
-                title: 'Registro',
+                title: 'Register',
                 scripts: ['register.js', 'authFirebase.js']
             },
             '/home': {
                 view: 'home.html',
-                title: 'Inicio',
+                title: 'Home',
                 scripts: ['home.js', 'points.js', 'authFirebase.js']
             },
             '/setting': {
                 view: 'setting.html',
-                title: 'Configuración',
+                title: 'Settings',
                 scripts: ['setting.js', 'points.js', 'authFirebase.js', 'profile.js']
             },
             '/habits': {
                 view: 'habits.html',
-                title: 'Mis Hábitos',
+                title: 'My Habits',
                 scripts: ['habits.js', 'points.js', 'authFirebase.js']
             },
             '/tasks': {
                 view: 'habits.html',
-                title: 'Mis Tareas',
+                title: 'My Tasks',
                 scripts: ['tasks.js', 'points.js', 'authFirebase.js']
             },
             '/challenges': {
                 view: 'challenges.html',
-                title: 'Desafíos Semanales',
+                title: 'Weekly Challenges',
                 scripts: ['challenges.js', 'points.js', 'authFirebase.js']
             },
             '/analytics': {
                 view: 'analytics.html',
-                title: 'Analíticas',
+                title: 'Analytics',
                 scripts: ['analytics.js', 'points.js', 'authFirebase.js']
             },
             '/forums': {
                 view: 'foro.html',
-                title: 'Foros',
+                title: 'Forums',
                 scripts: ['foro.js', 'points.js', 'authFirebase.js']
+            },
+            '/groups': {
+                view: 'groups.html',
+                title: 'Groups',
+                scripts: ['groups.js', 'points.js', 'authFirebase.js']
             }
 
         };
