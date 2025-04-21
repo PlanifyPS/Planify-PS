@@ -1,104 +1,104 @@
 [
   {
     "id": 1,
-    "name": "Primer Paso",
-    "description": "Completa tu primer registro de hábito esta semana. Este desafío te ayudará a comenzar tu viaje de desarrollo personal. Registra cualquier hábito que quieras mejorar, desde beber más agua hasta leer diariamente.",
-    "shortDescription": "Completa tu primer registro de hábito",
+    "name": "First Step",
+    "description": "Complete your first habit log this week. This challenge will help you begin your personal development journey. Record any habit you want to improve, from drinking more water to reading daily.",
+    "shortDescription": "Complete your first habit log",
     "points": 5,
-    "level": "Fácil",
+    "level": "Easy",
     "duration": 7,
-    "category": "Iniciación",
+    "category": "Initiation",
     "tips": [
-      "Elige un hábito sencillo para empezar",
-      "Configura recordatorios en tu teléfono",
-      "Celebra tu primer registro"
+      "Choose an easy habit to start",
+      "Set reminders on your phone",
+      "Celebrate your first log"
     ],
-    "details": "<p>Este desafío está diseñado para iniciarte en el seguimiento de hábitos. No importa cuán pequeño sea el hábito, lo importante es comenzar.</p>",
+    "details": "<p>This challenge is designed to introduce you to habit tracking. It doesn't matter how small the habit is; what's important is to begin.</p>",
     "completed": false
   },
   {
     "id": 2,
-    "name": "Constancia Semanal",
-    "description": "Registra un hábito por 5 días seguidos esta semana. La consistencia es clave para formar nuevos hábitos. Este desafío te ayudará a desarrollar disciplina y compromiso con tus metas.",
-    "shortDescription": "5 días consecutivos de registro",
+    "name": "Weekly Consistency",
+    "description": "Log a habit for 5 consecutive days this week. Consistency is key to forming new habits. This challenge will help you develop discipline and commitment to your goals.",
+    "shortDescription": "5 consecutive days of logging",
     "points": 15,
-    "level": "Medio",
+    "level": "Medium",
     "duration": 7,
-    "category": "Consistencia",
+    "category": "Consistency",
     "tips": [
-      "Elige un horario fijo cada día",
-      "Usa la función de recordatorios",
-      "Visualiza tu progreso en el calendario"
+      "Choose a fixed schedule each day",
+      "Use the reminder function",
+      "Visualize your progress on the calendar"
     ],
-    "details": "<p>La repetición diaria es fundamental para convertir acciones en hábitos. Este desafío te premia por mantener la regularidad durante la semana.</p>",
+    "details": "<p>Daily repetition is fundamental to turning actions into habits. This challenge rewards you for maintaining regularity throughout the week.</p>",
     "completed": false
   },
   {
     "id": 3,
-    "name": "Maestro del Tiempo",
-    "description": "Completa 5 tareas en un solo día esta semana. Organiza tu tiempo eficientemente y demuestra tu capacidad de productividad concentrada.",
-    "shortDescription": "5 tareas en un día",
+    "name": "Master of Time",
+    "description": "Complete 5 tasks in a single day this week. Organize your time efficiently and demonstrate your ability for focused productivity.",
+    "shortDescription": "5 tasks in one day",
     "points": 20,
-    "level": "Difícil",
+    "level": "Hard",
     "duration": 1,
-    "category": "Productividad",
+    "category": "Productivity",
     "tips": [
-      "Planifica tu día con anticipación",
-      "Prioriza tareas importantes",
-      "Usa la técnica Pomodoro"
+      "Plan your day in advance",
+      "Prioritize important tasks",
+      "Use the Pomodoro technique"
     ],
-    "details": "<p>Este desafío prueba tu habilidad para gestionar múltiples tareas en un período corto. Ideal para días especialmente ocupados.</p>",
+    "details": "<p>This challenge tests your ability to manage multiple tasks in a short period. Ideal for especially busy days.</p>",
     "completed": false
   },
   {
     "id": 4,
-    "name": "Desafío Nocturno",
-    "description": "Registra un hábito después de las 10 PM al menos 3 veces esta semana. Ideal para aquellos que tienen más energía por la noche o quieren establecer rutinas nocturnas.",
-    "shortDescription": "Hábitos nocturnos 3 veces",
+    "name": "Nighttime Challenge",
+    "description": "Log a habit after 10 PM at least 3 times this week. Ideal for those who have more energy at night or want to establish nighttime routines.",
+    "shortDescription": "Nighttime habits 3 times",
     "points": 8,
-    "level": "Fácil",
+    "level": "Easy",
     "duration": 7,
-    "category": "Rutinas",
+    "category": "Routines",
     "tips": [
-      "Prepara tu ambiente para el hábito nocturno",
-      "Evita pantallas antes del hábito",
-      "Relájate y disfruta el proceso"
+      "Prepare your environment for the nighttime habit",
+      "Avoid screens before the habit",
+      "Relax and enjoy the process"
     ],
-    "details": "<p>Las rutinas nocturnas pueden mejorar tu calidad de sueño y prepararte para el día siguiente. Este desafío fomenta la reflexión y relajación nocturna.</p>",
+    "details": "<p>Nighttime routines can improve your sleep quality and prepare you for the next day. This challenge promotes reflection and nighttime relaxation.</p>",
     "completed": false
   },
   {
     "id": 5,
-    "name": "Rutina Matutina",
-    "description": "Realiza tu primer hábito antes de las 8 AM al menos 4 días esta semana. Comenzar el día con propósito establece un tono positivo para las horas siguientes.",
-    "shortDescription": "Hábitos matutinos 4 días",
+    "name": "Morning Routine",
+    "description": "Complete your first habit before 8 AM at least 4 days this week. Starting the day with purpose sets a positive tone for the hours ahead.",
+    "shortDescription": "Morning habits for 4 days",
     "points": 10,
-    "level": "Medio",
+    "level": "Medium",
     "duration": 7,
-    "category": "Rutinas",
+    "category": "Routines",
     "tips": [
-      "Prepara todo la noche anterior",
-      "Establece una alarma motivadora",
-      "Comienza con hábitos sencillos"
+      "Prepare everything the night before",
+      "Set a motivating alarm",
+      "Start with simple habits"
     ],
-    "details": "<p>Las mañanas productivas generan días productivos. Este desafío te ayuda a construir una rutina matutina efectiva.</p>",
+    "details": "<p>Productive mornings lead to productive days. This challenge helps you build an effective morning routine.</p>",
     "completed": false
   },
   {
     "id": 6,
-    "name": "Equilibrio Perfecto",
-    "description": "Mantén un balance entre hábitos físicos y mentales todos los días esta semana. La verdadera productividad viene del equilibrio entre cuerpo y mente.",
-    "shortDescription": "Balance físico/mental diario",
+    "name": "Perfect Balance",
+    "description": "Maintain a balance between physical and mental habits every day this week. True productivity comes from balancing body and mind.",
+    "shortDescription": "Daily physical/mental balance",
     "points": 12,
-    "level": "Medio",
+    "level": "Medium",
     "duration": 7,
-    "category": "Bienestar",
+    "category": "Wellness",
     "tips": [
-      "Alterna entre hábitos físicos y mentales",
-      "Combina hábitos cuando sea posible",
-      "Reflexiona sobre tu equilibrio diario"
+      "Alternate between physical and mental habits",
+      "Combine habits when possible",
+      "Reflect on your daily balance"
     ],
-    "details": "<p>Este desafío promueve un enfoque holístico del desarrollo personal, asegurando que no descuides ninguna área importante de tu vida.</p>",
+    "details": "<p>This challenge promotes a holistic approach to personal development, ensuring that you don't neglect any important area of your life.</p>",
     "completed": false
   }
 ]
