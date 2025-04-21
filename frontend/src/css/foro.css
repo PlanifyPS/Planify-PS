@@ -90,3 +90,23 @@
     border-left: 1px solid var(--grey);
     padding: 10px;
 }
+
+.search-results {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    width: 250px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-results div {
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.search-results div:hover {
+    background-color: #f0f0f0;
+}

@@ -1,5 +1,5 @@
 const forumList = [];
-let currentForum = "Nombre del Foro";
+let currentForum = "Forum Name";
 const forumPosts = {};
 
 document.getElementById('createForum').addEventListener('click', function() {
@@ -52,12 +52,14 @@ document.getElementById('searchForum').addEventListener('input', function() {
                         document.getElementById('forumContainer').appendChild(post.cloneNode(true));
                     });
                     resultsContainer.innerHTML = '';
+                    document.getElementById('searchForum').value = ''; // Limpia input
                 });
                 resultsContainer.appendChild(resultItem);
             }
         });
     }
 });
+
 
 document.getElementById('addPost').addEventListener('click', function() {
     document.getElementById('postModal').style.display = 'flex';
@@ -77,5 +79,13 @@ document.getElementById('savePost').addEventListener('click', function() {
         }
         forumPosts[currentForum].push(postTemplate);
         document.getElementById('postModal').style.display = 'none';
+    }
+});
+
+document.addEventListener('click', function(e) {
+    const searchBox = document.getElementById('searchForum');
+    const resultsContainer = document.getElementById('searchResults');
+    if (!searchBox.contains(e.target) && !resultsContainer.contains(e.target)) {
+        resultsContainer.innerHTML = '';
     }
 });
