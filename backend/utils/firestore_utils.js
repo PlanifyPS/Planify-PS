@@ -3,7 +3,7 @@ import {doc, getDoc, setDoc, updateDoc} from "https://www.gstatic.com/firebasejs
 
 
 export async function saveUserData(userCredential, data) {
-    const userRef = doc(db, "Users", userCredential.user.uid);
+    const userRef = doc(db, "Users", userCredential);
     try {
         const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
