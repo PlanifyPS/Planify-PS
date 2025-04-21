@@ -38,28 +38,45 @@ function updateMedals(points) {
     if (!medalsContainer) return;
 
     medalsContainer.innerHTML = "";
-    const medalCount = Math.floor(points / 50);
 
-    for (let i = 0; i < medalCount; i++) {
+    const totalMedals = Math.floor(points / 50);
+    const medalsUsed = parseInt(localStorage.getItem('medalsUsedForRank') || '0');
+    const currentMedals = totalMedals - medalsUsed;
+
+    for (let i = 0; i < currentMedals; i++) {
         const medalIcon = document.createElement('i');
         medalIcon.className = "fa-solid fa-medal";
         medalsContainer.appendChild(medalIcon);
     }
-    updateRank(medalCount);
+
+    updateRank(totalMedals);
 }
 
 
-function updateRank(medalCount) {
+
+function updateRank(totalMedals) {
     const rankDisplay = document.getElementById('rank-display');
     if (!rankDisplay) return;
+
     const ranks = ["Beginner", "Apprentice", "Novice", "Intermediate",
         "Advanced", "Expert", "Master", "Elite", "Legend", "Mythical"];
 
-    const rankIndex = Math.min(Math.floor(medalCount / 3), ranks.length - 1);
-    const currentRank = ranks[rankIndex];
-    rankDisplay.textContent = `Range: ${currentRank}`;
-    localStorage.setItem('rank', currentRank);
+    const previousRank = localStorage.getItem('rank') || "Beginner";
+    const medalsUsed = parseInt(localStorage.getItem('medalsUsedForRank') || '0');
+
+    const currentMedalCount = totalMedals - medalsUsed;
+    const newRankIndex = Math.min(Math.floor(totalMedals / 3), ranks.length - 1);
+    const newRank = ranks[newRankIndex];
+
+    if (previousRank !== newRank) {
+        // Se subió de rango → reiniciamos las medallas visuales
+        localStorage.setItem('medalsUsedForRank', totalMedals.toString());
+    }
+
+    rankDisplay.textContent = `Range: ${newRank}`;
+    localStorage.setItem('rank', newRank);
 }
+
 
 
 
