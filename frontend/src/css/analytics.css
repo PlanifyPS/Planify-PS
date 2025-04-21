@@ -121,8 +121,7 @@
     justify-content: space-between;
     padding: 10px;
     height: 100%;
-    gap:10px
-
+    gap: 10px;
 }
 
 .counter-container {
@@ -142,6 +141,8 @@
     align-items: center;
     justify-content: center;
     gap: 5px;
+    background-color: #E5F8FC;
+    border-radius: 15px;
 }
 
 .counter-container i {
@@ -182,10 +183,7 @@
     height: 1px;
     background-color: rgba(255, 255, 255, 0);
 }
-.counter-container div{
-    background-color: #E5F8FC;
-    border-radius: 15px;
-}
+
 .CurrentHabitStreak-counter i {
     color: red;
 }
@@ -201,9 +199,44 @@
 .InProgressHabits-counter i {
     color: grey;
 }
-.MaxHabitStreak-counter i{
+
+.MaxHabitStreak-counter i {
     color: #fd33b1;
 }
-.toDecide-counter i{
+
+.toDecide-counter i {
     color: #e78254;
+}
+.tooltip {
+    visibility: hidden;
+    opacity: 0;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 8px;
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 999;
+    transition: opacity 0.3s ease;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+.tooltip-container:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
 }
