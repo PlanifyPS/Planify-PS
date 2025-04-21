@@ -37,3 +37,17 @@ onAuthStateChanged(auth, (user) => {
         window.location.href = "/login.html";
     }
 });
+
+import { loadUserProfile } from "./LoadProfileData.js";
+
+
+export function initProfile() {
+    if (document.readyState === 'complete') {
+        loadUserProfile();
+        console.log("aqui estuve")
+    } else {
+        document.addEventListener('DOMContentLoaded', loadUserProfile);
+    }
+}
+
+initProfile();
