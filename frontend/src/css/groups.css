@@ -69,7 +69,6 @@
     gap: 0.75rem;
 }
 
-/* Dialog base */
 dialog {
     border: none;
     border-radius: 8px;
@@ -79,12 +78,10 @@ dialog {
     box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 
-/* Semi‑transparent backdrop */
 dialog::backdrop {
     background: rgba(0, 0, 0, 0.4);
 }
 
-/* Form inside dialog */
 .dialog-form {
     display: flex;
     flex-direction: column;
