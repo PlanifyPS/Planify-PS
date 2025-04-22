@@ -1,0 +1,148 @@
+.groups{
+    width: 100%;
+    padding: 30px;
+    background-color: var(--light-bg);
+    border-radius: 15px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.groups-header {
+    margin-bottom: 2rem;
+}
+
+.groups-header h1 {
+    color: var(--dark-blue);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.groups-btn-content{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 1rem;
+}
+
+.btn-add-group{
+    width: 100%;
+    padding: 10px;
+    color: var(--white);
+    background-color: var(--blue-dark);
+    border: none;
+    transition: all .3s ease-in-out;
+    font-size: 15px;
+}
+
+.btn-add-group:hover{
+    background-color: var(--blue-medium);
+    cursor: pointer;
+}
+
+.btn-join-group{
+    width: 100%;
+    padding: 10px;
+    color: var(--black);
+    background-color: var(--light-blue);
+    border: none;
+    transition: all .3s ease-in-out;
+    font-size: 15px;
+}
+
+.btn-join-group:hover{
+    background-color: var(--blue-medium);
+    cursor: pointer;
+    color: var(--white);
+}
+
+.groups-list-header {
+    margin: 2rem 0;
+}
+
+.groups-list-header h1 {
+    color: var(--dark-blue);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Dialog base */
+dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+/* Semi‑transparent backdrop */
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* Form inside dialog */
+.dialog-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dialog-form h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--dark-blue);
+}
+
+.dialog-form label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    color: var(--dark-blue);
+}
+
+.dialog-form input,
+.dialog-form textarea {
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    border: 1px solid var(--shadow);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/* Action buttons */
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.dialog-actions button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.dialog-actions button[value="cancel"] {
+    background: var(--light-bg);
+    color: var(--dark-blue);
+}
+
+.dialog-actions button[value="default"] {
+    background: var(--blue-dark);
+    color: var(--white);
+}
+
+.dialog-actions button[value="cancel"]:hover {
+    background: var(--shadow);
+}
+
+.dialog-actions button[value="default"]:hover {
+    background: var(--blue-medium);
+}
