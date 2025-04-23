@@ -24,7 +24,7 @@ export const registerUser = async (email, password, username) => {
 export const loginUser = async (email, password) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        sessionStorage.setItem("uid", JSON.stringify(userCredential.user.uid));
+        sessionStorage.setItem("uid", userCredential.user.uid);
         return userCredential.user;
     } catch (error) {
         throw new Error(error.message);
@@ -34,7 +34,7 @@ export const loginUser = async (email, password) => {
 export const loginWithGoogle = async () => {
     try {
         const result = await signInWithPopup(auth, googleProvider);
-        sessionStorage.setItem("uid", JSON.stringify(result.user.uid));
+        sessionStorage.setItem("uid", result.user.uid);
         return result.user;
     } catch (error) {
         throw new Error(error.message);

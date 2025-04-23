@@ -1,5 +1,10 @@
 import { db} from "./firebase_config.js";
-import {doc, getDoc, setDoc, updateDoc} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import {
+    deleteField,
+    doc,
+    getDoc,
+    updateDoc
+} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 
 
@@ -13,13 +18,18 @@ export const saveUserData = async (uid, data) => {
     }
 };
 
-export async function getUserData(userCredential) {
-    const userRef = doc(db, "Users", userCredential.user.uid);
+export async function getUserData(userUid) {
+    const userRef = doc(db, "Users", userUid);
     const userSnap = await getDoc(userRef);
+
     if (userSnap.exists()) {
         return userSnap.data();
     }
     else{
         console.error("User data not found");
     }
+}
+
+export const deleteUserHabit = async (uid, habitId) => {
+    await saveUserData(uid, {[habitId]: deleteField()});
 }
