@@ -23,4 +23,13 @@ if (registerMain) {
     switchToSignUpBtn.addEventListener("click", () => {
         container.classList.add("right-panel-active");
     });
+
+    const overlay = document.querySelector('.overlay');
+    if (overlay) {
+        const randomImageNumber = Math.floor(Math.random() * 6) + 1;
+        overlay.style.background = `var(--light-blue) url("./assets/register${randomImageNumber}.jpg") no-repeat fixed center`;
+        overlay.style.backgroundSize = "cover";
+        overlay.style.backgroundPosition = "center center";
+    }
+
 }
