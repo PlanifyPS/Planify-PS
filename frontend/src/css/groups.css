@@ -143,3 +143,84 @@ dialog::backdrop {
 .dialog-actions button[value="default"]:hover {
     background: var(--blue-medium);
 }
+
+.group-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+#group-name {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.podium-item {
+    position: relative;
+    width: 120px;
+    background: var(--light-bg);
+    border-radius: 6px;
+    text-align: center;
+    padding-top: 1.5rem;
+}
+
+.podium-item.first    { height: 180px; }
+.podium-item.second   { height: 140px; }
+.podium-item.third    { height: 120px; }
+
+.podium-item .star {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 48px;
+    color: gold;
+}
+
+.podium-item .user-name {
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+.podium-item .points {
+    font-size: 0.9rem;
+    color: var(--blue-medium);
+}
+
+.members-list {
+    margin-bottom: 2rem;
+}
+
+.members-list h2 {
+    margin-bottom: 0.5rem;
+}
+
+.members-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.members-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--shadow);
+    display: flex;
+    justify-content: space-between;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
