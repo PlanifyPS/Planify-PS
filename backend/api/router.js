@@ -46,6 +46,11 @@ class Router {
                 title: 'Groups',
                 scripts: ['groups.js', 'points.js', 'authFirebase.js']
             },
+            '/groupChallenge': {
+                view: 'groupChallenge.html',
+                title: 'GroupChallenge',
+                scripts: ['groupChallenge.js', 'points.js', 'authFirebase.js']
+            },
             '/group-information': {
                 view: 'groupInformation.html',
                 title: 'Group Information',

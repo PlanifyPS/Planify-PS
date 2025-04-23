@@ -62,6 +62,10 @@ document.getElementById('searchForum').addEventListener('input', function() {
 
 
 document.getElementById('addPost').addEventListener('click', function() {
+    if(currentForum == "Forum Name") {
+        alert("Please, enter or create a forum");
+        return;
+    }
     document.getElementById('postModal').style.display = 'flex';
 });
 
