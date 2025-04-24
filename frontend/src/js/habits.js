@@ -2,6 +2,7 @@ import {deleteUserField, getUserData, saveUserData} from "../../../backend/utils
 
 const userUID = sessionStorage.getItem("uid");
 let habitsData;
+let editingHabitId = null;
 
 function initHome() {
     if (document.readyState === 'complete') {
@@ -60,10 +61,16 @@ async function saveHabit() {
         completed: false,
         streak: 0,
     }
-    const habitId = crypto.randomUUID().toString();
+    const habitId = editingHabitId || crypto.randomUUID().toString();
+
+    if(editingHabitId && habitsData[editingHabitId]){
+        newHabit.completed = habitsData[editingHabitId].completed;
+        newHabit.streak = habitsData[editingHabitId].streak;
+    }
 
     await saveUserData(userUID, {[`habits.${habitId}`]: newHabit,});
 
+    editingHabitId = null;
     document.getElementById('AddHabitModal').style.display = 'none';
     clearInputs();
     await reloadUserHabits();
@@ -83,7 +90,7 @@ async function loadUserHabit() {
 async function deleteHabit(habitId) {
 
     await deleteUserField(userUID, `habits.${habitId}`)
-    reloadUserHabits();
+    await reloadUserHabits();
 }
 ///Pasar esta funcion a subfunciones para delegar responsabilidades en completeHabit()
 function completeHabitTOREFACTORIZE(habitTitle) {
@@ -136,7 +143,7 @@ async function sortHabits() {
         await addTemplate("user-content", "../src/templates/habitsItem.html", habit, habit.id);
     }
     
-    setupHabitsListeners();
+    await setupHabitsListeners();
     addStylesToCompletedHabits();
 
 }
@@ -167,7 +174,7 @@ async function completeHabit(habitId) {
     
 }
 
-
+/*
 function setupHabitsListeners() {
     document.querySelectorAll('.Task-Habit-complete-btn').forEach(button => {
         button.addEventListener('click', async function () {
@@ -189,6 +196,52 @@ function setupHabitsListeners() {
             }
         });
     });
+}
+
+ */
+
+function getHabitInfo(button) {
+    const habitItem = button.closest('.habits-list-item');
+    const habitId = habitItem.getAttribute('data-id');
+    const habitTitle = habitItem.querySelector('.habits-task-title').textContent;
+    return { habitItem, habitId, habitTitle };
+}
+
+async function handleCompleteHabit(button) {
+    const  habitInfo  = getHabitInfo(button);
+    await completeHabit(habitInfo.habitId);
+}
+async function handleDeleteHabit(button) {
+    const habitInfo = getHabitInfo(button);
+    if (confirm(`¿Estás seguro que quieres eliminar el hábito "${habitInfo.habitTitle}"?`)) {
+        await deleteHabit(habitInfo.habitId);
+    }
+}
+
+function handleEditHabit(button) {
+    const habitInfo = getHabitInfo(button);
+    editingHabitId = habitInfo.habitId;
+
+    let modal = document.getElementById('AddHabitModal');
+    modal.style.display = 'flex';
+    document.getElementById("NewHabitTitle").value = habitsData[habitInfo.habitId].title;
+    document.getElementById("HabitDescription").value = habitsData[habitInfo.habitId].description;
+    document.getElementById("HabitFrequency").value = habitsData[habitInfo.habitId].frequency;
+    
+
+}
+
+async function setupHabitsListeners(){
+    document.querySelectorAll('.Task-Habit-complete-btn').forEach(button => {
+        button.addEventListener('click', () => handleCompleteHabit(button));
+    });
+
+    document.querySelectorAll('.Task-Habit-delete-btn').forEach(button => {
+        button.addEventListener('click', () => handleDeleteHabit(button));
+    });
+    document.querySelectorAll('.Task-Habit-edit-btn').forEach(button => {
+        button.addEventListener('click', () => handleEditHabit(button));
+    })
 }
 
 async function addTemplate(id, url, item, habitId) {
