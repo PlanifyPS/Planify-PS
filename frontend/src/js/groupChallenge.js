@@ -204,6 +204,13 @@ function showChallengeDetails(challengeId) {
 
     detailContainer.innerHTML = `
         <div class="detail-content">
+        <div class="progress-section">
+    <h3>Progreso</h3>
+    <div class="progress-bar-container">
+        <div class="progress-bar" style="width: ${challenge.completed ? 100 : challenge.accepted ? 50 : 0}%"></div>
+    </div>
+</div>
+
             <div class="detail-header">
                 <h2>${challenge.name}</h2>
                 <div class="challenge-meta">
@@ -211,12 +218,6 @@ function showChallengeDetails(challengeId) {
                     <span class="points">${challenge.points} pts</span>
                     <span class="duration"><i class="far fa-clock"></i> ${challenge.duration} días</span>
                     ${challenge.category ? `<span class="category"><i class="fas fa-tag"></i> ${challenge.category}</span>` : ''}
-                </div>
-            </div>
-            <div class="progress-section">
-                <h3>Progreso</h3>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: ${challenge.completed ? 100 : challenge.accepted ? 50 : 0}%"></div>
                 </div>
             </div>
             <div class="detail-body">
@@ -282,6 +283,7 @@ function acceptChallenge(challengeId) {
     challenge.accepted = true;
     challenge.acceptedDate = new Date().toISOString();
 
+    // Guardar en localStorage (para persistencia por usuario)
     let acceptedChallenges = JSON.parse(localStorage.getItem('acceptedChallenges') || '[]');
     if (!acceptedChallenges.includes(challengeId)) {
         acceptedChallenges.push(challengeId);
@@ -293,6 +295,7 @@ function acceptChallenge(challengeId) {
 
     console.log(`Desafío "${challenge.name}" aceptado`);
 }
+
 
 function completeChallenge(challengeId) {
     const challenge = challengesData.find(c => c.id == challengeId);
@@ -356,26 +359,12 @@ function showError(message) {
     }
 }
 
+
+
 window.addEventListener('hashchange', () => {
     if (window.location.hash.includes('challenges')) {
         initChallenges();
     }
 });
-
-function completeChallenge(challengeId) {
-    const challenge = challengesData.find(c => c.id == challengeId);
-    if (!challenge) return;
-
-    challenge.completed = true;
-    challenge.completedDate = new Date().toISOString();
-
-    addPointsToLocalStorage(challenge.points);
-    addToStreak();
-    showChallengeDetails(challengeId);
-    filterChallenges();
-
-    showNotification(`¡Has completado el desafío "${challenge.name}"!`);
-}
-
 
 initChallenges();
