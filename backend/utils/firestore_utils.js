@@ -30,6 +30,6 @@ export async function getUserData(userUid) {
     }
 }
 
-export const deleteUserHabit = async (uid, habitId) => {
-    await saveUserData(uid, {[habitId]: deleteField()});
+export const deleteUserField = async (uid, fieldToRemove) => {
+    await saveUserData(uid, {[fieldToRemove]: deleteField()});
 }
