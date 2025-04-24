@@ -2,7 +2,7 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-
 import { db } from "../../../backend/utils/firebase_config.js";
 
 export const loadUserProfile = async () => {
-    const uid = JSON.parse(sessionStorage.getItem("uid"));
+    const uid = sessionStorage.getItem("uid");
     if (!uid) return;
 
     try {

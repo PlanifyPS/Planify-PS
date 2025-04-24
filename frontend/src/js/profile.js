@@ -28,6 +28,7 @@ onAuthStateChanged(auth, (user) => {
                 postCode: document.getElementById("post_code").value.trim(),
                 city: document.getElementById("city").value.trim(),
                 country: document.getElementById("Country").value.trim(),
+                    UserEmail: document.getElementById("email_address").value.trim(),
             };
 
             saveUserData(user.uid, updatedData);
