@@ -30,6 +30,18 @@ export async function getUserData(userUid) {
     }
 }
 
+export async function getGroupData(groupUID) {
+    const groupRef = doc(db, "Groups", groupUID);
+    const groupSnap = await getDoc(groupRef);
+
+    if (groupSnap.exists()) {
+        return groupSnap.data();
+    }
+    else{
+        console.error("User data not found");
+    }
+}
+
 export const deleteUserField = async (uid, fieldToRemove) => {
     await saveUserData(uid, {[fieldToRemove]: deleteField()});
 }
