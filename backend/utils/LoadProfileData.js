@@ -1,5 +1,5 @@
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-import { db } from "../../../backend/utils/firebase_config.js";
+import { db } from "./firebase_config.js";
 
 export const loadUserProfile = async () => {
     const uid = sessionStorage.getItem("uid");

@@ -39,7 +39,7 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-import { loadUserProfile } from "./LoadProfileData.js";
+import { loadUserProfile } from "../../../backend/utils/LoadProfileData.js";
 
 
 export function initProfile() {
