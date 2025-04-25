@@ -1,9 +1,26 @@
+import {addUserToForum, createForum, getUserForum} from "../../../backend/utils/forum_utils.js";
 
 const forumList = [];
 let currentForum = "Forum Name";
 const forumPosts = {};
 
-document.getElementById('createForum').addEventListener('click', function() {
+async function printForums() {
+    const forumsList = await getUserForum();
+    console.log(forumsList);
+}
+
+async function initHome() {
+    if (document.readyState === 'complete') {
+        await printForums();
+    } else {
+        document.addEventListener('DOMContentLoaded', async () => {
+            await printForums();
+        });
+    }
+}
+
+
+document.getElementById('createForum').addEventListener('click', async function () {
     document.getElementById('forumModal').style.display = 'flex';
 });
 
@@ -15,7 +32,7 @@ document.querySelectorAll('.close').forEach(button => {
 });
 
 
-document.getElementById('saveForum').addEventListener('click', function() {
+document.getElementById('saveForum').addEventListener('click', async function () {
     const forumTitle = document.getElementById('forumTitle').value;
     if (forumTitle) {
         forumList.push(forumTitle);
@@ -23,7 +40,7 @@ document.getElementById('saveForum').addEventListener('click', function() {
         const forumListElement = document.getElementById('forumList');
         const newForum = document.createElement('li');
         newForum.textContent = forumTitle;
-        newForum.addEventListener('click', function() {
+        newForum.addEventListener('click', function () {
             document.getElementById('forumName').textContent = forumTitle;
             document.getElementById('forumContainer').innerHTML = '';
             currentForum = forumTitle;
@@ -34,6 +51,8 @@ document.getElementById('saveForum').addEventListener('click', function() {
         forumListElement.appendChild(newForum);
         document.getElementById('forumModal').style.display = 'none';
     }
+    await createForum(forumTitle);
+    await addUserToForum(forumTitle);
 });
 
 document.getElementById('searchForum').addEventListener('input', function() {
@@ -94,3 +113,5 @@ document.addEventListener('click', function(e) {
         resultsContainer.innerHTML = '';
     }
 });
+
+await initHome();
