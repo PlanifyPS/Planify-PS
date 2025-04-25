@@ -1,3 +1,4 @@
+
 const forumList = [];
 let currentForum = "Forum Name";
 const forumPosts = {};
@@ -52,7 +53,7 @@ document.getElementById('searchForum').addEventListener('input', function() {
                         document.getElementById('forumContainer').appendChild(post.cloneNode(true));
                     });
                     resultsContainer.innerHTML = '';
-                    document.getElementById('searchForum').value = ''; // Limpia input
+                    document.getElementById('searchForum').value = '';
                 });
                 resultsContainer.appendChild(resultItem);
             }
