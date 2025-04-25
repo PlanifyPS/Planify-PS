@@ -5,10 +5,10 @@ import {
     getDoc,
     setDoc,
     updateDoc
-} from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import {
     onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
 let currentUserUid = null;
 

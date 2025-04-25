@@ -1,5 +1,5 @@
 // js/auth_utils.js
-import { auth, googleProvider, signOut } from "./firebase_config.js";
+import { auth, googleProvider, db, signOut } from "./firebase_config.js";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -13,10 +13,11 @@ export const registerUser = async (email, password, username) => {
         await saveUserData(userCredential.user.uid, {
             userName: username,
             email: email,
-            points: 0 // empieza con 0 puntos al registrar
+            points: 0, // Asignamos los puntos iniciales al usuario
+            streak: 0,
+            lastTaskDate: ""
         });
-        sessionStorage.setItem("uid", userCredential.user.uid);
-        sessionStorage.setItem("points", 0);
+
         return userCredential.user;
     } catch (error) {
         throw new Error(error.message);
@@ -26,12 +27,13 @@ export const registerUser = async (email, password, username) => {
 export const loginUser = async (email, password) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const uid = userCredential.user.uid;
-        sessionStorage.setItem("uid", uid);
+        sessionStorage.setItem("uid", userCredential.user.uid);
 
-        const userData = await getUserData(uid);
-        const points = userData?.points ?? 0;
-        sessionStorage.setItem("points", points);
+        // Cargar los datos del usuario (como los puntos) después del login
+        const userData = await getUserData(userCredential.user.uid);
+        if (userData) {
+            console.log("User Data:", userData); // Mostrar los datos del usuario en consola, puedes eliminar esto después
+        }
 
         return userCredential.user;
     } catch (error) {
@@ -42,12 +44,13 @@ export const loginUser = async (email, password) => {
 export const loginWithGoogle = async () => {
     try {
         const result = await signInWithPopup(auth, googleProvider);
-        const uid = result.user.uid;
-        sessionStorage.setItem("uid", uid);
+        sessionStorage.setItem("uid", result.user.uid);
 
-        const userData = await getUserData(uid);
-        const points = userData?.points ?? 0;
-        sessionStorage.setItem("points", points);
+        // Cargar los datos del usuario después de login con Google
+        const userData = await getUserData(result.user.uid);
+        if (userData) {
+            console.log("User Data:", userData); // Mostrar los datos del usuario en consola, puedes eliminar esto después
+        }
 
         return result.user;
     } catch (error) {
@@ -58,7 +61,6 @@ export const loginWithGoogle = async () => {
 export const handleLogout = async () => {
     try {
         await signOut(auth);
-        sessionStorage.clear();
         window.location.href = '#/register';
     } catch (error) {
         console.error('Error en logout:', error);
