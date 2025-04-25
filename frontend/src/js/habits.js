@@ -1,6 +1,8 @@
-import {deleteUserHabit, getUserData, saveUserData} from "../../../backend/utils/firestore_utils.js";
+import {deleteUserField, getUserData, saveUserData} from "../../../backend/utils/firestore_utils.js";
 
 const userUID = sessionStorage.getItem("uid");
+let habitsData;
+let editingHabitId = null;
 
 function initHome() {
     if (document.readyState === 'complete') {
@@ -36,17 +38,17 @@ function clearInputs() {
     document.getElementById('HabitDescription').value = '';
 }
 
-function reloadUserHabits() {
+async function reloadUserHabits() {
     document.getElementById("user-content").innerHTML = '';
-    loadUserHabit().then();
+    await loadUserHabit();
 }
 
 
-function saveHabit(){
+async function saveHabit() {
     const title = document.getElementById("NewHabitTitle").value.trim().toString();
     const description = document.getElementById("HabitDescription").value.trim().toString();
     const frequency = document.getElementById("HabitFrequency").value;
-    
+
     if (!title || !description) {
         alert("Por favor, completa todos los campos.");
         return;
@@ -59,13 +61,19 @@ function saveHabit(){
         completed: false,
         streak: 0,
     }
-    const habitId = crypto.randomUUID().toString();
+    const habitId = editingHabitId || crypto.randomUUID().toString();
 
-    saveUserData(userUID, {[`habits.${habitId}`]: newHabit,}).then()
+    if(editingHabitId && habitsData[editingHabitId]){
+        newHabit.completed = habitsData[editingHabitId].completed;
+        newHabit.streak = habitsData[editingHabitId].streak;
+    }
 
+    await saveUserData(userUID, {[`habits.${habitId}`]: newHabit,});
+
+    editingHabitId = null;
     document.getElementById('AddHabitModal').style.display = 'none';
     clearInputs();
-    reloadUserHabits();
+    await reloadUserHabits();
 
 
 }
@@ -73,27 +81,19 @@ function saveHabit(){
 async function loadUserHabit() {
 
     const userData = await getUserData(userUID);
-    const habits = userData.habits;
+    habitsData = userData.habits;
 
-
-    for (const habitId in habits) {
-        if(habits.hasOwnProperty(habitId)){
-            const habitData = habits[habitId];
-            await addTemplate("user-content", "../src/templates/habitsItem.html", habitData, habitId);
-        }
-    }
-
-    setupHabitsListeners();
+    await sortHabits()
 
 }
 
-function deleteHabit(habitId) {
+async function deleteHabit(habitId) {
 
-    deleteUserHabit(userUID, `habits.${habitId}`).then()
-    reloadUserHabits();
+    await deleteUserField(userUID, `habits.${habitId}`)
+    await reloadUserHabits();
 }
-
-function completeHabit(habitTitle) {
+///Pasar esta funcion a subfunciones para delegar responsabilidades en completeHabit()
+function completeHabitTOREFACTORIZE(habitTitle) {
     let userHabits = JSON.parse(localStorage.getItem("UserHabits")) || [];
     const habitIndex = userHabits.findIndex(h => h.title === habitTitle);
 
@@ -125,29 +125,123 @@ function completeHabit(habitTitle) {
     }
 }
 
+async function sortHabits() {
+    const completed = [];
+    const incomplete = [];
 
+    for (const habitId in habitsData) {
+        const habit = habitsData[habitId];
+        if (habit.completed) {
+            completed.push({ id: habitId, ...habit });
+        } else {
+            incomplete.push({ id: habitId, ...habit });
+        }
+    }
+
+    document.getElementById("user-content").innerHTML = '';
+    for (const habit of [...incomplete, ...completed]) {
+        await addTemplate("user-content", "../src/templates/habitsItem.html", habit, habit.id);
+    }
+    
+    await setupHabitsListeners();
+    addStylesToCompletedHabits();
+
+}
+
+function addStylesToCompletedHabits() {
+
+    document.querySelectorAll('.habits-list-item').forEach(habit => {
+        const id = habit.getAttribute('data-id');
+        if(habitsData[id].completed) {
+            habit.classList.add('habit-completed');
+        }else {
+            habit.classList.remove('habit-completed');
+        }
+    })
+}
+
+async function completeHabit(habitId) {
+
+    if (habitsData[habitId].completed) {
+        alert("Este hábito ya fue completado.");
+        return;
+    }
+
+    habitsData[habitId].completed = true;
+    await saveUserData(userUID, {[`habits.${habitId}`]: habitsData[habitId],})
+    /// añadir los puntos al usuario
+    await sortHabits();
+    
+}
+
+/*
 function setupHabitsListeners() {
     document.querySelectorAll('.Task-Habit-complete-btn').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', async function () {
             const habitItem = this.closest('.habits-list-item');
             const habitTitle = habitItem.querySelector('.habits-task-title').textContent;
-            completeHabit(habitTitle);
-
+            await completeHabit(habitItem.getAttribute('data-id'));
 
         });
     });
 
     document.querySelectorAll('.Task-Habit-delete-btn').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', async function () {
             const habitItem = this.closest('.habits-list-item');
             const habitId = habitItem.getAttribute('data-id');
             const habitTitle = habitItem.querySelector('.habits-task-title').textContent;
-            if(confirm(`¿Estás seguro que quieres eliminar el hábito "${habitTitle}"?`)) {
+            if (confirm(`¿Estás seguro que quieres eliminar el hábito "${habitTitle}"?`)) {
                 console.log(habitId);
-                deleteHabit(habitId);
+                await deleteHabit(habitId);
             }
         });
     });
+}
+
+ */
+
+function getHabitInfo(button) {
+    const habitItem = button.closest('.habits-list-item');
+    const habitId = habitItem.getAttribute('data-id');
+    const habitTitle = habitItem.querySelector('.habits-task-title').textContent;
+    return { habitItem, habitId, habitTitle };
+}
+
+async function handleCompleteHabit(button) {
+    const  habitInfo  = getHabitInfo(button);
+    await completeHabit(habitInfo.habitId);
+}
+async function handleDeleteHabit(button) {
+    const habitInfo = getHabitInfo(button);
+    if (confirm(`¿Estás seguro que quieres eliminar el hábito "${habitInfo.habitTitle}"?`)) {
+        await deleteHabit(habitInfo.habitId);
+    }
+}
+
+function handleEditHabit(button) {
+    const habitInfo = getHabitInfo(button);
+    editingHabitId = habitInfo.habitId;
+
+    let modal = document.getElementById('AddHabitModal');
+    modal.style.display = 'flex';
+    document.getElementById("NewHabitTitle").value = habitsData[habitInfo.habitId].title;
+    document.getElementById("HabitDescription").value = habitsData[habitInfo.habitId].description;
+    document.getElementById("HabitFrequency").value = habitsData[habitInfo.habitId].frequency;
+    
+
+}
+
+async function setupHabitsListeners(){
+    document.querySelectorAll('.Task-Habit-complete-btn').forEach(button => {
+        button.addEventListener('click', () => handleCompleteHabit(button));
+    });
+
+    document.querySelectorAll('.Task-Habit-delete-btn').forEach(button => {
+        button.addEventListener('click', () => handleDeleteHabit(button));
+    });
+    document.querySelectorAll('.Task-Habit-edit-btn').forEach(button => {
+        button.addEventListener('click', () => handleEditHabit(button));
+    })
 }
 
 async function addTemplate(id, url, item, habitId) {
@@ -176,4 +270,5 @@ async function addTemplate(id, url, item, habitId) {
         console.log(error);
     }
 }
+
 initHome();
