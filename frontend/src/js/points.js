@@ -1,3 +1,17 @@
+// js/points.js
+import { auth, db } from "../../../backend/utils/firebase_config.js";
+import {
+    doc,
+    getDoc,
+    setDoc,
+    updateDoc
+} from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
+
+let currentUserUid = null;
+
 export function initPoints() {
     if (document.readyState === 'complete') {
         loadPoints();
@@ -5,32 +19,57 @@ export function initPoints() {
         document.addEventListener('DOMContentLoaded', loadPoints);
     }
 
-    document.addEventListener('pointsUpdated', (e) => {
-        updatePoints();
+    document.addEventListener('pointsUpdated', () => {
+        updatePointsUI();
     });
 }
 
-function loadPoints(){
-    updatePoints();
-    checkStreak();
-    updateStreakUI();
-    const points = parseInt(localStorage.getItem('points') || '0');
-    const medalCount = Math.floor(points / 50);
-    updateRank(medalCount);
-    setupTaskButton();
+async function loadPoints() {
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUserUid = user.uid;
+            const docRef = doc(db, "Users", currentUserUid);
+            const docSnap = await getDoc(docRef);
+
+            if (!docSnap.exists()) {
+                await setDoc(docRef, {
+                    points: 0,
+                    streak: 0,
+                    lastTaskDate: ""
+                });
+            }
+
+            const data = (await getDoc(docRef)).data();
+            const points = data.points || 0;
+
+            updatePointsUI(points);
+            updateMedals(points);
+            updateRank(Math.floor(points / 50));
+            updateStreakUI(data.streak);
+            checkStreak(data.lastTaskDate, data.streak);
+
+            setupTaskButton();
+        }
+    });
 }
 
+async function addPoint() {
+    const docRef = doc(db, "Users", currentUserUid);
+    const docSnap = await getDoc(docRef);
+    let data = docSnap.data();
 
-if (!localStorage.getItem('points')) {
-    localStorage.setItem('points', '0');
+    const newPoints = (data.points || 0) + 1;
+    await updateDoc(docRef, { points: newPoints });
+
+    updatePointsUI(newPoints);
+    updateMedals(newPoints);
+    await addToStreak(data.streak, data.lastTaskDate);
 }
 
-function updatePoints() {
-    const points = localStorage.getItem('points') || '0';
+function updatePointsUI(points = 0) {
     document.querySelectorAll('#points').forEach(el => {
         el.textContent = points + 'pts';
     });
-    updateMedals(parseInt(points));
 }
 
 function updateMedals(points) {
@@ -40,10 +79,7 @@ function updateMedals(points) {
     medalsContainer.innerHTML = "";
 
     const totalMedals = Math.floor(points / 50);
-    const medalsUsed = parseInt(localStorage.getItem('medalsUsedForRank') || '0');
-    const currentMedals = totalMedals - medalsUsed;
-
-    for (let i = 0; i < currentMedals; i++) {
+    for (let i = 0; i < totalMedals; i++) {
         const medalIcon = document.createElement('i');
         medalIcon.className = "fa-solid fa-medal";
         medalsContainer.appendChild(medalIcon);
@@ -52,8 +88,6 @@ function updateMedals(points) {
     updateRank(totalMedals);
 }
 
-
-
 function updateRank(totalMedals) {
     const rankDisplay = document.getElementById('rank-display');
     if (!rankDisplay) return;
@@ -61,75 +95,57 @@ function updateRank(totalMedals) {
     const ranks = ["Beginner", "Apprentice", "Novice", "Intermediate",
         "Advanced", "Expert", "Master", "Elite", "Legend", "Mythical"];
 
-    const previousRank = localStorage.getItem('rank') || "Beginner";
-    const medalsUsed = parseInt(localStorage.getItem('medalsUsedForRank') || '0');
-
-    const currentMedalCount = totalMedals - medalsUsed;
     const newRankIndex = Math.min(Math.floor(totalMedals / 3), ranks.length - 1);
     const newRank = ranks[newRankIndex];
 
-    if (previousRank !== newRank) {
-        // Se subió de rango → reiniciamos las medallas visuales
-        localStorage.setItem('medalsUsedForRank', totalMedals.toString());
-    }
-
     rankDisplay.textContent = `Range: ${newRank}`;
-    localStorage.setItem('rank', newRank);
 }
 
-
-
-
-if (!localStorage.getItem('streak')) {
-    localStorage.setItem('streak', '0');
-    localStorage.setItem('lastTaskDate', '');
-}
-
-function updateStreakUI() {
+function updateStreakUI(streak = 0) {
     const streakElement = document.getElementById('streak');
     if (streakElement) {
-        streakElement.textContent = localStorage.getItem('streak');
+        streakElement.textContent = streak;
     }
 }
 
-function checkStreak() {
-    const lastDate = localStorage.getItem('lastTaskDate');
+async function checkStreak(lastDate, currentStreak) {
     const today = new Date().toDateString();
-
-    if (!lastDate) return;
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toDateString();
 
-    if (lastDate !== yesterday.toDateString() && lastDate !== today) {
-        localStorage.setItem('streak', '0');
-        updateStreakUI();
+    if (lastDate !== today && lastDate !== yesterdayStr) {
+        await updateDoc(doc(db, "Users", currentUserUid), {
+            streak: 0
+        });
+        updateStreakUI(0);
     }
 }
 
-function addToStreak() {
+async function addToStreak(currentStreak = 0, lastDate = "") {
     const today = new Date().toDateString();
-    const lastDate = localStorage.getItem('lastTaskDate');
 
     if (lastDate !== today) {
-        const newStreak = parseInt(localStorage.getItem('streak')) + 1;
-        localStorage.setItem('streak', newStreak.toString());
-        localStorage.setItem('lastTaskDate', today);
-        updateStreakUI();
+        const newStreak = currentStreak + 1;
+        await updateDoc(doc(db, "Users", currentUserUid), {
+            streak: newStreak,
+            lastTaskDate: today
+        });
+        updateStreakUI(newStreak);
     }
 }
 
 function setupTaskButton() {
     document.querySelectorAll('.complete-task-button').forEach(button => {
-        button.addEventListener('click', function() {
-            const newPoints = parseInt(localStorage.getItem('points') || '0') + 1;
-            localStorage.setItem('points', newPoints.toString());
-            updatePoints();
-            addToStreak();
+        button.addEventListener('click', async () => {
+            await addPoint();
         });
     });
 }
 
-initPoints();
-document.addEventListener('streakUpdated', updateStreakUI);
+document.addEventListener('streakUpdated', () => {
+    updateStreakUI();
+});
+
 window.initPoints = initPoints;
