@@ -1,8 +1,9 @@
 import { db} from "./firebase_config.js";
 import {
+    collection,
     deleteField,
     doc,
-    getDoc, setDoc,
+    getDoc, getDocs, setDoc,
     updateDoc
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
@@ -68,4 +69,19 @@ export async function getGroupData(groupUID) {
 
 export const deleteUserField = async (uid, fieldToRemove) => {
     await saveUserData(uid, {[fieldToRemove]: deleteField()});
+}
+
+export async function getAllDocumentsFromCollection(collectionName) {
+    try {
+        const colRef = collection(db, collectionName);
+        const colSnap = await getDocs(colRef);
+
+        const docs = [];
+        colSnap.forEach(doc => {
+            docs.push({id:doc.id, ...doc.data()});
+        });
+        return docs;
+    }catch (error) {
+        console.error("Error getAllDocumentsFromCollection:", error);
+    }
 }
