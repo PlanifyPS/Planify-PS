@@ -15,23 +15,23 @@ if (signupForm) {
         const repeatPassword = document.getElementById("signup-repeat-password").value.trim();
 
         if (!email || !password || !repeatPassword || !username) {
-            showError("Todos los campos son obligatorios.");
+            showError("All fields are required.");
             return;
         }
 
         if (password !== repeatPassword) {
-            showError("Las contraseñas no coinciden.");
+            showError("Passwords do not match.");
             return;
         }
 
         if (password.length < 6) {
-            showError("La contraseña debe tener al menos 6 caracteres.");
+            showError("Password must be at least 6 characters long.");
             return;
         }
 
         try {
             await registerUser(email, password, username);
-            showSuccess("Registro exitoso. Redirigiendo...");
+            showSuccess("Registration successful. Redirecting...");
         } catch (error) {
             showError(error.message);
         }
@@ -46,13 +46,13 @@ if (loginForm) {
         const password = document.getElementById("login-password").value.trim();
 
         if (!email || !password) {
-            showError("Todos los campos son obligatorios.");
+            showError("All fields are required.");
             return;
         }
 
         try {
             await loginUser(email, password);
-            showSuccess("Inicio de sesión exitoso. Redirigiendo...");
+            showSuccess("Login successful. Redirecting...");
         } catch (error) {
             showError(error.message);
         }
@@ -63,7 +63,7 @@ if (googleLoginButton) {
     googleLoginButton.addEventListener("click", async () => {
         try {
             await loginWithGoogle();
-            showSuccess("Inicio de sesión con Google exitoso. Redirigiendo...");
+            showSuccess("Google sign-in successful. Redirecting...");
         } catch (error) {
             showError(error.message);
         }
@@ -75,16 +75,18 @@ if (logoutBtn) {
     logoutBtn.addEventListener('click', handleLogout);
 }
 
-function showSuccess(message, title = 'Éxito') {
+function showSuccess(message, title = 'Success') {
     return Swal.fire({
         title: title,
         text: message,
         icon: 'success',
         confirmButtonColor: '#dc3545',
-        confirmButtonText: 'Entendido',
+        confirmButtonText: 'OK',
         background: 'var(--bg-primary)',
         color: 'var(--text-primary)'
-    }).then(isConfirm => {window.location.href = "#/home";});
+    }).then(() => {
+        window.location.href = "#/home";
+    });
 }
 
 function showError(message, title = 'Error') {
@@ -93,7 +95,7 @@ function showError(message, title = 'Error') {
         text: message,
         icon: 'error',
         confirmButtonColor: '#dc3545',
-        confirmButtonText: 'Entendido',
+        confirmButtonText: 'OK',
         background: 'var(--bg-primary)',
         color: 'var(--text-primary)'
     });

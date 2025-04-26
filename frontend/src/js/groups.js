@@ -36,7 +36,7 @@ function loadDialog() {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Por favor completa todos los campos antes de continuar.',
+                    text: 'Please complete all fields before continuing.',
                 }).then(() => {
                     dialogAdd.showModal();
                     dialogAdd.style.display = 'block';
@@ -44,12 +44,12 @@ function loadDialog() {
             } else {
                 Swal.fire({
                     icon: 'success',
-                    title: '¡Grupo creado!',
-                    text: `El grupo "${name}" ha sido creado correctamente.`,
+                    title: 'Group Created!',
+                    text: `The group "${name}" has been created successfully.`,
                     timer: 2000,
                     showConfirmButton: false
                 });
-                //TODO: lógica real de creación
+                // TODO: real creation logic
             }
         }
 
@@ -64,8 +64,8 @@ function loadDialog() {
             if (!code) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Código faltante',
-                    text: 'Necesitas ingresar un código de invitación para unirte.',
+                    title: 'Missing Code',
+                    text: 'You need to enter an invitation code to join.',
                 }).then(() => {
                     dialogJoin.showModal();
                     dialogJoin.style.display = 'block';
@@ -73,12 +73,12 @@ function loadDialog() {
             } else {
                 Swal.fire({
                     icon: 'success',
-                    title: '¡Te has unido!',
-                    text: `Te has unido al grupo con el código "${code}".`,
+                    title: 'Joined!',
+                    text: `You have joined the group with code "${code}".`,
                     timer: 2000,
                     showConfirmButton: false
                 });
-                //TODO: lógica de unirse al grupo
+                // TODO: join-group logic
             }
         }
 

@@ -33,7 +33,6 @@ async function loadGroupInformation() {
     };
 
     [second, first, third].forEach((user, idx) => {
-        // El orden en HTML es second, first, third
         const key = ['second','first','third'][idx];
         const el = podiumEls[key];
         el.querySelector('.user-name').textContent = user.name;
