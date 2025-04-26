@@ -74,7 +74,10 @@ class Router {
     }
 
     async handleRoute() {
-        const path = window.location.hash.slice(1) || '/register';
+        //const path = window.location.hash.slice(1) || '/register';
+        const hash = window.location.hash || '#/register';
+        const fullPath = hash.slice(1);           // "/group-information?id=XYZ"
+        const [path] = fullPath.split('?');
         const route = this.routes[path];
 
         if (!route) {
