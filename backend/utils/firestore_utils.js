@@ -2,7 +2,7 @@ import { db} from "./firebase_config.js";
 import {
     deleteField,
     doc,
-    getDoc,
+    getDoc, setDoc,
     updateDoc
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
@@ -24,6 +24,42 @@ export async function getUserData(userUid) {
 
     if (userSnap.exists()) {
         return userSnap.data();
+    }
+    else{
+        console.error("User data not found");
+    }
+}
+
+export async function getForum(forumUid) {
+    const forumRef = doc(db, "Forums", forumUid);
+    const forumSnap = await getDoc(forumRef);
+
+    if (forumSnap.exists()) {
+        return forumSnap.data();
+    }
+    else{
+        console.error("User data not found");
+    }
+}
+
+export async function initForum(forumUid, data) {
+    try {
+        const userRef = doc(db, "Forums", forumUid);
+        await setDoc(userRef, data);
+        
+        console.log("Datos actualizados correctamente.");
+    } catch (error) {
+        console.error("Error al guardar datos:", error);
+    }
+}
+
+
+export async function getGroupData(groupUID) {
+    const groupRef = doc(db, "Groups", groupUID);
+    const groupSnap = await getDoc(groupRef);
+
+    if (groupSnap.exists()) {
+        return groupSnap.data();
     }
     else{
         console.error("User data not found");

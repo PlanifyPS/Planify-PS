@@ -1,10 +1,7 @@
-// Ruta al archivo JSON
 const JSON_PATH = '../../frontend/src/json/challenges.json';
-let challengesData = []; // Almacenar los desafíos cargados
+let challengesData = [];
 
-// Función principal que se ejecuta al cargar la página
 export function initChallenges() {
-    // Esperar a que el DOM esté listo
     if (document.readyState === 'complete') {
         loadChallenges();
     } else {
@@ -283,7 +280,6 @@ function acceptChallenge(challengeId) {
     challenge.accepted = true;
     challenge.acceptedDate = new Date().toISOString();
 
-    // Guardar en localStorage (para persistencia por usuario)
     let acceptedChallenges = JSON.parse(localStorage.getItem('acceptedChallenges') || '[]');
     if (!acceptedChallenges.includes(challengeId)) {
         acceptedChallenges.push(challengeId);
@@ -358,7 +354,6 @@ function showError(message) {
         `;
     }
 }
-
 
 
 window.addEventListener('hashchange', () => {
