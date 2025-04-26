@@ -12,10 +12,10 @@ export function initChallenges() {
 async function loadChallenges() {
     try {
         const container = document.getElementById('cards-container');
-        if (container) container.innerHTML = '<p>Cargando desafíos...</p>';
+        if (container) container.innerHTML = '<p>Loading challenges...</p>';
 
         const response = await fetch(JSON_PATH);
-        if (!response.ok) throw new Error('No se pudieron cargar los desafíos');
+        if (!response.ok) throw new Error('Failed to load challenges');
 
         challengesData = await response.json();
         challengesData.forEach(challenge => {
@@ -29,7 +29,7 @@ async function loadChallenges() {
         setupFilterEvents();
     } catch (error) {
         console.error('Error:', error);
-        showError('Error al cargar los desafíos');
+        showError('Error loading challenges');
     }
 }
 
@@ -82,7 +82,7 @@ function renderChallenges(challenges) {
     if (!container) return;
 
     if (!challenges || challenges.length === 0) {
-        container.innerHTML = '<p>No hay desafíos disponibles</p>';
+        container.innerHTML = '<p>No challenges available</p>';
         return;
     }
 
@@ -107,7 +107,7 @@ function renderChallenges(challenges) {
             <p>${challenge.shortDescription}</p>
             <div class="card-footer">
                 <span class="points">${challenge.points} pts</span>
-                <span class="duration"><i class="far fa-clock"></i> ${challenge.duration} días</span>
+                <span class="duration"><i class="far fa-clock"></i> ${challenge.duration} days</span>
             </div>
         </article>
     `).join('');
@@ -169,8 +169,8 @@ function removeChallengeFromView(challengeId) {
             detailContainer.innerHTML = `
                 <div class="empty-detail">
                     <i class="fas fa-flag"></i>
-                    <h2>Selecciona un desafío</h2>
-                    <p>Haz clic en cualquier desafío para ver sus detalles</p>
+                    <h2>Select a challenge</h2>
+                    <p>Click on any challenge to see its details</p>
                 </div>
             `;
         }
@@ -201,38 +201,38 @@ function showChallengeDetails(challengeId) {
 
     detailContainer.innerHTML = `
         <div class="detail-content">
-        <div class="progress-section">
-    <h3>Progreso</h3>
-    <div class="progress-bar-container">
-        <div class="progress-bar" style="width: ${challenge.completed ? 100 : challenge.accepted ? 50 : 0}%"></div>
-    </div>
-</div>
+            <div class="progress-section">
+                <h3>Progress</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: ${challenge.completed ? 100 : challenge.accepted ? 50 : 0}%"></div>
+                </div>
+            </div>
 
             <div class="detail-header">
                 <h2>${challenge.name}</h2>
                 <div class="challenge-meta">
                     <span class="tag ${challenge.level.toLowerCase()}">${challenge.level}</span>
                     <span class="points">${challenge.points} pts</span>
-                    <span class="duration"><i class="far fa-clock"></i> ${challenge.duration} días</span>
+                    <span class="duration"><i class="far fa-clock"></i> ${challenge.duration} days</span>
                     ${challenge.category ? `<span class="category"><i class="fas fa-tag"></i> ${challenge.category}</span>` : ''}
                 </div>
             </div>
             <div class="detail-body">
                 <div class="description-section">
-                    <h3>Descripción</h3>
+                    <h3>Description</h3>
                     <p>${challenge.description}</p>
                 </div>
 
                 ${challenge.details ? `
                 <div class="details-section">
-                    <h3>Detalles</h3>
+                    <h3>Details</h3>
                     <div class="challenge-details">${challenge.details}</div>
                 </div>
                 ` : ''}
 
                 ${challenge.tips && challenge.tips.length > 0 ? `
                 <div class="tips-section">
-                    <h3><i class="fas fa-lightbulb"></i> Consejos para completarlo</h3>
+                    <h3><i class="fas fa-lightbulb"></i> Tips to complete it</h3>
                     <ul class="tips-list">
                         ${challenge.tips.map(tip => `<li>${tip}</li>`).join('')}
                     </ul>
@@ -242,17 +242,17 @@ function showChallengeDetails(challengeId) {
                 <div class="actions-section">
                     ${!challenge.accepted && !challenge.completed ? `
                         <button class="btn accept-challenge">
-                            <i class="fas fa-check-circle"></i> Aceptar Desafío
+                            <i class="fas fa-check-circle"></i> Accept Challenge
                         </button>
                     ` : ''}
-                    
+
                     ${challenge.accepted && !challenge.completed ? `
                         <button class="btn complete-challenge">
-                            <i class="fas fa-flag-checkered"></i> Marcar como Completado
+                            <i class="fas fa-flag-checkered"></i> Mark as Completed
                         </button>
                     ` : ''}
-                    
-                    ${challenge.completed ? '<span class="completed-badge">Completado</span>' : ''}
+
+                    ${challenge.completed ? '<span class="completed-badge">Completed</span>' : ''}
                 </div>
             </div>
         </div>
@@ -289,9 +289,8 @@ function acceptChallenge(challengeId) {
     showChallengeDetails(challengeId);
     filterChallenges();
 
-    console.log(`Desafío "${challenge.name}" aceptado`);
+    console.log(`Challenge "${challenge.name}" accepted`);
 }
-
 
 function completeChallenge(challengeId) {
     const challenge = challengesData.find(c => c.id == challengeId);
@@ -305,7 +304,7 @@ function completeChallenge(challengeId) {
     showChallengeDetails(challengeId);
     filterChallenges();
 
-    console.log(`Desafío "${challenge.name}" completado. Puntos añadidos: ${challenge.points}`);
+    console.log(`Challenge "${challenge.name}" completed. Points added: ${challenge.points}`);
 }
 
 function addToStreak() {
@@ -317,7 +316,6 @@ function addToStreak() {
         localStorage.setItem('streak', newStreak.toString());
         localStorage.setItem('lastTaskDate', today);
 
-        // Disparar evento para actualizar UI
         const streakUpdatedEvent = new CustomEvent('streakUpdated');
         document.dispatchEvent(streakUpdatedEvent);
     }
@@ -328,7 +326,7 @@ function addPointsToLocalStorage(pointsToAdd) {
         let points = parseInt(localStorage.getItem('points')) || 0;
         points += pointsToAdd;
         localStorage.setItem('points', points.toString());
-        console.log(`Puntos actualizados en localStorage. Total: ${points}`);
+        console.log(`Points updated in localStorage. Total: ${points}`);
 
         const pointsUpdatedEvent = new CustomEvent('pointsUpdated', {
             detail: { points }
@@ -336,7 +334,7 @@ function addPointsToLocalStorage(pointsToAdd) {
         document.dispatchEvent(pointsUpdatedEvent);
 
     } catch (error) {
-        console.error('Error al actualizar puntos en localStorage:', error);
+        console.error('Error updating points in localStorage:', error);
     }
 }
 
@@ -348,13 +346,12 @@ function showError(message) {
                 <i class="fas fa-exclamation-triangle"></i>
                 <p>${message}</p>
                 <button class="retry-btn" onclick="window.location.reload()">
-                    <i class="fas fa-sync-alt"></i> Reintentar
+                    <i class="fas fa-sync-alt"></i> Retry
                 </button>
             </div>
         `;
     }
 }
-
 
 window.addEventListener('hashchange', () => {
     if (window.location.hash.includes('challenges')) {
