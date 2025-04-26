@@ -2,7 +2,7 @@ class Router {
     constructor() {
         this.globalScripts = [
             'points.js',
-            'authFirebase.js',
+            'sidebar.js',
             'header.js'
         ];
 
@@ -10,7 +10,7 @@ class Router {
             '/register': {
                 view: 'register.html',
                 title: 'Register',
-                scripts: ['register.js']
+                scripts: ['register.js', 'authFirebase.js']
             },
             '/home': {
                 view: 'home.html',
@@ -101,18 +101,6 @@ class Router {
         ];
 
         await this.loadScripts(scriptsToLoad);
-        if (scriptsToLoad.includes('points.js') && window.initPoints) {
-            window.initPoints();
-        }
-        if (scriptsToLoad.includes('authFirebase.js') && window.initAuth) {
-            window.initAuth();
-        }
-        if (scriptsToLoad.includes('header.js') && window.initHeader) {
-            window.initHeader();
-        }
-        if (scriptsToLoad.includes('points.js') && window.setupTaskButton) {
-            window.setupTaskButton();
-        }
     }
 
     async loadComponents() {
@@ -150,6 +138,8 @@ class Router {
             }
 
             const module = this.loadedScripts.get(scriptName);
+            await this.loadModules(module);
+
             if (module && typeof module.init === 'function') {
                 module.init();
             }
@@ -162,6 +152,19 @@ class Router {
             this.loadedScripts.set(scriptName, module);
         } catch (error) {
             console.error(`Error loading script ${scriptName}:`, error);
+        }
+    }
+
+    async loadModules(module){
+        if (module && typeof module.initSidebar === 'function') {
+            module.initSidebar();
+        }
+
+        if (module && typeof module.initHeader === 'function') {
+            module.initHeader();
+        }
+        if (module && typeof module.initPoints === 'function') {
+            module.initPoints();
         }
     }
 

@@ -70,11 +70,6 @@ if (googleLoginButton) {
     });
 }
 
-const logoutBtn = document.getElementById('logout-btn');
-if (logoutBtn) {
-    logoutBtn.addEventListener('click', handleLogout);
-}
-
 function showSuccess(message, title = 'Success') {
     return Swal.fire({
         title: title,

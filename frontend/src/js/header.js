@@ -1,36 +1,37 @@
-import { auth, db } from '../../../backend/utils/firebase_config.js';
-import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
-import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+import {auth, db} from '../../../backend/utils/firebase_config.js';
+import {onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
+import {doc, getDoc} from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 
-let user = {};
 export function initHeader() {
-    if (document.readyState === 'complete') {
-        onAuthStateChanged(auth, async user => {
-            const imgEl = document.getElementById('avatar-img');
-            if (!imgEl) return;
-
-            if (user) {
-                try {
-                    const userRef = doc(db, 'Users', user.uid);
-                    const userSnap = await getDoc(userRef);
-                    if (userSnap.exists()) {
-                        const data = userSnap.data();
-                        const avatarFile = data.image || 'default-avatar.png';
-                        imgEl.src = `/frontend/public/assets/${avatarFile}.webp`;
-                        imgEl.style.display = 'block';
-                    } else {
-                        throw new Error('User doc not found');
-                    }
-                } catch (err) {
-                    console.error('Error loading avatar:', err);
-                }
-            } else {
-                imgEl.style.display = 'none';
-            }
-        });
-    } else {
-        document.addEventListener('DOMContentLoaded', initHeader);
+    const imgEl = document.getElementById('avatar-img');
+    if (!imgEl) {
+        console.warn('[header] #avatar-img not found – is the header HTML already injected?');
+        return;
     }
+
+    onAuthStateChanged(auth, async user => {
+        if (!user) {
+            imgEl.style.display = 'none';
+            return;
+        }
+
+        try {
+            const userRef  = doc(db, 'Users', user.uid);
+            const userSnap = await getDoc(userRef);
+            if (!userSnap.exists()) {
+                imgEl.style.display = 'none';
+                return;
+            }
+
+            const data        = userSnap.data();
+            const avatarFile  = data.image || 'default-avatar';
+            imgEl.src         = `/frontend/public/assets/${avatarFile}.webp`;
+            imgEl.style.display = 'block';
+        } catch (err) {
+            console.error('[header] error loading avatar:', err);
+            imgEl.style.display = 'none';
+        }
+    });
 }
 
-initHeader();
+window.initHeader = initHeader;
