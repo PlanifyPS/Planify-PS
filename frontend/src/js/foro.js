@@ -1,20 +1,78 @@
-import {addUserToForum, createForum, getUserForum} from "../../../backend/utils/forum_utils.js";
+import {
+    addUserToForum,
+    createForum,
+    getAllForumsAvoidingUserForum,
+    getUserForum
+} from "../../../backend/utils/forum_utils.js";
 
 const forumList = [];
 let currentForum = "Forum Name";
 const forumPosts = {};
 
-async function printForums() {
+function addForumToList(forumTitle) {
+
+
+    const forumListElement = document.getElementById('forumList');
+    const newForum = document.createElement('li');
+    newForum.textContent = forumTitle;
+    newForum.addEventListener('click', function () {
+        document.getElementById('forumName').textContent = forumTitle;
+        document.getElementById('forumContainer').innerHTML = '';
+        currentForum = forumTitle;
+        /*forumPosts[currentForum].forEach(post => {
+            document.getElementById('forumContainer').appendChild(post.cloneNode(true));
+        });
+        */
+    });
+    forumListElement.appendChild(newForum);
+    document.getElementById('forumModal').style.display = 'none';
+}
+
+async function printUserForums() {
     const forumsList = await getUserForum();
-    console.log(forumsList);
+    forumsList.forEach(forum => {
+        addForumToList(forum.title);
+    })
+
+}
+
+
+function addToAutoCompleteList(forum) {
+    const resultItem = document.createElement('div');
+    const resultsContainer = document.getElementById('searchResults');
+    resultItem.textContent = forum.id;
+    resultsContainer.appendChild(resultItem);
+}
+
+async function autoCompleteForums() {
+
+    const query = document.getElementById('searchForum').value;
+
+    if (!query) {
+        return;
+    }
+    const forumsList = await getAllForumsAvoidingUserForum();
+    for (const index in forumsList) {
+        if(forumsList[index].id.startsWith(query)){
+            addToAutoCompleteList(forumsList[index]);
+        }
+    }
+
+
+}
+
+async function setupForumListeners() {
+    document.getElementById('searchForum').addEventListener('input', autoCompleteForums);
 }
 
 async function initHome() {
     if (document.readyState === 'complete') {
-        await printForums();
+        await printUserForums();
+        await setupForumListeners();
     } else {
         document.addEventListener('DOMContentLoaded', async () => {
-            await printForums();
+            await printUserForums();
+            await setupForumListeners();
         });
     }
 }
