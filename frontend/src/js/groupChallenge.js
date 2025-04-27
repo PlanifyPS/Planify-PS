@@ -1,7 +1,10 @@
+// Ruta al archivo JSON
 const JSON_PATH = '../../frontend/src/json/challenges.json';
-let challengesData = [];
+let challengesData = []; // Almacenar los desafíos cargados
 
+// Función principal que se ejecuta al cargar la página
 export function initChallenges() {
+    // Esperar a que el DOM esté listo
     if (document.readyState === 'complete') {
         loadChallenges();
     } else {
@@ -201,13 +204,6 @@ function showChallengeDetails(challengeId) {
 
     detailContainer.innerHTML = `
         <div class="detail-content">
-        <div class="progress-section">
-    <h3>Progreso</h3>
-    <div class="progress-bar-container">
-        <div class="progress-bar" style="width: ${challenge.completed ? 100 : challenge.accepted ? 50 : 0}%"></div>
-    </div>
-</div>
-
             <div class="detail-header">
                 <h2>${challenge.name}</h2>
                 <div class="challenge-meta">
@@ -280,18 +276,12 @@ function acceptChallenge(challengeId) {
     challenge.accepted = true;
     challenge.acceptedDate = new Date().toISOString();
 
-    let acceptedChallenges = JSON.parse(localStorage.getItem('acceptedChallenges') || '[]');
-    if (!acceptedChallenges.includes(challengeId)) {
-        acceptedChallenges.push(challengeId);
-        localStorage.setItem('acceptedChallenges', JSON.stringify(acceptedChallenges));
-    }
-
+    // Actualizar la vista
     showChallengeDetails(challengeId);
-    filterChallenges();
+    filterChallenges(); // Para actualizar la lista si hay filtros aplicados
 
     console.log(`Desafío "${challenge.name}" aceptado`);
 }
-
 
 function completeChallenge(challengeId) {
     const challenge = challengesData.find(c => c.id == challengeId);
@@ -354,7 +344,6 @@ function showError(message) {
         `;
     }
 }
-
 
 window.addEventListener('hashchange', () => {
     if (window.location.hash.includes('challenges')) {
