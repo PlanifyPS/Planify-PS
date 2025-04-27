@@ -53,6 +53,8 @@ async function createNewGroup(name, description) {
             createdBy: user.uid,
             members: [user.uid],
             inviteCode,
+            challenges: [],
+            habits: [],
             createdAt: serverTimestamp()
         });
 
@@ -129,21 +131,31 @@ async function displayUserGroups() {
             const li = document.createElement('li');
             li.className = 'group-item';
             li.innerHTML = `
-                <div class="group-info">
-                    <h3>${groupData.name}</h3>
-                    <p>${groupData.description || 'No description'}</p>
-                    <small>Members: ${groupData.members.length}</small>
-                    ${groupData.createdBy === user.uid ? `<small class="invite-code">Invite Code: ${groupData.inviteCode}</small>` : ''}
-                </div>
-                <button class="btn-view-group" data-id="${groupId}">View Group</button>
-            `;
+        <div class="group-info">
+            <h3>${groupData.name}</h3>
+            <p>${groupData.description || 'No description'}</p>
+            <small>Members: ${groupData.members.length}</small>
+            ${groupData.createdBy === user.uid ? `<small class="invite-code">Invite Code: ${groupData.inviteCode}</small>` : ''}
+        </div>
+        <div class="group-buttons">
+            <button class="btn-view-group" data-id="${groupId}">View Group</button>
+            <button class="btn-view-challenges" data-id="${groupId}">Challenges</button>
+        </div>
+    `;
 
+            // Evento para el botón de "View Group"
             li.querySelector('.btn-view-group').addEventListener('click', () => {
                 window.location.href = `#/group-information?id=${groupId}`;
             });
 
+            // Evento para el botón de "Challenges"
+            li.querySelector('.btn-view-challenges').addEventListener('click', () => {
+                window.location.href = `#/groupChallenge?id=${groupId}`;
+            });
+
             groupsList.appendChild(li);
         });
+
     } catch (error) {
         console.error('Error displaying groups:', error);
         const groupsList = document.querySelector('.groups-list');

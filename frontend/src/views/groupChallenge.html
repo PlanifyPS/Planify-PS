@@ -1,18 +1,18 @@
-<main id="challenges">
+<main id="group-challenges">
   <div class="challenges-header">
-    <h1><i class="fas fa-trophy"></i> Weekly Challenges</h1>
+    <h1><i class="fas fa-people-group"></i> Group Challenges</h1>
     <div class="challenges-controls">
       <div class="search-filter">
         <div class="search-box">
-          <input type="text" id="search-challenges" placeholder="Search challenge...">
+          <input type="text" id="search-group-challenges" placeholder="Search group challenge...">
         </div>
-        <select id="filter-challenges">
+        <select id="filter-group-challenges">
           <option value="all">All</option>
+          <option value="joined">Joined</option>
+          <option value="open">Open</option>
           <option value="completed">Completed</option>
-          <option value="in-progress">In progress</option>
-          <option value="pending">Pending</option>
         </select>
-        <select id="filter-level">
+        <select id="filter-group-level">
           <option value="all">All levels</option>
           <option value="fácil">Easy</option>
           <option value="medio">Medium</option>
@@ -22,13 +22,15 @@
     </div>
   </div>
 
-  <div id="challenge-layout">
-    <div id="cards-container" class="cards-grid"></div>
-    <div id="challenge-detail" class="detail-card">
+  <div id="group-challenge-layout">
+    <div id="group-cards-container" class="cards-grid">
+    </div>
+
+    <div id="group-challenge-detail" class="detail-card">
       <div class="empty-detail">
-        <i class="fas fa-flag"></i>
-        <h2>Select a Challenge</h2>
-        <p>Click on any challenge to see its details</p>
+        <i class="fas fa-people-arrows"></i>
+        <h2>Select a Group Challenge</h2>
+        <p>Click on any group challenge to see its details and join!</p>
       </div>
     </div>
   </div>
