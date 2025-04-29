@@ -14,6 +14,7 @@ export const registerUser = async (email, password, username) => {
         await saveUserData(userCredential.user.uid, {
             userName: username,
             email: email,
+            image: 'avatar1',
             points: 0,
             streak: 0,
             lastTaskDate: ""
