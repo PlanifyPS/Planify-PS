@@ -144,6 +144,16 @@ dialog::backdrop {
     background: var(--blue-medium);
 }
 
+.group-information-header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    position: relative;
+    margin-bottom: 20px;
+}
+
 .group-container {
     width: 100%;
     padding: 30px;
@@ -154,7 +164,20 @@ dialog::backdrop {
 
 #group-name {
     text-align: center;
-    margin-bottom: 2rem;
+    margin: 0;
+}
+
+#invite-code-container{
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 13px;
+    font-style: italic;
+}
+
+#invite-code{
+    color: var(--dark-blue);
+    font-weight: bold;
 }
 
 .podium {
@@ -197,10 +220,17 @@ dialog::backdrop {
     color: var(--blue-medium);
 }
 
-.chart-container {
+.group-information-chart-container {
     width: 100%;
-    max-width: 700px;
     margin: 20px auto;
+    background-color: var(--white);
+    border-radius: 15px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px var(--shadow);
+    height: 100%;
 }
 
 .groups-list {
@@ -298,6 +328,11 @@ dialog::backdrop {
 .member-chart {
     flex: 1;
     text-align: center;
+    background-color: var(--white);
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0 4px 8px var(--shadow);
+    height: 100%;
 }
 
 .member-chart h2 {

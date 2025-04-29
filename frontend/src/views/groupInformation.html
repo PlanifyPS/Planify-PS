@@ -1,7 +1,9 @@
 <main class="group-container">
-    <h1 id="group-name">Loading…</h1>
-    <p id="group-desc" class="group-description"></p>
-    <small id="invite-code" class="invite-code-label"></small>
+    <div class="group-information-header">
+        <h1 id="group-name">Loading…</h1>
+        <p id="group-desc" class="group-description"></p>
+        <p id="invite-code-container">Invite code: <span id="invite-code"></span></p>
+    </div>
 
     <div class="podium">
         <div class="podium-item second">
@@ -44,7 +46,7 @@
         </select>
     </div>
 
-    <div class="chart-container">
+    <div class="group-information-chart-container">
         <canvas id="pointsHistoryChart"></canvas>
     </div>
 </main>

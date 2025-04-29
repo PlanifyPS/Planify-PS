@@ -22,7 +22,6 @@ export function initGroupInformation() {
 }
 
 async function loadGroupInformation() {
-    // 1) Carga datos del grupo
     const params   = new URLSearchParams(window.location.hash.split('?')[1]);
     const groupId  = params.get('id');
     if (!groupId) return console.error('No group ID');
@@ -34,7 +33,7 @@ async function loadGroupInformation() {
     document.getElementById('group-name').textContent = g.name;
     document.getElementById('group-desc').textContent = g.description || '';
     document.getElementById('invite-code').textContent =
-        g.createdBy === currentUser.uid ? `Invite Code: ${g.inviteCode}` : '';
+        g.createdBy === currentUser.uid ? `${g.inviteCode}` : '';
 
     // 2) Trae miembros y suma puntos
     const snaps = await Promise.all(
