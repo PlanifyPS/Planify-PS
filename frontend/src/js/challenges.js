@@ -1,5 +1,20 @@
-// Ruta al archivo JSON
-const JSON_PATH = '../../frontend/src/json/challenges.json';
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    updateDoc,
+    setDoc,
+    increment,
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+import { app } from "../../../backend/utils/firebase_config.js";
+
+const db = getFirestore(app);
+
+
 let challengesData = []; // Almacenar los desafíos cargados
 
 // Función principal que se ejecuta al cargar la página
@@ -12,15 +27,23 @@ export function initChallenges() {
     }
 }
 
+async function fetchChallengesFromFirebase() {
+    const challengesRef = collection(db, "Challenges");
+    const snapshot = await getDocs(challengesRef);
+    return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }));
+}
+
 async function loadChallenges() {
     try {
         const container = document.getElementById('cards-container');
         if (container) container.innerHTML = '<p>Cargando desafíos...</p>';
 
-        const response = await fetch(JSON_PATH);
-        if (!response.ok) throw new Error('No se pudieron cargar los desafíos');
+        challengesData = await fetchChallengesFromFirebase();
+        await markCompletedChallenges();
 
-        challengesData = await response.json();
         challengesData.forEach(challenge => {
             if (challenge.pinned === undefined) challenge.pinned = false;
             if (challenge.accepted === undefined) challenge.accepted = false;
@@ -35,6 +58,7 @@ async function loadChallenges() {
         showError('Error al cargar los desafíos');
     }
 }
+
 
 function setupFilterEvents() {
     const searchInput = document.getElementById('search-challenges');
@@ -226,14 +250,15 @@ function showChallengeDetails(challengeId) {
                 </div>
                 ` : ''}
 
-                ${challenge.tips && challenge.tips.length > 0 ? `
-                <div class="tips-section">
-                    <h3><i class="fas fa-lightbulb"></i> Consejos para completarlo</h3>
-                    <ul class="tips-list">
-                        ${challenge.tips.map(tip => `<li>${tip}</li>`).join('')}
-                    </ul>
-                </div>
+                ${Array.isArray(challenge.tips) && challenge.tips.length > 0 ? `
+                    <div class="tips-section">
+                        <h3><i class="fas fa-lightbulb"></i> Consejos para completarlo</h3>
+                            <ul class="tips-list">
+                                ${challenge.tips.map(tip => `<li>${tip}</li>`).join('')}
+                            </ul>
+                    </div>
                 ` : ''}
+
 
                 <div class="actions-section">
                     ${!challenge.accepted && !challenge.completed ? `
@@ -283,34 +308,40 @@ function acceptChallenge(challengeId) {
     console.log(`Desafío "${challenge.name}" aceptado`);
 }
 
-function completeChallenge(challengeId) {
+async function completeChallenge(challengeId) {
     const challenge = challengesData.find(c => c.id == challengeId);
     if (!challenge) return;
 
-    challenge.completed = true;
-    challenge.completedDate = new Date().toISOString();
+    try {
+        const user = getAuth().currentUser;
+        if (!user) throw new Error("Usuario no autenticado");
 
-    addPointsToFirebase(challenge.points);
-    addToStreak();
-    showChallengeDetails(challengeId);
-    filterChallenges();
+        const userRef = doc(db, "Users", user.uid, "CompletedChallenges", challengeId);
 
-    console.log(`Desafío "${challenge.name}" completado. Puntos añadidos: ${challenge.points}`);
+        // Guardamos que lo completó
+        await setDoc(userRef, {
+            completed: true,
+            completedAt: new Date()
+        });
+
+        challenge.completed = true;
+        challenge.completedDate = new Date().toISOString();
+
+        addPointsToFirebase(challenge.points);
+        addToStreak();
+        showChallengeDetails(challengeId);
+        filterChallenges();
+
+        console.log(`Desafío "${challenge.name}" completado y registrado. Puntos añadidos: ${challenge.points}`);
+
+    } catch (error) {
+        console.error("Error al registrar desafío completado:", error);
+    }
 }
 
 
-import {
-    getFirestore,
-    doc,
-    getDoc,
-    updateDoc,
-    increment
-} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-import { getAuth } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
-import { app } from "../../../backend/utils/firebase_config.js";
 
-const db = getFirestore(app);
 
 // Añadir puntos
 async function addPointsToFirebase(pointsToAdd) {
@@ -396,6 +427,27 @@ function showError(message) {
         `;
     }
 }
+
+async function markCompletedChallenges() {
+    try {
+        const user = getAuth().currentUser;
+        if (!user) return;
+
+        const completedRef = collection(db, "Users", user.uid, "CompletedChallenges");
+        const snapshot = await getDocs(completedRef);
+        const completedIds = snapshot.docs.map(doc => doc.id);
+
+        challengesData.forEach(challenge => {
+            if (completedIds.includes(challenge.id)) {
+                challenge.completed = true;
+            }
+        });
+
+    } catch (error) {
+        console.error("Error marcando desafíos completados:", error);
+    }
+}
+
 
 window.addEventListener('hashchange', () => {
     if (window.location.hash.includes('challenges')) {
