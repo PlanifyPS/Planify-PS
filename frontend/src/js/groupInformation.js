@@ -2,10 +2,13 @@
 import {auth, db} from '../../../backend/utils/firebase_config.js';
 import {
     doc,
-    getDoc
+    getDoc,
+    getDocs,
+    collection
 } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
-//import { Chart } from 'https://cdn.jsdelivr.net/npm/chart.js/dist/chart.esm.js';
+
+import Chart from 'https://esm.run/chart.js/auto';
 
 let user = {};
 export function initGroupInformation() {
@@ -40,6 +43,7 @@ async function loadGroupInformation() {
         console.error('Group not found:', groupId);
         return;
     }
+
     const groupData = groupSnap.data();
 
     document.getElementById('group-name').textContent = groupData.name;
@@ -53,16 +57,20 @@ async function loadGroupInformation() {
         groupData.members.map(uid => getDoc(doc(db, 'Users', uid)))
     );
 
+
     const members = memberDocs
         .filter(snap => snap.exists())
         .map(snap => {
             const d = snap.data();
             return {
+                uid: snap.id,
                 name: d.username || d.name || 'Unknown',
                 points: d.points || 0,
                 improvement: d.improvement || 0
             };
         });
+
+    console.log(members);
 
     members.sort((a, b) => b.points - a.points);
     const [first, second, third, ...others] = members;
@@ -87,25 +95,81 @@ async function loadGroupInformation() {
         ul.appendChild(li);
     });
 
-    /*const ctx = document.getElementById('improvementChart').getContext('2d');
-    new Chart(ctx, {
+    const ctx1 = document.getElementById('improvementChart').getContext('2d');
+    new Chart(ctx1, {
         type: 'bar',
         data: {
-            labels: members.map(u => u.name),
-            datasets: [
-                {
-                    label: 'Improvement',
-                    data: members.map(u => u.improvement)
-                }
-            ]
+            labels:    members.map(u => u.name),
+            datasets: [{
+                label: 'Improvement',
+                data:   members.map(u => u.improvement)
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    const historySnapshots = await Promise.all(
+        members.map(u =>
+            getDocs(collection(db, 'Users', u.uid, 'pointsHistory'))
+        )
+    );
+
+    console.log(historySnapshots);
+
+    function getWeekStart(dateStr) {
+        const d = new Date(dateStr);
+        const day = d.getUTCDay();
+        const diff = (day + 6) % 7;
+        d.setDate(d.getDate() - diff);
+        return d.toISOString().slice(0, 10);
+    }
+
+    const allRecords = [];
+    historySnapshots.forEach(snap => {
+        snap.docs.forEach(d => {
+            const { points, timestamp } = d.data();
+            const dateStr = new Date(timestamp.seconds * 1000)
+                .toISOString().slice(0,10);
+            allRecords.push({ date: dateStr, points });
+        });
+    });
+
+    const sumByWeek = {};
+    allRecords.forEach(({ date, points }) => {
+        const weekStart = getWeekStart(date);
+        sumByWeek[weekStart] = (sumByWeek[weekStart] || 0) + points;
+    });
+
+    const sortedWeeks = Object.keys(sumByWeek).sort();
+    const totalPointsPerWeek = sortedWeeks.map(week => sumByWeek[week]);
+
+    const ctx2 = document.getElementById('pointsHistoryChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: sortedWeeks,
+            datasets: [{
+                label: 'Total Points (by week)',
+                data: totalPointsPerWeek
+            }]
         },
         options: {
             responsive: true,
             scales: {
-                y: { beginAtZero: true }
+                y: { beginAtZero: true },
+                x: {
+                    ticks: {
+                        callback: val => {
+                            return sortedWeeks[val].slice(5);
+                        }
+                    }
+                }
             }
         }
-    });*/
+    });
 }
 
 initGroupInformation();

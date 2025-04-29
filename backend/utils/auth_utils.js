@@ -12,14 +12,13 @@ export const registerUser = async (email, password, username) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await saveUserData(userCredential.user.uid, {
-            userName: username,
-            email: email,
-            image: 'avatar1',
-            points: 0,
-            streak: 0,
+            userName:     username,
+            email:        email,
+            image:        'avatar1',
+            points:       0,
+            streak:       0,
             lastTaskDate: ""
         });
-
         return userCredential.user;
     } catch (error) {
         throw new Error(error.message);
@@ -45,14 +44,25 @@ export const loginUser = async (email, password) => {
 export const loginWithGoogle = async () => {
     try {
         const result = await signInWithPopup(auth, googleProvider);
-        sessionStorage.setItem("uid", result.user.uid);
+        const user   = result.user;
+        sessionStorage.setItem("uid", user.uid);
 
-        const userData = await getUserData(result.user.uid);
-        if (userData) {
-            console.log("User Data:", userData);
+        const existing = await getUserData(user.uid);
+        if (!existing) {
+            await saveUserData(user.uid, {
+                userName:     user.displayName || 'Google User',
+                email:        user.email,
+                image:        'avatar1',
+                points:       0,
+                streak:       0,
+                lastTaskDate: ""
+            });
+            console.log("New Google user saved to Firestore");
+        } else {
+            console.log("Google user already exists:", existing);
         }
 
-        return result.user;
+        return user;
     } catch (error) {
         throw new Error(error.message);
     }
