@@ -2,7 +2,7 @@ import {
     addUserToForum,
     createForum,
     getAllForumsAvoidingUserForum,
-    getUserForum
+    getUserForum, sendMessage
 } from "../../../backend/utils/forum_utils.js";
 
 const forumList = [];
@@ -12,7 +12,8 @@ const forumPosts = {};
 function initChat(forumTitle) {
 
     document.getElementById('chat-title').textContent = forumTitle;
-    // Crear los mensajes
+    // traer los mensajes y mostrarlos
+
 
 }
 
@@ -119,7 +120,7 @@ document.getElementById('close-chat-button').addEventListener("click", function(
 
 document.getElementById('chat-send-message')
 
-function sendMessage() {
+async function showMessage() {
     const chatInput = document.getElementById("chatInput");
     const chatMessages = document.getElementById("chatMessages");
     const message = chatInput.value.trim();
@@ -130,11 +131,15 @@ function sendMessage() {
     messageEl.style.marginBottom = "10px";
 
     chatMessages.appendChild(messageEl);
-    chatInput.value = "";
+
     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    const forumTitle = document.getElementById('chat-title').textContent
+    await sendMessage(forumTitle, chatInput.value);
+    chatInput.value = "";
 }
 
-addEventListener('click', sendMessage)
+addEventListener('click', showMessage)
 
 
 document.getElementById('createForum').addEventListener('click', async function () {

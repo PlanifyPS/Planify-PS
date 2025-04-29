@@ -1,13 +1,22 @@
 import { db} from "./firebase_config.js";
 import {
+    addDoc,
     collection,
     deleteField,
     doc,
-    getDoc, getDocs, setDoc,
+    getDoc, getDocs, serverTimestamp, setDoc,
     updateDoc
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-
+export const createUser = async(uid,data) =>{
+    try {
+        const userRef = doc(db, "Users", uid);
+        await setDoc(userRef, data);
+        console.log("Datos actualizados correctamente.");
+    } catch (error) {
+        console.error("Error al guardar datos:", error);
+    }
+}
 
 export const saveUserData = async (uid, data) => {
     try {
@@ -118,6 +127,18 @@ export const addPointsToUser = async (uid, pointsToAdd) => {
     }
 };
 
-export async function sendForumMessage(forumId, senderUid, message) {
-
+export async function sendForumMessage(forumId, senderUid, messageBody) {
+    try {
+        const messageRef = collection(db, "Forums", forumId, "messages");
+        await addDoc(messageRef, {
+            body:messageBody,
+            sender: senderUid,
+            timestamp: serverTimestamp(),
+        });
+        
+    }catch (error) {
+        console.error("Error al guardar mensajes:", error);
+    }
+    
+    
 }

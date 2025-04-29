@@ -4,7 +4,7 @@ import {
     getUserData,
     initForum,
     saveForumUser,
-    saveUserData
+    saveUserData, sendForumMessage
 } from "./firestore_utils.js";
 
 
@@ -75,4 +75,7 @@ export async function getAllForumsAvoidingUserForum(){
     });
 
 
+}
+export async function sendMessage(forumId, messageBody){
+    await sendForumMessage(forumId, userUID, messageBody);
 }
