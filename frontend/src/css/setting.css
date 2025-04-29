@@ -228,3 +228,84 @@ input:checked + .slider:before {
 .right-panel > div {
     width: 100%;
 }
+
+/* Avatar en el perfil */
+.avatar-section {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+#profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--blue-dark);
+    margin-bottom: 0.5rem;
+}
+.btn-avatar {
+    display: block;
+    margin: 0 auto;
+    padding: 0.4rem 0.8rem;
+    background: var(--blue-medium);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.btn-avatar:hover {
+    background: var(--blue-dark);
+}
+
+/* Diálogo de selección */
+#avatar-dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 1rem;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+#avatar-dialog h3 {
+    text-align: center;
+    margin-top: 0;
+}
+.avatar-options {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+.avatar-options img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    object-fit: cover;
+}
+.avatar-options img.selected {
+    border-color: var(--blue-dark);
+}
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+.dialog-actions button {
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.dialog-actions button[value="cancel"] {
+    background: var(--light-bg);
+    color: var(--dark-blue);
+}
+.dialog-actions button[value="default"] {
+    background: var(--blue-dark);
+    color: white;
+}
+.dialog-actions button:hover {
+    opacity: 0.9;
+}
+

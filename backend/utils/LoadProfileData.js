@@ -6,11 +6,8 @@ export const loadUserProfile = async () => {
     if (!uid) return;
 
     try {
-        console.log(uid);
         const userRef = doc(db, "Users", uid);
-        console.log(userRef);
         const docSnap = await getDoc(userRef);
-        console.log(docSnap);
 
         if (docSnap.exists()) {
             const data = docSnap.data();
