@@ -290,7 +290,7 @@ function completeChallenge(challengeId) {
     challenge.completed = true;
     challenge.completedDate = new Date().toISOString();
 
-    addPointsToLocalStorage(challenge.points);
+    addPointsToFirebase(challenge.points);
     addToStreak();
     showChallengeDetails(challengeId);
     filterChallenges();
@@ -298,37 +298,89 @@ function completeChallenge(challengeId) {
     console.log(`Desafío "${challenge.name}" completado. Puntos añadidos: ${challenge.points}`);
 }
 
-function addToStreak() {
-    const today = new Date().toDateString();
-    const lastDate = localStorage.getItem('lastTaskDate');
 
-    if (lastDate !== today) {
-        const newStreak = parseInt(localStorage.getItem('streak')) + 1;
-        localStorage.setItem('streak', newStreak.toString());
-        localStorage.setItem('lastTaskDate', today);
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    updateDoc,
+    increment
+} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-        // Disparar evento para actualizar UI
-        const streakUpdatedEvent = new CustomEvent('streakUpdated');
-        document.dispatchEvent(streakUpdatedEvent);
-    }
-}
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+import { app } from "../../../backend/utils/firebase_config.js";
 
-function addPointsToLocalStorage(pointsToAdd) {
+const db = getFirestore(app);
+
+// Añadir puntos
+async function addPointsToFirebase(pointsToAdd) {
     try {
-        let points = parseInt(localStorage.getItem('points')) || 0;
-        points += pointsToAdd;
-        localStorage.setItem('points', points.toString());
-        console.log(`Puntos actualizados en localStorage. Total: ${points}`);
+        const user = getAuth().currentUser;
+        if (!user) throw new Error("Usuario no autenticado");
 
-        const pointsUpdatedEvent = new CustomEvent('pointsUpdated', {
-            detail: { points }
+        const userRef = doc(db, "Users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+            // Si no existe, lo creamos con los puntos iniciales
+            await setDoc(userRef, {
+                points: pointsToAdd,
+                streak: 0,
+                lastTaskDate: new Date().toDateString()
+            });
+        } else {
+            // Si ya existe, incrementamos los puntos
+            await updateDoc(userRef, {
+                points: increment(pointsToAdd)
+            });
+        }
+
+        const updatedSnap = await getDoc(userRef);
+        const updatedPoints = updatedSnap.data().points;
+
+        console.log(`Puntos actualizados: ${updatedPoints}`);
+
+        const pointsUpdatedEvent = new CustomEvent("pointsUpdated", {
+            detail: { points: updatedPoints }
         });
         document.dispatchEvent(pointsUpdatedEvent);
 
     } catch (error) {
-        console.error('Error al actualizar puntos en localStorage:', error);
+        console.error("Error al actualizar puntos:", error);
     }
 }
+
+
+// Añadir a racha
+async function addToStreak() {
+    try {
+        const today = new Date().toDateString();
+        const user = getAuth().currentUser;
+        if (!user) throw new Error("Usuario no autenticado");
+
+        const userRef = doc(db, "Users", user.uid);
+        const userSnap = await getDoc(userRef);
+        const data = userSnap.data();
+
+        const lastDate = data.lastTaskDate;
+        let newStreak = data.streak || 0;
+
+        if (lastDate !== today) {
+            newStreak++;
+            await updateDoc(userRef, {
+                streak: newStreak,
+                lastTaskDate: today
+            });
+
+            const streakUpdatedEvent = new CustomEvent("streakUpdated");
+            document.dispatchEvent(streakUpdatedEvent);
+        }
+
+    } catch (error) {
+        console.error("Error al actualizar racha:", error);
+    }
+}
+
 
 function showError(message) {
     const container = document.getElementById('cards-container');

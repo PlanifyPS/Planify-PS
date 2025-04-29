@@ -45,3 +45,24 @@ export async function getGroupData(groupUID) {
 export const deleteUserField = async (uid, fieldToRemove) => {
     await saveUserData(uid, {[fieldToRemove]: deleteField()});
 }
+
+export const addPointsToUser = async (uid, pointsToAdd) => {
+    try {
+        const userRef = doc(db, "Users", uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+            const currentPoints = userSnap.data().points || 0;
+            const newPoints = currentPoints + pointsToAdd;
+
+            await updateDoc(userRef, { points: newPoints });
+
+            console.log(`Puntos actualizados en Firestore. Total: ${newPoints}`);
+            return newPoints;
+        } else {
+            console.error("Usuario no encontrado en Firestore");
+        }
+    } catch (error) {
+        console.error("Error al añadir puntos al usuario:", error);
+    }
+};
