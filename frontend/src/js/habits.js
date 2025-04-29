@@ -1,4 +1,10 @@
 import {deleteUserField, getUserData, saveUserData} from "../../../backend/utils/firestore_utils.js";
+import {
+    addDoc,
+    collection,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import {db} from "/backend/utils/firebase_config.js";
 
 const userUID = sessionStorage.getItem("uid");
 let habitsData;
@@ -161,17 +167,26 @@ function addStylesToCompletedHabits() {
 }
 
 async function completeHabit(habitId) {
-
     if (habitsData[habitId].completed) {
         alert("Este hábito ya fue completado.");
         return;
     }
 
     habitsData[habitId].completed = true;
-    await saveUserData(userUID, {[`habits.${habitId}`]: habitsData[habitId],})
-    /// añadir los puntos al usuario
+    await saveUserData(userUID, {
+        [`habits.${habitId}`]: habitsData[habitId],
+    });
+
     await sortHabits();
-    
+
+    await addDoc(
+        collection(db, "Users", userUID, "habitsHistory"),
+        {
+            timestamp: serverTimestamp(),
+            userId:    userUID,
+            habitId:   habitId
+        }
+    );
 }
 
 /*

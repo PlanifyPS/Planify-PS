@@ -1,3 +1,10 @@
+import {
+    addDoc,
+    collection,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { auth, db } from "/backend/utils/firebase_config.js";
+
 function initHome() {
     if (document.readyState === 'complete') {
         initTextContent();
@@ -102,20 +109,19 @@ function deleteTask(taskId) {
     reloadUserTasks();
 }
 
-function completeTask(taskTitle) {
+async function completeTask(taskTitle) {
     let userTasks = JSON.parse(localStorage.getItem("UserTasks")) || [];
     const taskIndex = userTasks.findIndex(t => t.title === taskTitle);
 
     if (taskIndex !== -1 && !userTasks[taskIndex].completed) {
         const taskPoints = userTasks[taskIndex].points || 5;
-
-        const newPoints = parseInt(localStorage.getItem('points')) + taskPoints;
+        const newPoints  = parseInt(localStorage.getItem('points') || '0') + taskPoints;
         localStorage.setItem('points', newPoints.toString());
 
-        const today = new Date().toDateString();
+        const today    = new Date().toDateString();
         const lastDate = localStorage.getItem('lastTaskDate');
         if (lastDate !== today) {
-            const newStreak = parseInt(localStorage.getItem('streak')) + 1;
+            const newStreak = parseInt(localStorage.getItem('streak') || '0') + 1;
             localStorage.setItem('streak', newStreak.toString());
             localStorage.setItem('lastTaskDate', today);
         }
@@ -128,9 +134,26 @@ function completeTask(taskTitle) {
 
         reloadUserTasks();
 
-        alert(`¡Tarea completada! Ganaste ${taskPoints} puntos.`);
-    } else if (userTasks[taskIndex]?.completed) {
-        alert("Esta tarea ya fue completada.");
+        const user = auth.currentUser;
+        if (user) {
+            try {
+                await addDoc(
+                    collection(db, "Users", user.uid, "tasksHistory"),
+                    {
+                        timestamp: serverTimestamp(),
+                        userId:    user.uid,
+                        taskTitle: taskTitle
+                    }
+                );
+            } catch (e) {
+                console.error("Error writing task history:", e);
+            }
+        }
+
+        alert(`Task completed! You earned ${taskPoints} points.`);
+    }
+    else if (userTasks[taskIndex]?.completed) {
+        alert("This task has already been completed.");
     }
 }
 

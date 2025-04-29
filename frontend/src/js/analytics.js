@@ -1,7 +1,7 @@
 // analytics.js
 import Chart from 'https://esm.run/chart.js/auto';
 import { auth, db } from '../../../backend/utils/firebase_config.js';
-import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+import { collection, getDocs, getDoc, doc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
 
 let habitsBarChart, habitsPieChart;
@@ -94,95 +94,94 @@ function drawPie(containerId, doneCount, totalDays) {
 }
 
 async function loadHabitsAnalytics(uid) {
+    // 0) Traer doc de usuario para leer habits.{id}.completed
+    const userSnap = await getDoc(doc(db, 'Users', uid));
+    const userData = userSnap.exists() ? userSnap.data() : {};
+    const habitsObj = userData.habits || {};
+    // cuenta cuántos están pendientes (completed === false)
+    const habitsInProgress = Object.values(habitsObj)
+        .filter(h => h.completed === false)
+        .length;
+
+    // 1) Histórico de completion timestamps…
     const snaps = await getDocs(collection(db, 'Users', uid, 'habitsHistory'));
     const dates = snaps.docs.map(d =>
         new Date(d.data().timestamp.seconds * 1000)
     );
 
+    // 2) Generar últimas 7 fechas y conteos diarios…
     const last7Dates = getLastNDates(7);
     const grouped = groupSum(dates, d => d.toISOString().slice(0,10));
     const dailyCounts = last7Dates.map(d =>
         grouped[d.toISOString().slice(0,10)] || 0
     );
 
-    const todayCount = dailyCounts[6];
-    const currentStreak = (() => {
-        let s=0;
-        for (let i=6; i>=0 && dailyCounts[i]>0; i--) s++;
-        return s;
-    })();
-    const maxStreak = (() => {
-        let m=0,c=0;
-        for (const v of dailyCounts) {
-            v>0 ? c++ : (m=Math.max(m,c), c=0);
-        }
-        return Math.max(m,c);
-    })();
-    const totalDone = dates.length;
-    const planned=0, inProgress=0;
+    // 3) Calcula streaks, totals, etc.
+    const todayCount    = dailyCounts[6];
+    const currentStreak = (() => { let s=0; for(let i=6;i>=0&&dailyCounts[i]>0;i--) s++; return s; })();
+    const maxStreak     = (() => { let m=0,c=0; for(const v of dailyCounts){ v>0?c++:(m=Math.max(m,c),c=0);} return Math.max(m,c); })();
+    const totalDone     = dates.length;
+    const planned       = 0;  // si tienes lógica de “planned” añádela aquí
 
-    document.getElementById('habits-current-streak').textContent = currentStreak;
+    // 4) Actualizar DOM
+    document.getElementById('habits-current-streak').textContent  = currentStreak;
     document.getElementById('habits-completed-today').textContent = todayCount;
-    document.getElementById('habits-planned').textContent = planned;
-    document.getElementById('habits-total').textContent = totalDone;
-    document.getElementById('habits-in-progress').textContent = inProgress;
-    document.getElementById('habits-max-streak').textContent = maxStreak;
+    document.getElementById('habits-planned').textContent        = planned;
+    document.getElementById('habits-total').textContent          = totalDone;
+    document.getElementById('habits-in-progress').textContent    = habitsInProgress;
+    document.getElementById('habits-max-streak').textContent     = maxStreak;
 
+    // 5) Dibuja barra y pie…
     const dayLabels = last7Dates.map(d =>
-        d.toLocaleDateString('en-US', { weekday: 'short' })
+        d.toLocaleDateString('en-US',{ weekday: 'short' })
     );
     drawBar('habits-BarChart', dayLabels, dailyCounts, 'Habits done');
-
-    // pie semanal (días con al menos 1 hábito)
-    const weekKeys = dayLabels; // mismo orden Mon...Sun
-    const doneThisWeek = weekKeys.reduce((acc,_,i) =>
-        acc + (dailyCounts[i]>0 ? 1 : 0), 0
-    );
+    const doneThisWeek = dailyCounts.reduce((acc,v)=> acc + (v>0?1:0), 0);
     drawPie('habits-circle-progress', doneThisWeek, 7);
 }
 
 async function loadTasksAnalytics(uid) {
+    // 0) Leemos las tareas del localStorage para el in-progress
+    const userTasks = JSON.parse(localStorage.getItem("UserTasks")) || [];
+    const tasksInProgress = userTasks.filter(t => t.completed === false).length;
+
+    // 1) Histórico de completions…
     const snaps = await getDocs(collection(db, 'Users', uid, 'tasksHistory'));
     const dates = snaps.docs.map(d =>
         new Date(d.data().timestamp.seconds * 1000)
     );
 
+    // 2) Últimos 7 días…
     const last7Dates = getLastNDates(7);
-    const grouped = groupSum(dates, d => d.toISOString().slice(0,10));
+    const grouped    = groupSum(dates, d => d.toISOString().slice(0,10));
     const dailyCounts = last7Dates.map(d =>
         grouped[d.toISOString().slice(0,10)] || 0
     );
 
-    const todayCount = dailyCounts[6];
-    const currentStreak = (() => {
-        let s=0;
-        for (let i=6; i>=0 && dailyCounts[i]>0; i--) s++;
-        return s;
-    })();
-    const maxStreak = (() => {
-        let m=0,c=0;
-        for (const v of dailyCounts) {
-            v>0 ? c++ : (m=Math.max(m,c), c=0);
-        }
-        return Math.max(m,c);
-    })();
-    const totalDone = dates.length;
-    const planned=0, inProgress=0;
+    // 3) Cálculo de counters…
+    const todayCount    = dailyCounts[6];
+    const currentStreak = (() => { let s=0; for(let i=6;i>=0&&dailyCounts[i]>0;i--) s++; return s; })();
+    const maxStreak     = (() => { let m=0,c=0; for(const v of dailyCounts){ v>0?c++:(m=Math.max(m,c),c=0);} return Math.max(m,c); })();
+    const totalDone     = dates.length;
+    const planned       = 0; // si tienes lógica de planned
+    const inProgress    = tasksInProgress;
 
-    document.getElementById('tasks-current-streak').textContent = currentStreak;
+    // 4) Actualizar DOM
+    document.getElementById('tasks-current-streak').textContent  = currentStreak;
     document.getElementById('tasks-completed-today').textContent = todayCount;
-    document.getElementById('tasks-planned').textContent = planned;
-    document.getElementById('tasks-total').textContent = totalDone;
-    document.getElementById('tasks-in-progress').textContent = inProgress;
-    document.getElementById('tasks-max-streak').textContent = maxStreak;
+    document.getElementById('tasks-planned').textContent        = planned;
+    document.getElementById('tasks-total').textContent          = totalDone;
+    document.getElementById('tasks-in-progress').textContent    = inProgress;
+    document.getElementById('tasks-max-streak').textContent     = maxStreak;
 
+    // 5) Gráficas…
     const dayLabels = last7Dates.map(d =>
-        d.toLocaleDateString('en-US', { weekday: 'short' })
+        d.toLocaleDateString('en-US',{ weekday: 'short' })
     );
     drawBar('tasks-BarChart', dayLabels, dailyCounts, 'Tasks done');
-
-    const doneThisWeek = dailyCounts.reduce((acc, v) => acc + (v>0?1:0), 0);
+    const doneThisWeek = dailyCounts.reduce((acc,v)=> acc + (v>0?1:0), 0);
     drawPie('tasks-circle-progress', doneThisWeek, 7);
 }
+
 
 initAnalytics();
