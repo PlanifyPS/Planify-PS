@@ -1,9 +1,84 @@
+import {
+    addUserToForum,
+    createForum,
+    getAllForumsAvoidingUserForum,
+    getUserForum
+} from "../../../backend/utils/forum_utils.js";
 
 const forumList = [];
 let currentForum = "Forum Name";
 const forumPosts = {};
 
-document.getElementById('createForum').addEventListener('click', function() {
+function addForumToList(forumTitle) {
+
+
+    const forumListElement = document.getElementById('forumList');
+    const newForum = document.createElement('li');
+    newForum.textContent = forumTitle;
+    newForum.addEventListener('click', function () {
+        document.getElementById('forumName').textContent = forumTitle;
+        document.getElementById('forumContainer').innerHTML = '';
+        currentForum = forumTitle;
+        /*forumPosts[currentForum].forEach(post => {
+            document.getElementById('forumContainer').appendChild(post.cloneNode(true));
+        });
+        */
+    });
+    forumListElement.appendChild(newForum);
+    document.getElementById('forumModal').style.display = 'none';
+}
+
+async function printUserForums() {
+    const forumsList = await getUserForum();
+    forumsList.forEach(forum => {
+        addForumToList(forum.title);
+    })
+
+}
+
+
+function addToAutoCompleteList(forum) {
+    const resultItem = document.createElement('div');
+    const resultsContainer = document.getElementById('searchResults');
+    resultItem.textContent = forum.id;
+    resultsContainer.appendChild(resultItem);
+}
+
+async function autoCompleteForums() {
+
+    const query = document.getElementById('searchForum').value;
+
+    if (!query) {
+        return;
+    }
+    const forumsList = await getAllForumsAvoidingUserForum();
+    for (const index in forumsList) {
+        if(forumsList[index].id.startsWith(query)){
+            addToAutoCompleteList(forumsList[index]);
+        }
+    }
+
+
+}
+
+async function setupForumListeners() {
+    document.getElementById('searchForum').addEventListener('input', autoCompleteForums);
+}
+
+async function initHome() {
+    if (document.readyState === 'complete') {
+        await printUserForums();
+        await setupForumListeners();
+    } else {
+        document.addEventListener('DOMContentLoaded', async () => {
+            await printUserForums();
+            await setupForumListeners();
+        });
+    }
+}
+
+
+document.getElementById('createForum').addEventListener('click', async function () {
     document.getElementById('forumModal').style.display = 'flex';
 });
 
@@ -15,7 +90,7 @@ document.querySelectorAll('.close').forEach(button => {
 });
 
 
-document.getElementById('saveForum').addEventListener('click', function() {
+document.getElementById('saveForum').addEventListener('click', async function () {
     const forumTitle = document.getElementById('forumTitle').value;
     if (forumTitle) {
         forumList.push(forumTitle);
@@ -23,7 +98,7 @@ document.getElementById('saveForum').addEventListener('click', function() {
         const forumListElement = document.getElementById('forumList');
         const newForum = document.createElement('li');
         newForum.textContent = forumTitle;
-        newForum.addEventListener('click', function() {
+        newForum.addEventListener('click', function () {
             document.getElementById('forumName').textContent = forumTitle;
             document.getElementById('forumContainer').innerHTML = '';
             currentForum = forumTitle;
@@ -34,6 +109,8 @@ document.getElementById('saveForum').addEventListener('click', function() {
         forumListElement.appendChild(newForum);
         document.getElementById('forumModal').style.display = 'none';
     }
+    await createForum(forumTitle);
+    await addUserToForum(forumTitle);
 });
 
 document.getElementById('searchForum').addEventListener('input', function() {
@@ -94,3 +171,5 @@ document.addEventListener('click', function(e) {
         resultsContainer.innerHTML = '';
     }
 });
+
+await initHome();

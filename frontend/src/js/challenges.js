@@ -110,7 +110,7 @@ function renderChallenges(challenges) {
             <p>${challenge.shortDescription}</p>
             <div class="card-footer">
                 <span class="points">${challenge.points} pts</span>
-                <span class="duration"><i class="far fa-clock"></i> ${challenge.duration} días</span>
+                <span class="duration"><i class="far fa-clock"></i> ${challenge.duration} days</span>
             </div>
         </article>
     `).join('');

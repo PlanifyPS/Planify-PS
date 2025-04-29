@@ -1,5 +1,11 @@
 class Router {
     constructor() {
+        this.globalScripts = [
+            'points.js',
+            'sidebar.js',
+            'header.js'
+        ];
+
         this.routes = {
             '/register': {
                 view: 'register.html',
@@ -9,82 +15,75 @@ class Router {
             '/home': {
                 view: 'home.html',
                 title: 'Home',
-                scripts: ['home.js', 'points.js', 'authFirebase.js']
+                scripts: ['home.js']
             },
             '/setting': {
                 view: 'setting.html',
                 title: 'Settings',
-                scripts: ['setting.js', 'points.js', 'authFirebase.js', 'profile.js']
+                scripts: ['setting.js', 'profile.js']
             },
             '/habits': {
                 view: 'habits.html',
                 title: 'My Habits',
-                scripts: ['habits.js', 'points.js', 'authFirebase.js']
+                scripts: ['habits.js',]
             },
             '/tasks': {
                 view: 'habits.html',
                 title: 'My Tasks',
-                scripts: ['tasks.js', 'points.js', 'authFirebase.js']
+                scripts: ['tasks.js']
             },
             '/challenges': {
                 view: 'challenges.html',
                 title: 'Weekly Challenges',
-                scripts: ['challenges.js', 'points.js', 'authFirebase.js']
+                scripts: ['challenges.js']
             },
             '/analytics': {
                 view: 'analytics.html',
                 title: 'Analytics',
-                scripts: ['analytics.js', 'points.js', 'authFirebase.js']
+                scripts: ['analytics.js']
             },
             '/forums': {
                 view: 'foro.html',
                 title: 'Forums',
-                scripts: ['foro.js', 'points.js', 'authFirebase.js']
+                scripts: ['foro.js']
             },
             '/groups': {
                 view: 'groups.html',
                 title: 'Groups',
-                scripts: ['groups.js', 'points.js', 'authFirebase.js']
+                scripts: ['groups.js']
             },
             '/groupChallenge': {
                 view: 'groupChallenge.html',
                 title: 'GroupChallenge',
-                scripts: ['groupChallenge.js', 'points.js', 'authFirebase.js']
+                scripts: ['groupChallenge.js']
             },
             '/group-information': {
                 view: 'groupInformation.html',
                 title: 'Group Information',
-                scripts: ['groupInformation.js', 'points.js', 'authFirebase.js']
+                scripts: ['groupInformation.js']
             }
-
         };
+
         this.basePath = '../../frontend/src';
         this.loadedScripts = new Map();
-        this.currentStyle = null;
         this.init();
     }
 
     async init() {
-        try {
-            this.setupEvents();
-            await this.handleRoute();
-        } catch (error) {
-            this.showError(error);
-        }
+        this.setupEvents();
+        await this.handleRoute();
     }
 
     async handleRoute() {
-        const path = window.location.hash.slice(1) || '/register';
+        const hash = window.location.hash || '#/register';
+        const [path] = hash.slice(1).split('?');
         const route = this.routes[path];
-
         if (!route) {
-            this.showError(new Error('Página no encontrada'));
-            return;
+            return this.showError(new Error('Página no encontrada'));
         }
 
-        document.title = `Planify - ${route.title}`;
+        document.title = `Planify – ${route.title}`;
         document.getElementById('app').innerHTML = '';
-
         if (path === '/register') {
             document.body.classList.add('full-screen');
         } else {
@@ -92,24 +91,17 @@ class Router {
         }
 
         await this.loadView(route);
-
         if (path !== '/register') {
             await this.loadComponents();
         }
 
-        await this.loadScripts(route.scripts);
+        const scriptsToLoad = [
+            ...this.globalScripts,
+            ...route.scripts.filter(s => !this.globalScripts.includes(s))
+        ];
 
-        if (route.scripts.includes('points.js') && window.initPoints) {
-            window.initPoints();
-        }
-
-        await this.loadScripts(route.scripts);
-        if (window.setupTaskButton) {
-            window.setupTaskButton();
-        }
+        await this.loadScripts(scriptsToLoad);
     }
-
-
 
     async loadComponents() {
         try {
@@ -146,12 +138,13 @@ class Router {
             }
 
             const module = this.loadedScripts.get(scriptName);
+            await this.loadModules(module);
+
             if (module && typeof module.init === 'function') {
                 module.init();
             }
         }
     }
-
 
     async loadScript(scriptName) {
         try {
@@ -162,6 +155,18 @@ class Router {
         }
     }
 
+    async loadModules(module){
+        if (module && typeof module.initSidebar === 'function') {
+            module.initSidebar();
+        }
+
+        if (module && typeof module.initHeader === 'function') {
+            module.initHeader();
+        }
+        if (module && typeof module.initPoints === 'function') {
+            module.initPoints();
+        }
+    }
 
     cleanupUnusedScripts(neededScripts) {
         this.loadedScripts.forEach((_, scriptName) => {
@@ -170,7 +175,6 @@ class Router {
             }
         });
     }
-
 
     setupEvents() {
         window.addEventListener('hashchange', () => this.handleRoute());

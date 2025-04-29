@@ -1,8 +1,9 @@
 import { db} from "./firebase_config.js";
 import {
+    collection,
     deleteField,
     doc,
-    getDoc,
+    getDoc, getDocs, setDoc,
     updateDoc
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
@@ -30,6 +31,30 @@ export async function getUserData(userUid) {
     }
 }
 
+export async function getForum(forumUid) {
+    const forumRef = doc(db, "Forums", forumUid);
+    const forumSnap = await getDoc(forumRef);
+
+    if (forumSnap.exists()) {
+        return forumSnap.data();
+    }
+    else{
+        console.error("User data not found");
+    }
+}
+
+export async function initForum(forumUid, data) {
+    try {
+        const userRef = doc(db, "Forums", forumUid);
+        await setDoc(userRef, data);
+        
+        console.log("Datos actualizados correctamente.");
+    } catch (error) {
+        console.error("Error al guardar datos:", error);
+    }
+}
+
+
 export async function getGroupData(groupUID) {
     const groupRef = doc(db, "Groups", groupUID);
     const groupSnap = await getDoc(groupRef);
@@ -46,23 +71,17 @@ export const deleteUserField = async (uid, fieldToRemove) => {
     await saveUserData(uid, {[fieldToRemove]: deleteField()});
 }
 
-export const addPointsToUser = async (uid, pointsToAdd) => {
+export async function getAllDocumentsFromCollection(collectionName) {
     try {
-        const userRef = doc(db, "Users", uid);
-        const userSnap = await getDoc(userRef);
+        const colRef = collection(db, collectionName);
+        const colSnap = await getDocs(colRef);
 
-        if (userSnap.exists()) {
-            const currentPoints = userSnap.data().points || 0;
-            const newPoints = currentPoints + pointsToAdd;
-
-            await updateDoc(userRef, { points: newPoints });
-
-            console.log(`Puntos actualizados en Firestore. Total: ${newPoints}`);
-            return newPoints;
-        } else {
-            console.error("Usuario no encontrado en Firestore");
-        }
-    } catch (error) {
-        console.error("Error al añadir puntos al usuario:", error);
+        const docs = [];
+        colSnap.forEach(doc => {
+            docs.push({id:doc.id, ...doc.data()});
+        });
+        return docs;
+    }catch (error) {
+        console.error("Error getAllDocumentsFromCollection:", error);
     }
-};
+}
