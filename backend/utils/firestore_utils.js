@@ -45,8 +45,6 @@ export async function getForum(forumUid) {
 }
 
 export async function saveForumUser(forumUid,data) {
-    console.log(data);
-    console.log(forumUid)
     try {
         const forumRef = doc(db, "Forums", forumUid);
         await updateDoc(forumRef, data);
