@@ -1,4 +1,11 @@
-import {getAllDocumentsFromCollection, getForum, getUserData, initForum, saveUserData} from "./firestore_utils.js";
+import {
+    getAllDocumentsFromCollection,
+    getForum,
+    getUserData,
+    initForum,
+    saveForumUser,
+    saveUserData
+} from "./firestore_utils.js";
 
 
 const userUID = sessionStorage.getItem("uid");
@@ -15,7 +22,27 @@ export async function getUserForum() {
     return forums;
 }
 
+async function checkIfForumExists(forumName) {
+    const forumData = await getForum(forumName);
+    return forumData !== undefined;
+}
+
+async function updateForum(forumUid) {
+
+    const forum = await getForum(forumUid);
+    const updatedForum = [];
+    for(const index in forum.users || []){
+        updatedForum.push(forum.users[index]);
+    }
+    updatedForum.push(userUID);
+
+
+    await saveForumUser(forumUid, {users: updatedForum});
+}
+
 export async function addUserToForum(forumName) {
+
+    if(!await checkIfForumExists(forumName)){return;}
 
     const userData = await getUserData(userUID);
     const userFormData = [];
@@ -24,16 +51,18 @@ export async function addUserToForum(forumName) {
     }
     userFormData.push(forumName);
     await saveUserData(userUID, {forum: userFormData});
+    await updateForum(forumName);
 
 }
 
 export async function createForum(forumName) {
     const forumInit = {
         messages : {},
-        users : [userUID],
+        users : [],
         title : forumName,
     }
     await initForum(forumName,forumInit);
+
 
 }
 

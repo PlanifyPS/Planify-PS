@@ -31,6 +31,7 @@ export async function getUserData(userUid) {
     }
 }
 
+
 export async function getForum(forumUid) {
     const forumRef = doc(db, "Forums", forumUid);
     const forumSnap = await getDoc(forumRef);
@@ -39,7 +40,19 @@ export async function getForum(forumUid) {
         return forumSnap.data();
     }
     else{
-        console.error("User data not found");
+        console.error("Forum data not found");
+    }
+}
+
+export async function saveForumUser(forumUid,data) {
+    console.log(data);
+    console.log(forumUid)
+    try {
+        const forumRef = doc(db, "Forums", forumUid);
+        await updateDoc(forumRef, data);
+        console.log("Datos actualizados correctamente.");
+    } catch (error) {
+        console.error("Error al guardar datos:", error);
     }
 }
 

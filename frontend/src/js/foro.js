@@ -19,10 +19,6 @@ function addForumToList(forumTitle) {
         document.getElementById('forumName').textContent = forumTitle;
         document.getElementById('forumContainer').innerHTML = '';
         currentForum = forumTitle;
-        /*forumPosts[currentForum].forEach(post => {
-            document.getElementById('forumContainer').appendChild(post.cloneNode(true));
-        });
-        */
     });
     forumListElement.appendChild(newForum);
     document.getElementById('forumModal').style.display = 'none';
@@ -41,6 +37,11 @@ function addToAutoCompleteList(forum) {
     const resultItem = document.createElement('div');
     const resultsContainer = document.getElementById('searchResults');
     resultItem.textContent = forum.id;
+
+    resultItem.addEventListener('click', () => {
+        document.getElementById('searchForum').value = forum.id;
+    })
+
     resultsContainer.appendChild(resultItem);
 }
 
@@ -61,8 +62,16 @@ async function autoCompleteForums() {
 
 }
 
+async function joinForum() {
+    const searchForum = document.getElementById('searchForum');
+    await addUserToForum(searchForum.value);
+    searchForum.value = '';
+}
+
 async function setupForumListeners() {
     document.getElementById('searchForum').addEventListener('input', autoCompleteForums);
+    document.getElementById('addPost').addEventListener('click', joinForum)
+   
 }
 
 async function initHome() {
