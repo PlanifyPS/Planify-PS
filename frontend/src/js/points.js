@@ -3,6 +3,9 @@ import { auth, db } from "../../../backend/utils/firebase_config.js";
 import {
     doc,
     getDoc,
+    addDoc,
+    collection,
+    serverTimestamp,
     setDoc,
     updateDoc
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
@@ -54,12 +57,20 @@ async function loadPoints() {
 }
 
 async function addPoint() {
-    const docRef = doc(db, "Users", currentUserUid);
-    const docSnap = await getDoc(docRef);
-    let data = docSnap.data();
+    const userRef = doc(db, "Users", currentUserUid);
+    const userSnap = await getDoc(userRef);
+    const data = userSnap.data() || {};
 
     const newPoints = (data.points || 0) + 1;
-    await updateDoc(docRef, { points: newPoints });
+    await updateDoc(userRef, { points: newPoints });
+
+    await addDoc(
+        collection(db, "Users", currentUserUid, "pointsHistory"),
+        {
+            timestamp: serverTimestamp(),
+            points:    newPoints
+        }
+    );
 
     updatePointsUI(newPoints);
     updateMedals(newPoints);
