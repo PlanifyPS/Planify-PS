@@ -145,12 +145,11 @@ dialog::backdrop {
 }
 
 .group-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 1.5rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px var(--shadow);
+    width: 100%;
+    padding: 30px;
+    background-color: var(--light-bg);
+    border-radius: 15px;
+    box-shadow: 0 2px 8px var(--shadow);
 }
 
 #group-name {
@@ -196,26 +195,6 @@ dialog::backdrop {
 .podium-item .points {
     font-size: 0.9rem;
     color: var(--blue-medium);
-}
-
-.members-list {
-    margin-bottom: 2rem;
-}
-
-.members-list h2 {
-    margin-bottom: 0.5rem;
-}
-
-.members-list ul {
-    list-style: none;
-    padding: 0;
-}
-
-.members-list li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--shadow);
-    display: flex;
-    justify-content: space-between;
 }
 
 .chart-container {
@@ -287,5 +266,69 @@ dialog::backdrop {
     background-color: var(--blue-medium);
     cursor: pointer;
 }
+
+.member-flex {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.members-list {
+    flex: 1;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.members-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.members-list li {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--shadow);
+    cursor: pointer;
+}
+
+.members-list li:hover {
+    background: var(--light-bg);
+}
+
+.member-chart {
+    flex: 1;
+    text-align: center;
+}
+
+.member-chart h2 {
+    margin-bottom: 1rem;
+}
+
+.history-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.history-controls label {
+    font-size: 0.9rem;
+    color: var(--dark-blue);
+}
+
+.history-controls select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--shadow);
+    border-radius: 4px;
+}
+
+#member-instruction {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--text-secondary);
+    margin: 0.5rem 0 1rem;
+}
+
+
 
 

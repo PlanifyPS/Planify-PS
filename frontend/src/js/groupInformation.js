@@ -1,175 +1,162 @@
-// group-information.js
-import {auth, db} from '../../../backend/utils/firebase_config.js';
+import { auth, db } from '../../../backend/utils/firebase_config.js';
 import {
-    doc,
-    getDoc,
-    getDocs,
-    collection
+    doc, getDoc,
+    getDocs, collection
 } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
-
 import Chart from 'https://esm.run/chart.js/auto';
 
-let user = {};
-export function initGroupInformation() {
-    if (document.readyState === 'complete') {
+let currentUser;
+let members = [];
+let totalPoints = 0;
+let allRecords = [];
+let memberPieChart, historyChart;
 
-        onAuthStateChanged(auth, authUser => {
-            if (authUser) {
-                user = authUser;
-                loadGroupInformation();
-            } else {
-                console.log('No user is signed in');
-            }
-        });
-    } else {
-        document.addEventListener('DOMContentLoaded', loadGroupInformation);
-    }
+export function initGroupInformation() {
+    onAuthStateChanged(auth, u => {
+        if (u) {
+            currentUser = u;
+            loadGroupInformation();
+        }
+    });
 }
 
 async function loadGroupInformation() {
-    const hash = window.location.hash || '';
-    const queryString = hash.includes('?') ? hash.split('?')[1] : '';
-    const params = new URLSearchParams(queryString);
-    const groupId = params.get('id');
-    if (!groupId) {
-        console.error('No group ID provided');
-        return;
-    }
+    // 1) Carga datos del grupo
+    const params   = new URLSearchParams(window.location.hash.split('?')[1]);
+    const groupId  = params.get('id');
+    if (!groupId) return console.error('No group ID');
 
-    const groupRef = doc(db, 'Groups', groupId);
-    const groupSnap = await getDoc(groupRef);
-    if (!groupSnap.exists()) {
-        console.error('Group not found:', groupId);
-        return;
-    }
+    const gSnap = await getDoc(doc(db, 'Groups', groupId));
+    if (!gSnap.exists()) return console.error('Group not found');
+    const g = gSnap.data();
 
-    const groupData = groupSnap.data();
-
-    document.getElementById('group-name').textContent = groupData.name;
-    document.getElementById('group-desc').textContent = groupData.description || '';
+    document.getElementById('group-name').textContent = g.name;
+    document.getElementById('group-desc').textContent = g.description || '';
     document.getElementById('invite-code').textContent =
-        groupData.createdBy === user.uid
-            ? `Invite Code: ${groupData.inviteCode}`
-            : '';
+        g.createdBy === currentUser.uid ? `Invite Code: ${g.inviteCode}` : '';
 
-    const memberDocs = await Promise.all(
-        groupData.members.map(uid => getDoc(doc(db, 'Users', uid)))
+    // 2) Trae miembros y suma puntos
+    const snaps = await Promise.all(
+        g.members.map(uid => getDoc(doc(db, 'Users', uid)))
     );
+    members = snaps
+        .filter(s=>s.exists())
+        .map(s => ({
+            uid:         s.id,
+            name:        s.data().username||s.data().name||'Unknown',
+            points:      s.data().points||0
+        }))
+        .sort((a,b)=>b.points - a.points);
+    totalPoints = members.reduce((sum,u)=> sum+u.points, 0);
 
-
-    const members = memberDocs
-        .filter(snap => snap.exists())
-        .map(snap => {
-            const d = snap.data();
-            return {
-                uid: snap.id,
-                name: d.username || d.name || 'Unknown',
-                points: d.points || 0,
-                improvement: d.improvement || 0
-            };
-        });
-
-    console.log(members);
-
-    members.sort((a, b) => b.points - a.points);
-    const [first, second, third, ...others] = members;
-
-    const podiumEls = {
-        first: document.querySelector('.podium-item.first'),
-        second: document.querySelector('.podium-item.second'),
-        third: document.querySelector('.podium-item.third')
-    };
-    [second, first, third].forEach((user, idx) => {
-        const key = ['second', 'first', 'third'][idx];
-        const el = podiumEls[key];
-        el.querySelector('.user-name').textContent = user?.name || '';
-        el.querySelector('.points').textContent = user ? `${user.points} pts` : '';
+    // 3) Rellenar podio
+    const [first,second,third] = [members[0],members[1],members[2]].filter(Boolean);
+    const pods = { first, second, third };
+    Object.entries(pods).forEach(([pos,u])=>{
+        const el = document.querySelector(`.podium-item.${pos}`);
+        if (!u) return el.style.visibility='hidden';
+        el.querySelector('.user-name').textContent = u.name;
+        el.querySelector('.points').textContent    = `${u.points} pts`;
     });
 
+    // 4) Lista de demás miembros
     const ul = document.getElementById('members-list');
     ul.innerHTML = '';
-    others.forEach(u => {
+    members.forEach(u=>{
         const li = document.createElement('li');
-        li.innerHTML = `<span>${u.name}</span><span>${u.points} pts</span>`;
+        li.textContent = u.name;
+        li.dataset.uid = u.uid;
+        li.addEventListener('click', ()=> selectMember(u));
         ul.appendChild(li);
     });
 
-    const ctx1 = document.getElementById('improvementChart').getContext('2d');
-    new Chart(ctx1, {
-        type: 'bar',
-        data: {
-            labels:    members.map(u => u.name),
-            datasets: [{
-                label: 'Improvement',
-                data:   members.map(u => u.improvement)
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: { y: { beginAtZero: true } }
-        }
-    });
+    // 5) Inicializa primer gráfico de historial
+    await loadAllRecords();
+    setupHistoryChart();
+    document.getElementById('range-select')
+        .addEventListener('change', e=> updateHistoryChart(e.target.value));
+}
 
-    const historySnapshots = await Promise.all(
+async function loadAllRecords() {
+    // lee todas las subcolecciones pointsHistory
+    const snaps = await Promise.all(
         members.map(u =>
             getDocs(collection(db, 'Users', u.uid, 'pointsHistory'))
         )
     );
-
-    console.log(historySnapshots);
-
-    function getWeekStart(dateStr) {
-        const d = new Date(dateStr);
-        const day = d.getUTCDay();
-        const diff = (day + 6) % 7;
-        d.setDate(d.getDate() - diff);
-        return d.toISOString().slice(0, 10);
-    }
-
-    const allRecords = [];
-    historySnapshots.forEach(snap => {
-        snap.docs.forEach(d => {
+    allRecords = [];
+    snaps.forEach((snap,i)=>{
+        snap.docs.forEach(d=>{
             const { points, timestamp } = d.data();
-            const dateStr = new Date(timestamp.seconds * 1000)
-                .toISOString().slice(0,10);
-            allRecords.push({ date: dateStr, points });
+            const date = new Date(timestamp.seconds*1000).toISOString().slice(0,10);
+            allRecords.push({ date, points });
         });
     });
+}
 
-    const sumByWeek = {};
-    allRecords.forEach(({ date, points }) => {
-        const weekStart = getWeekStart(date);
-        sumByWeek[weekStart] = (sumByWeek[weekStart] || 0) + points;
-    });
+function selectMember(u) {
+    const instr = document.getElementById('member-instruction');
+    if (instr) instr.style.display = 'none';
 
-    const sortedWeeks = Object.keys(sumByWeek).sort();
-    const totalPointsPerWeek = sortedWeeks.map(week => sumByWeek[week]);
+    const pct = totalPoints > 0
+        ? Math.round(u.points / totalPoints * 100)
+        : 0;
+    document.getElementById('member-chart-title').textContent =
+        `${u.name}: ${pct}% of total`;
 
-    const ctx2 = document.getElementById('pointsHistoryChart').getContext('2d');
-    new Chart(ctx2, {
-        type: 'bar',
+    const ctx = document.getElementById('memberPieChart').getContext('2d');
+    if (memberPieChart) memberPieChart.destroy();
+    memberPieChart = new Chart(ctx, {
+        type: 'pie',
         data: {
-            labels: sortedWeeks,
+            labels: [u.name, 'Others'],
             datasets: [{
-                label: 'Total Points (by week)',
-                data: totalPointsPerWeek
+                data:   [u.points, totalPoints - u.points],
+                backgroundColor: ['#4f46e5', '#c7d2fe']
             }]
         },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true },
-                x: {
-                    ticks: {
-                        callback: val => {
-                            return sortedWeeks[val].slice(5);
-                        }
-                    }
-                }
-            }
+        options: { responsive: true }
+    });
+}
+
+
+function getPeriodKey(dateStr, range) {
+    const d = new Date(dateStr);
+    if (range==='daily')   return dateStr;
+    if (range==='weekly')  {
+        const day = d.getUTCDay(), diff = (day+6)%7;
+        d.setDate(d.getDate()-diff);
+        return d.toISOString().slice(0,10);
+    }
+    return dateStr.slice(0,7);
+}
+
+function setupHistoryChart() {
+    const ctx = document.getElementById('pointsHistoryChart').getContext('2d');
+    historyChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: [], datasets:[{ label:'Points', data:[] }] },
+        options:{
+            responsive:true,
+            scales:{ y:{ beginAtZero:true } }
         }
     });
+    updateHistoryChart('weekly');
+}
+
+function updateHistoryChart(range) {
+    const sum = {};
+    allRecords.forEach(r=>{
+        const key = getPeriodKey(r.date, range);
+        sum[key] = (sum[key]||0) + r.points;
+    });
+    const labels = Object.keys(sum).sort();
+    const data   = labels.map(l=>sum[l]);
+    historyChart.data.labels = labels;
+    historyChart.data.datasets[0].data = data;
+    historyChart.data.datasets[0].label = `Total Points (${range})`;
+    historyChart.update();
 }
 
 initGroupInformation();

@@ -21,18 +21,30 @@
         </div>
     </div>
 
-    <div class="members-list">
-        <h2>Other Members</h2>
-        <ul id="members-list"></ul>
+    <div class="member-flex">
+        <div class="members-list">
+            <h2>Members</h2>
+            <ul id="members-list"></ul>
+        </div>
+        <div class="member-chart">
+            <h2 id="member-chart-title">Select a member</h2>
+            <p id="member-instruction">
+                Click on a member from the list to view their contribution percentage.
+            </p>
+            <canvas id="memberPieChart"></canvas>
+        </div>
     </div>
 
-    <div class="chart-container">
-        <canvas id="improvementChart"></canvas>
+    <div class="history-controls">
+        <label for="range-select">Show:</label>
+        <select id="range-select">
+            <option value="daily">Daily</option>
+            <option value="weekly" selected>Weekly</option>
+            <option value="monthly">Monthly</option>
+        </select>
     </div>
 
     <div class="chart-container">
         <canvas id="pointsHistoryChart"></canvas>
     </div>
-
 </main>
-
