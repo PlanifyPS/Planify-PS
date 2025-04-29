@@ -3,7 +3,8 @@ import { auth, googleProvider, db, signOut } from "./firebase_config.js";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    signInWithPopup
+    signInWithPopup,
+    sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { saveUserData, getUserData } from "./firestore_utils.js";
 
@@ -62,5 +63,13 @@ export const handleLogout = async () => {
         window.location.href = '#/register';
     } catch (error) {
         console.error('Error in logout:', error);
+    }
+};
+
+export const resetPassword = async (email) => {
+    try {
+        await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+        throw new Error(error.message);
     }
 };

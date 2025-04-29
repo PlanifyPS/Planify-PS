@@ -1,9 +1,9 @@
-// js/authFirebase.js
-import { registerUser, loginUser, loginWithGoogle, handleLogout } from "../../../backend/utils/auth_utils.js";
+import { registerUser, loginUser, loginWithGoogle, resetPassword } from "../../../backend/utils/auth_utils.js";
 
 const signupForm = document.getElementById("signup-form");
 const loginForm = document.getElementById("login-form");
 const googleLoginButton = document.getElementById("google-login");
+const forgotBtn = document.getElementById("forgot-password");
 
 if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
@@ -69,6 +69,41 @@ if (googleLoginButton) {
         }
     });
 }
+
+if (forgotBtn) {
+    forgotBtn.addEventListener("click", async () => {
+        const { value: email } = await Swal.fire({
+            title: 'Reset your password',
+            input: 'email',
+            inputLabel: 'Enter your email address',
+            inputPlaceholder: 'you@example.com',
+            showCancelButton: true,
+            confirmButtonText: 'Send reset link',
+            cancelButtonText: 'Cancel',
+            inputValidator: v => (!v ? 'You need to enter an email!' : null)
+        });
+
+        if (email) {
+            Swal.showLoading();
+            try {
+                await resetPassword(email);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Email sent!',
+                    text: `A password reset link has been sent to ${email}.`,
+                    confirmButtonText: 'OK'
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message
+                });
+            }
+        }
+    });
+}
+
 
 function showSuccess(message, title = 'Success') {
     return Swal.fire({

@@ -17,6 +17,14 @@
     font-size: 0.9rem;
     margin: 1.5rem 0;
     text-decoration: none;
+    background-color: transparent;
+    border: none;
+    transition: all 0.25s ease-in-out;
+}
+
+.link:hover{
+    color: var(--light-blue);
+    cursor: pointer;
 }
 
 .container {
