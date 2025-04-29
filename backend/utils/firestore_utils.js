@@ -117,3 +117,7 @@ export const addPointsToUser = async (uid, pointsToAdd) => {
         console.error("Error al añadir puntos al usuario:", error);
     }
 };
+
+export async function sendForumMessage(forumId, senderUid, message) {
+
+}

@@ -9,16 +9,29 @@ const forumList = [];
 let currentForum = "Forum Name";
 const forumPosts = {};
 
+function initChat(forumTitle) {
+
+    document.getElementById('chat-title').textContent = forumTitle;
+    // Crear los mensajes
+
+}
+
+function userForumListener(forumTitle){
+    document.getElementById('forumName').textContent = forumTitle;
+    document.getElementById('forumContainer').innerHTML = '';
+    currentForum = forumTitle;
+
+    document.getElementById('chatModal').style.display = 'flex';
+    initChat(forumTitle);
+}
 function addForumToList(forumTitle) {
 
 
     const forumListElement = document.getElementById('forumList');
     const newForum = document.createElement('li');
     newForum.textContent = forumTitle;
-    newForum.addEventListener('click', function () {
-        document.getElementById('forumName').textContent = forumTitle;
-        document.getElementById('forumContainer').innerHTML = '';
-        currentForum = forumTitle;
+    newForum.addEventListener('click', function(event){
+        userForumListener(forumTitle);
     });
     forumListElement.appendChild(newForum);
     document.getElementById('forumModal').style.display = 'none';
@@ -98,6 +111,30 @@ async function initHome() {
         });
     }
 }
+
+document.getElementById('close-chat-button').addEventListener("click", function() {
+    console.log('close-chat-button');
+    document.getElementById('chatModal').style.display = 'none';
+})
+
+document.getElementById('chat-send-message')
+
+function sendMessage() {
+    const chatInput = document.getElementById("chatInput");
+    const chatMessages = document.getElementById("chatMessages");
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    const messageEl = document.createElement("div");
+    messageEl.innerHTML = `<strong>You:</strong> ${message}`;
+    messageEl.style.marginBottom = "10px";
+
+    chatMessages.appendChild(messageEl);
+    chatInput.value = "";
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+addEventListener('click', sendMessage)
 
 
 document.getElementById('createForum').addEventListener('click', async function () {
