@@ -1,149 +1,188 @@
-import ProgressBar from 'https://cdn.jsdelivr.net/npm/progressbar.js/+esm';
+// analytics.js
+import Chart from 'https://esm.run/chart.js/auto';
+import { auth, db } from '../../../backend/utils/firebase_config.js';
+import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
 
-function initHome() {
-    if (document.readyState === 'complete') {
-        loadAnalytics();
+let habitsBarChart, habitsPieChart;
+let tasksBarChart, tasksPieChart;
+
+export function initAnalytics() {
+    onAuthStateChanged(auth, user => {
+        if (!user) return window.location.href = '#/register';
+        loadAnalytics(user.uid);
+    });
+}
+
+async function loadAnalytics(uid) {
+    await loadHabitsAnalytics(uid);
+    await loadTasksAnalytics(uid);
+}
+
+function getLastNDates(n) {
+    const arr = [];
+    const today = new Date();
+    for (let i = n - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        arr.push(d);
+    }
+    return arr;
+}
+
+function groupSum(records, keyFn) {
+    return records.reduce((acc, r) => {
+        const k = keyFn(r);
+        acc[k] = (acc[k] || 0) + 1;
+        return acc;
+    }, {});
+}
+
+function drawBar(containerId, labels, data, label) {
+    const ctx = document.createElement('canvas');
+    const cont = document.getElementById(containerId);
+    cont.innerHTML = '';
+    cont.appendChild(ctx);
+
+    const cfg = {
+        type: 'bar',
+        data: { labels, datasets: [{ label, data, backgroundColor: '#4f46e5' }] },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true },
+                x: { grid: { display: false } }
+            }
+        }
+    };
+
+    if (containerId.startsWith('habits')) {
+        habitsBarChart?.destroy();
+        habitsBarChart = new Chart(ctx.getContext('2d'), cfg);
     } else {
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAnalytics();
-        });
+        tasksBarChart?.destroy();
+        tasksBarChart = new Chart(ctx.getContext('2d'), cfg);
     }
 }
 
-function loadAnalytics() {
-    loadCircleProgressBars();
-    loadProgressBarCharts();
+function drawPie(containerId, doneCount, totalDays) {
+    const missed = totalDays - doneCount;
+    const ctx = document.createElement('canvas');
+    const cont = document.getElementById(containerId);
+    cont.innerHTML = '';
+    cont.appendChild(ctx);
 
-    // Responsive handling with debounce
-    let resizeTimeout;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(function() {
-            loadProgressBarCharts();
-        }, 200); // 200ms for faster response
-    });
+    const cfg = {
+        type: 'pie',
+        data: {
+            labels: ['Done','Missed'],
+            datasets: [{
+                data: [doneCount, missed],
+                backgroundColor: ['#2563EB', '#93C5FD']
+            }]
+        },
+        options: { responsive: true }
+    };
+
+    if (containerId.startsWith('habits')) {
+        habitsPieChart?.destroy();
+        habitsPieChart = new Chart(ctx.getContext('2d'), cfg);
+    } else {
+        tasksPieChart?.destroy();
+        tasksPieChart = new Chart(ctx.getContext('2d'), cfg);
+    }
 }
 
-function loadCircleProgressBars() {
-    localStorage.setItem("habitsJson", JSON.stringify(0.8));
-    localStorage.setItem("tasksJson", JSON.stringify(0.6));
-    const habits = document.getElementById("habits-circle-progress");
-    const tasks = document.getElementById("tasks-circle-progress");
+async function loadHabitsAnalytics(uid) {
+    const snaps = await getDocs(collection(db, 'Users', uid, 'habitsHistory'));
+    const dates = snaps.docs.map(d =>
+        new Date(d.data().timestamp.seconds * 1000)
+    );
 
-    const habitsCircleBar = new ProgressBar.Circle(habits, {
-        strokeWidth: 12,
-        easing: "easeInOut",
-        duration: 1000,
-        color: "#0077B6",
-        svgStyle: null,
-        text:{
-            value: '0%',
-            className: 'circle-progress-text',
-        }
-    });
+    const last7Dates = getLastNDates(7);
+    const grouped = groupSum(dates, d => d.toISOString().slice(0,10));
+    const dailyCounts = last7Dates.map(d =>
+        grouped[d.toISOString().slice(0,10)] || 0
+    );
 
-    const tasksCircleBar = new ProgressBar.Circle(tasks, {
-        strokeWidth: 12,
-        easing: "easeInOut",
-        duration: 1000,
-        color: "#0077B6",
-        svgStyle: null,
-        text:{
-            value: '0%',
-            className: 'circle-progress-text',
+    const todayCount = dailyCounts[6];
+    const currentStreak = (() => {
+        let s=0;
+        for (let i=6; i>=0 && dailyCounts[i]>0; i--) s++;
+        return s;
+    })();
+    const maxStreak = (() => {
+        let m=0,c=0;
+        for (const v of dailyCounts) {
+            v>0 ? c++ : (m=Math.max(m,c), c=0);
         }
-    });
+        return Math.max(m,c);
+    })();
+    const totalDone = dates.length;
+    const planned=0, inProgress=0;
 
-    habitsCircleBar.animate(localStorage.getItem("habitsJson"), {
-        step: function(state, bar) {
-            bar.setText(Math.round(bar.value() * 100) + '%');
-        }
-    });
+    document.getElementById('habits-current-streak').textContent = currentStreak;
+    document.getElementById('habits-completed-today').textContent = todayCount;
+    document.getElementById('habits-planned').textContent = planned;
+    document.getElementById('habits-total').textContent = totalDone;
+    document.getElementById('habits-in-progress').textContent = inProgress;
+    document.getElementById('habits-max-streak').textContent = maxStreak;
 
-    tasksCircleBar.animate(localStorage.getItem("tasksJson"), {
-        step: function(state, bar) {
-            bar.setText(Math.round(bar.value() * 100) + '%');
-        }
-    });
+    const dayLabels = last7Dates.map(d =>
+        d.toLocaleDateString('en-US', { weekday: 'short' })
+    );
+    drawBar('habits-BarChart', dayLabels, dailyCounts, 'Habits done');
+
+    // pie semanal (días con al menos 1 hábito)
+    const weekKeys = dayLabels; // mismo orden Mon...Sun
+    const doneThisWeek = weekKeys.reduce((acc,_,i) =>
+        acc + (dailyCounts[i]>0 ? 1 : 0), 0
+    );
+    drawPie('habits-circle-progress', doneThisWeek, 7);
 }
 
-function loadProgressBarCharts() {
-    // Sample data
-    const habitsData = [
-        { day: 'Lun', value: 0.4 },
-        { day: 'Mar', value: 0.3 },
-        { day: 'Mié', value: 0.5 },
-        { day: 'Jue', value: 0.2 },
-        { day: 'Vie', value: 0.6 },
-        { day: 'Sáb', value: 0.4 },
-        { day: 'Dom', value: 0.3 }
-    ];
+async function loadTasksAnalytics(uid) {
+    const snaps = await getDocs(collection(db, 'Users', uid, 'tasksHistory'));
+    const dates = snaps.docs.map(d =>
+        new Date(d.data().timestamp.seconds * 1000)
+    );
 
-    const tasksData = [
-        { day: 'Lun', value: 0.7 },
-        { day: 'Mar', value: 0.5 },
-        { day: 'Mié', value: 0.4 },
-        { day: 'Jue', value: 0.8 },
-        { day: 'Vie', value: 0.6 },
-        { day: 'Sáb', value: 0.3 },
-        { day: 'Dom', value: 0.2 }
-    ];
+    const last7Dates = getLastNDates(7);
+    const grouped = groupSum(dates, d => d.toISOString().slice(0,10));
+    const dailyCounts = last7Dates.map(d =>
+        grouped[d.toISOString().slice(0,10)] || 0
+    );
 
-    createBarChart('habits-BarChart', habitsData, 'Hábitos');
-    createBarChart('tasks-BarChart', tasksData, 'Tareas');
+    const todayCount = dailyCounts[6];
+    const currentStreak = (() => {
+        let s=0;
+        for (let i=6; i>=0 && dailyCounts[i]>0; i--) s++;
+        return s;
+    })();
+    const maxStreak = (() => {
+        let m=0,c=0;
+        for (const v of dailyCounts) {
+            v>0 ? c++ : (m=Math.max(m,c), c=0);
+        }
+        return Math.max(m,c);
+    })();
+    const totalDone = dates.length;
+    const planned=0, inProgress=0;
+
+    document.getElementById('tasks-current-streak').textContent = currentStreak;
+    document.getElementById('tasks-completed-today').textContent = todayCount;
+    document.getElementById('tasks-planned').textContent = planned;
+    document.getElementById('tasks-total').textContent = totalDone;
+    document.getElementById('tasks-in-progress').textContent = inProgress;
+    document.getElementById('tasks-max-streak').textContent = maxStreak;
+
+    const dayLabels = last7Dates.map(d =>
+        d.toLocaleDateString('en-US', { weekday: 'short' })
+    );
+    drawBar('tasks-BarChart', dayLabels, dailyCounts, 'Tasks done');
+
+    const doneThisWeek = dailyCounts.reduce((acc, v) => acc + (v>0?1:0), 0);
+    drawPie('tasks-circle-progress', doneThisWeek, 7);
 }
 
-function createBarChart(containerId, data, label) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    const barsContainer = document.createElement('div');
-    barsContainer.className = 'bars-container';
-    container.appendChild(barsContainer);
-
-    const daysLabelsContainer = document.createElement('div');
-    daysLabelsContainer.className = 'days-labels-container';
-    container.appendChild(daysLabelsContainer);
-
-    data.forEach(item => {
-        const barWrapper = document.createElement('div');
-        barWrapper.className = 'bar-wrapper';
-        barsContainer.appendChild(barWrapper);
-
-        const valueLabel = document.createElement('div');
-        valueLabel.className = 'value-label';
-        valueLabel.textContent = Math.round(item.value * 10);
-        barWrapper.appendChild(valueLabel);
-
-        const barContainer = document.createElement('div');
-        barContainer.className = 'bar-container';
-        barWrapper.appendChild(barContainer);
-
-        const bar = new ProgressBar.Line(barContainer, {
-            strokeWidth: 10,
-            easing: 'easeInOut',
-            duration: 1000,
-            color: '#0077B6',
-            trailColor: '#E5F8FC',
-            trailWidth: 8,
-            svgStyle: { width: '100%', height: '100%' },
-            vertical: true
-        });
-
-        bar.animate(item.value);
-
-        const dayLabel = document.createElement('div');
-        dayLabel.className = 'day-label';
-        dayLabel.textContent = item.day;
-        daysLabelsContainer.appendChild(dayLabel);
-    });
-
-    const yAxisLabel = document.createElement('div');
-    yAxisLabel.className = 'y-axis-label';
-    yAxisLabel.textContent = label + ' completados';
-    container.appendChild(yAxisLabel);
-}
-
-initHome();
+initAnalytics();

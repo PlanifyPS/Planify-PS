@@ -71,7 +71,7 @@
     cursor: pointer;
 }
 
-.tooltip {
+.tooltip-header {
     visibility: hidden;
     opacity: 0;
     background-color: #333;
@@ -89,7 +89,7 @@
     transition: opacity 0.3s ease;
 }
 
-.tooltip::after {
+.tooltip-header::after {
     content: "";
     position: absolute;
     top: 100%;
@@ -100,7 +100,7 @@
     border-color: #333 transparent transparent transparent;
 }
 
-.tooltip-container:hover .tooltip {
+.tooltip-container:hover .tooltip-header {
     visibility: visible;
     opacity: 1;
 }
