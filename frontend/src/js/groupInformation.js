@@ -41,11 +41,22 @@ async function loadGroupInformation() {
     );
     members = snaps
         .filter(s=>s.exists())
-        .map(s => ({
-            uid:         s.id,
-            name:        s.data().username||s.data().name||'Unknown',
-            points:      s.data().points||0
-        }))
+        .map(s => {
+            const userData = s.data();
+            const userName =
+                userData.userName ||
+                userData.Username ||
+                userData.name ||
+                userData.firstName ||
+                userData.displayName ||
+                'Unknown';
+
+            return {
+                uid: s.id,
+                name: userName,
+                points: userData.points || 0
+            };
+        })
         .sort((a,b)=>b.points - a.points);
     totalPoints = members.reduce((sum,u)=> sum+u.points, 0);
 
