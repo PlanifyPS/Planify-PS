@@ -98,6 +98,7 @@ async function setupForumListeners() {
     document.getElementById('searchForum').addEventListener('input', autoCompleteForums);
     document.getElementById('addPost').addEventListener('click', joinForum)
     document.getElementById('saveForum').addEventListener('click', saveNewForum);
+    document.getElementById('send-message').addEventListener('click', showMessage);
    
 }
 
@@ -118,8 +119,6 @@ document.getElementById('close-chat-button').addEventListener("click", function(
     document.getElementById('chatModal').style.display = 'none';
 })
 
-document.getElementById('chat-send-message')
-
 async function showMessage() {
     const chatInput = document.getElementById("chatInput");
     const chatMessages = document.getElementById("chatMessages");
@@ -139,8 +138,6 @@ async function showMessage() {
     chatInput.value = "";
 }
 
-addEventListener('click', showMessage)
-
 
 document.getElementById('createForum').addEventListener('click', async function () {
     document.getElementById('forumModal').style.display = 'flex';
@@ -153,68 +150,6 @@ document.querySelectorAll('.close').forEach(button => {
     });
 });
 
-/*
-document.getElementById('saveForum').addEventListener('click', async function () {
-    const forumTitle = document.getElementById('forumTitle').value;
-    if (forumTitle) {
-        forumList.push(forumTitle);
-        forumPosts[forumTitle] = [];
-        const forumListElement = document.getElementById('forumList');
-        const newForum = document.createElement('li');
-        newForum.textContent = forumTitle;
-        newForum.addEventListener('click', function () {
-            document.getElementById('forumName').textContent = forumTitle;
-            document.getElementById('forumContainer').innerHTML = '';
-            currentForum = forumTitle;
-            forumPosts[currentForum].forEach(post => {
-                document.getElementById('forumContainer').appendChild(post.cloneNode(true));
-            });
-        });
-        forumListElement.appendChild(newForum);
-        document.getElementById('forumModal').style.display = 'none';
-    }
-
-});
-
- */
-/*
-document.getElementById('searchForum').addEventListener('input', function() {
-    const query = this.value.toLowerCase();
-    const resultsContainer = document.getElementById('searchResults');
-    resultsContainer.innerHTML = '';
-    if (query) {
-        forumList.forEach(forum => {
-            if (forum.toLowerCase().startsWith(query)) {
-                const resultItem = document.createElement('div');
-                resultItem.textContent = forum;
-                resultItem.addEventListener('click', function() {
-                    document.getElementById('forumName').textContent = forum;
-                    document.getElementById('forumContainer').innerHTML = '';
-                    currentForum = forum;
-                    forumPosts[currentForum].forEach(post => {
-                        document.getElementById('forumContainer').appendChild(post.cloneNode(true));
-                    });
-                    resultsContainer.innerHTML = '';
-                    document.getElementById('searchForum').value = '';
-                });
-                resultsContainer.appendChild(resultItem);
-            }
-        });
-    }
-});
-
- */
-
-/*
-document.getElementById('addPost').addEventListener('click', function() {
-    if(currentForum == "Forum Name") {
-        alert("Please, enter or create a forum");
-        return;
-    }
-    document.getElementById('postModal').style.display = 'flex';
-});
-
- */
 
 document.getElementById('savePost').addEventListener('click', function() {
     const postTitle = document.getElementById('postTitle').value;
