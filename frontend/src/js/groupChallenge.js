@@ -1,6 +1,38 @@
 const JSON_PATH = '../../frontend/src/json/challenges.json';
 let groupChallengesData = [];
 
+import { db } from '../../../backend/utils/firebase_config.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+
+async function fetchGroupMembers(groupId) {
+    const groupRef = doc(db, 'Groups', groupId);
+    const groupSnap = await getDoc(groupRef);
+    if (!groupSnap.exists()) return [];
+
+    const groupData = groupSnap.data();
+    return groupData.members || [];
+}
+
+async function fetchUsernamesFromIds(userIds) {
+    const userDocs = await Promise.all(userIds.map(uid => getDoc(doc(db, 'Users', uid))));
+    return userDocs.map(docSnap => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            return {
+                id: docSnap.id,
+                name: data.name || data.email || 'Unknown User'
+            };
+        }
+        return { id: 'unknown', name: 'Unknown User' };
+    });
+}
+
+function getGroupIdFromURL() {
+    const params = new URLSearchParams(window.location.hash.split('?')[1]);
+    return params.get('id');
+}
+
+
 export function initGroupChallenges() {
     if (document.readyState === 'complete') {
         loadGroupChallenges();
@@ -144,7 +176,7 @@ function setupGroupCardClickListeners() {
     });
 }
 
-function showGroupChallengeDetails(challengeId) {
+async function showGroupChallengeDetails(challengeId) {
     const challenge = groupChallengesData.find(c => c.id == challengeId);
     const detailContainer = document.getElementById('group-challenge-detail');
 
@@ -176,6 +208,28 @@ function showGroupChallengeDetails(challengeId) {
             </div>
         </div>
     `;
+    const groupId = getGroupIdFromURL();
+    if (groupId) {
+        const memberIds = await fetchGroupMembers(groupId);
+        const memberInfos = await fetchUsernamesFromIds(memberIds);
+
+        const checklistHTML = memberInfos.map(member => `
+            <label class="member-checkbox">
+                <input type="checkbox" name="members" value="${member.id}" />
+                ${member.name}
+            </label>
+        `).join('');
+
+        const checklistContainer = document.createElement('div');
+        checklistContainer.classList.add('member-checklist');
+        checklistContainer.innerHTML = `
+            <h4>Assign to members</h4>
+            ${checklistHTML}
+        `;
+
+        detailContainer.querySelector('.detail-body').appendChild(checklistContainer);
+    }
+
 
     const joinBtn = detailContainer.querySelector('.join-btn');
     if (joinBtn) {
