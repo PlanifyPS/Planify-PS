@@ -25,91 +25,94 @@
     height: 100%;
 }
 
-.habits-list-header{
+.habits-list-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-bottom: 20px;
-
-
 }
-.habits-list-title{
+
+.habits-list-title {
     display: flex;
     align-items: center;
-
 }
-.habits-list-header-options{
+
+.habits-list-header-options {
     display: flex;
     align-items: center;
     gap: 2rem;
-
+    position: relative;
 }
 
-.options-button{
+.options-button {
     padding: 10px;
     min-width: 5.5rem;
-    background-color: var(--blue-medium); /* Azul similar al tema */
+    background-color: var(--blue-medium);
     color: white;
     border: none;
     border-radius: 10px;
     font-size: 14px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-
 }
-/* Efecto hover */
+
 .options-button:hover {
-    background-color: #0056b3; /* Azul más oscuro */
-    transform: scale(1.05); /* Ligero aumento */
+    background-color: #0056b3;
+    transform: scale(1.05);
 }
 
-/* Efecto activo (cuando se presiona el botón) */
 .options-button:active {
     background-color: #004494;
     transform: scale(0.95);
 }
 
-
-
-.user-habits{
+.user-habits {
     display: flex;
     flex-direction: column;
-    overflow-y: auto ;
+    overflow-y: auto;
     width: 100%;
     height: 77vh;
     gap: 8px;
     padding-top: 8px;
 }
+
 .habits-list-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 10px;
-    background-color: var( --white);
+    background-color: var(--white);
     border-radius: 0.5rem;
     box-shadow: 3px 5px 10px var(--shadow);
     transition: transform 0.2s ease;
+    position: relative;
+    padding-left: 15px;
+    overflow: hidden;
 }
-.habit-completed{
+
+.habit-completed {
     background-color: var(--grey);
     text-decoration: line-through;
     opacity: 0.7;
 }
+
 .habits-list-item:hover {
     transform: translateY(-3px);
 }
+
 .habits-list-item-options button {
     border: none;
     background: none;
 }
-.habits-task-title{
+
+.habits-task-title {
     color: var(--dark-blue);
     font-size: 1.2rem;
     font-family: var(--heading-font), sans-serif;
     font-weight: var(--semibold);
 }
 
-#search-HabitsTasks{
+#search-HabitsTasks {
     display: flex;
     margin: 0;
 }
@@ -119,16 +122,18 @@
     align-items: center;
     gap: 1rem;
 }
-.habits-list-item-logo img{
+
+.habits-list-item-logo img {
     width: 50px;
     height: 50px;
-
 }
-.habits-list-item-options{
+
+.habits-list-item-options {
     display: flex;
     gap: 1rem;
 }
-.habits-item-description{
+
+.habits-item-description {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -143,8 +148,6 @@
     height: 20%;
 }
 
-
-
 .habits-item-description_row_b {
     flex-direction: row;
     display: flex;
@@ -153,63 +156,43 @@
     height: 80%;
 }
 
-.habits-item-description_col_1, .habits-item-description_col_2 {
+.habits-item-description_col_1,
+.habits-item-description_col_2 {
     display: flex;
     flex-direction: column;
     gap: 8px;
     width: 50%;
 }
 
-.habits-item-description_1 {
-    background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-lighter) 100%);
-    border-radius: 15px;
-    padding: 12px;
-    gap: 8px;
-    box-shadow: 0 4px 8px var(--shadow);
-    height: 30%;
-    margin: 0;
-    transition: transform 0.2s ease;
-    align-content: center;
-    text-align: center;
-}
-
-.habits-item-description_2 {
-    background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-lighter) 100%);
-    border-radius: 15px;
-    padding: 12px;
-    gap: 8px;
-    box-shadow: 0 4px 8px var(--shadow);
-    height: 70%;
-    margin: 0;
-    transition: transform 0.2s ease;
-    align-content: center;
-    text-align: center;
-}
-
-.habits-item-description_3 {
-    background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-lighter) 100%);
-    border-radius: 15px;
-    padding: 12px;
-    gap: 8px;
-    box-shadow: 0 4px 8px var(--shadow);
-    height: 34%;
-    margin: 0;
-    transition: transform 0.2s ease;
-    align-content: center;
-    text-align: center;
-}
-
+.habits-item-description_1,
+.habits-item-description_2,
+.habits-item-description_3,
 .habits-item-description_4 {
     background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-lighter) 100%);
     border-radius: 15px;
     padding: 12px;
     gap: 8px;
     box-shadow: 0 4px 8px var(--shadow);
-    height: 100%;
     margin: 0;
     transition: transform 0.2s ease;
     align-content: center;
     text-align: center;
+}
+
+.habits-item-description_1 {
+    height: 30%;
+}
+
+.habits-item-description_2 {
+    height: 70%;
+}
+
+.habits-item-description_3 {
+    height: 34%;
+}
+
+.habits-item-description_4 {
+    height: 100%;
 }
 
 .habits-item-description_1:hover,
@@ -219,7 +202,7 @@
     transform: translateY(-3px);
 }
 
-.TaskModal{
+.TaskModal {
     display: none;
     position: fixed;
     top: 0;
@@ -231,7 +214,8 @@
     align-items: center;
     z-index: 999;
 }
-.Task-modal-content{
+
+.Task-modal-content {
     background: white;
     padding: 20px;
     border-radius: 12px;
@@ -239,9 +223,9 @@
     text-align: center;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     position: relative;
-
 }
-.closeTask{
+
+.closeTask {
     position: absolute;
     top: 10px;
     right: 15px;
@@ -250,6 +234,7 @@
     font-size: 24px;
     cursor: pointer;
 }
+
 .Task-modal-content input,
 .Task-modal-content textarea,
 .Task-modal-content select {
@@ -259,6 +244,7 @@
     border: 1px solid #ccc;
     border-radius: 8px;
 }
+
 .Task-modal-content textarea {
     resize: none;
     height: 80px;
@@ -266,7 +252,7 @@
     overflow-y: auto;
 }
 
-#saveTask,#saveHabit {
+#saveTask, #saveHabit {
     background-color: #007bff;
     color: white;
     border: none;
@@ -276,17 +262,140 @@
     transition: all 0.3s ease-in-out;
 }
 
-#saveTask:hover {
+#saveTask:hover,
+#saveHabit:hover {
     background-color: #0056b3;
     transform: scale(1.05);
 }
-.habitTask-options-icon{
+
+.habitTask-options-icon {
     font-size: 1.2rem;
     color: var(--secondary-blue);
- }
-#check{
+}
+
+#check {
     font-size: 1.5rem;
 }
-#cross{
+
+#cross {
     font-size: 1.5rem;
+}
+
+.habits-list-item-category {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+    color: white;
+}
+
+.category-Wellness {
+    background-color: #8ecae6;
+}
+
+.category-Fitness {
+    background-color: #219ebc;
+}
+
+.category-Education {
+    background-color: #fb8500;
+}
+
+.category-Career {
+    background-color: #023047;
+}
+
+.category-Social {
+    background-color: #ffb703;
+}
+
+.category-Other {
+    background-color: #606c38;
+}
+
+.filter-dropdown {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    margin-top: 8px;
+    right: 90px;
+    min-width: 180px;
+    max-width: 220px;
+    font-family: var(--text-font), sans-serif;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.filter-dropdown label {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--dark-blue);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+
+.filter-dropdown label:hover {
+    background-color: rgba(0, 123, 255, 0.08);
+    padding-left: 5px;
+}
+
+.filter-dropdown input[type="radio"] {
+    margin-right: 10px;
+    accent-color: var(--blue-medium);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+
+.filter-dropdown label.selected {
+    font-weight: var(--semibold);
+    color: var(--blue-medium);
+    background-color: rgba(0, 123, 255, 0.08);
+}
+
+.filter-dropdown .category-divider {
+    height: 1px;
+    background-color: #eaeaea;
+    margin: 8px 0;
+}
+
+@media (max-width: 768px) {
+    .filter-dropdown {
+        right: 20px;
+        left: auto;
+        max-width: 85%;
+    }
+}
+
+.habits-list-item-indicator {
+    width: 4px;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 5px 0 0 5px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-dropdown {
+    animation: fadeIn 0.2s ease-out forwards;
 }

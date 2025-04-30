@@ -5,22 +5,27 @@
                 <div class="habits-list-header">
                     <div class="habits-list-title"><h2 id="TitleHabitsTasks"></h2></div>
                     <div class="habits-list-header-options">
-                            <input type="text" id="search-HabitsTasks" placeholder="Search...">
+                        <input type="text" id="search-HabitsTasks" placeholder="Search...">
                         <button id="add-button" class="options-button">Add Habit</button>
-                        <button class="options-button">Filter</button>
-
+                        <button id="filter-button" class="options-button">Filter</button>
+                        <div id="filterDropdown" class="filter-dropdown" style="display: none;">
+                            <label><input type="radio" name="category-filter" value="all" checked> All</label>
+                            <label><input type="radio" name="category-filter" value="Wellness"> Wellness</label>
+                            <label><input type="radio" name="category-filter" value="Fitness"> Fitness</label>
+                            <label><input type="radio" name="category-filter" value="Education"> Education</label>
+                            <label><input type="radio" name="category-filter" value="Career"> Career</label>
+                            <label><input type="radio" name="category-filter" value="Social"> Social</label>
+                            <label><input type="radio" name="category-filter" value="Other"> Other</label>
+                        </div>
                     </div>
                 </div>
                 <div id="user-content" class="user-habits"></div>
-
             </div>
             <div class="habits-item-description">
                 <div class="habits-item-description_row_a">
                     <div class="habits-item-description_4">Lorem ipsum</div>
                 </div>
-
                 <div class="habits-item-description_row_b">
-
                     <div class="habits-item-description_col_1">
                         <div class="habits-item-description_1">Lorem ipsum</div>
                         <div class="habits-item-description_2">Lorem ipsum</div>
@@ -38,39 +43,39 @@
         <div class="Task-modal-content">
             <button id="closeTaskButton" class="closeTask">&times;</button>
             <h2 id="addNewTitle">Add New Task</h2>
-
             <label for="NewTaskTitle">Title</label>
             <input type="text" id="NewTaskTitle" placeholder="My New Task">
-
             <label for="TaskDescription">Description</label>
             <textarea id="TaskDescription" placeholder="Describe your Task..."></textarea>
-
             <label for="TaskDueDate">Due Date</label>
             <input type="date" id="TaskDueDate">
-
             <button id="saveTask">Save Task</button>
         </div>
     </div>
     <div id="AddHabitModal" class="TaskModal">
         <div class="Task-modal-content">
             <button id="closeHabitButton" class="closeTask">&times;</button>
-            <h2 >Add New Habit</h2>
-
+            <h2>Add New Habit</h2>
             <label for="NewHabitTitle">Title</label>
             <input type="text" id="NewHabitTitle" placeholder="My New Habit">
-
             <label for="HabitDescription">Description</label>
             <textarea id="HabitDescription" placeholder="Describe your Habit..."></textarea>
-
             <label for="HabitFrequency">Frequency</label>
             <select id="HabitFrequency">
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
             </select>
-
+            <label for="HabitCategory">Category</label>
+            <select id="HabitCategory">
+                <option value="Wellness">Wellness</option>
+                <option value="Fitness">Fitness</option>
+                <option value="Education">Education</option>
+                <option value="Career">Career</option>
+                <option value="Social">Social</option>
+                <option value="Other">Other</option>
+            </select>
             <button id="saveHabit">Save Habit</button>
         </div>
     </div>
-
 </main>
