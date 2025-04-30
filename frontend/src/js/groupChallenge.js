@@ -1,282 +1,213 @@
-const JSON_PATH = '../../frontend/src/json/challenges.json';
-let groupChallengesData = [];
+import { auth, db } from '../../../backend/utils/firebase_config.js';
+import {
+    collection,
+    getDocs,
+    doc,
+    getDoc,
+    addDoc,
+    updateDoc,
+    serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
+import { addPoints } from './points.js';
 
-import { db } from '../../../backend/utils/firebase_config.js';
-import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
-
-async function fetchGroupMembers(groupId) {
-    const groupRef = doc(db, 'Groups', groupId);
-    const groupSnap = await getDoc(groupRef);
-    if (!groupSnap.exists()) return [];
-
-    const groupData = groupSnap.data();
-    return groupData.members || [];
-}
-
-async function fetchUsernamesFromIds(userIds) {
-    const userDocs = await Promise.all(userIds.map(uid => getDoc(doc(db, 'Users', uid))));
-    return userDocs.map(docSnap => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            return {
-                id: docSnap.id,
-                name: data.name || data.email || 'Unknown User'
-            };
-        }
-        return { id: 'unknown', name: 'Unknown User' };
-    });
-}
-
-function getGroupIdFromURL() {
-    const params = new URLSearchParams(window.location.hash.split('?')[1]);
-    return params.get('id');
-}
-
+let groupId, members = [], memberInfos = [], instanceMap = {}, challenges = [];
 
 export function initGroupChallenges() {
-    if (document.readyState === 'complete') {
-        loadGroupChallenges();
-    } else {
-        document.addEventListener('DOMContentLoaded', loadGroupChallenges);
-    }
-}
-
-async function loadGroupChallenges() {
-    try {
-        const container = document.getElementById('group-cards-container');
-        if (container) container.innerHTML = '<p>Loading group challenges...</p>';
-
-        const response = await fetch(JSON_PATH);
-        if (!response.ok) throw new Error('Group challenges could not be loaded');
-
-        groupChallengesData = await response.json();
-        groupChallengesData.forEach(challenge => {
-            if (challenge.joined === undefined) challenge.joined = false;
-            if (challenge.completed === undefined) challenge.completed = false;
-        });
-
-        renderGroupChallenges(groupChallengesData);
-        setupGroupFilterEvents();
-    } catch (error) {
-        console.error('Error:', error);
-        showGroupError('Error loading group challenges');
-    }
-}
-
-function setupGroupFilterEvents() {
-    const searchInput = document.getElementById('search-group-challenges');
-    const statusFilter = document.getElementById('filter-group-challenges');
-    const levelFilter = document.getElementById('filter-group-level');
-
-    if (searchInput) {
-        searchInput.addEventListener('input', filterGroupChallenges);
-    }
-    if (statusFilter) {
-        statusFilter.addEventListener('change', filterGroupChallenges);
-    }
-    if (levelFilter) {
-        levelFilter.addEventListener('change', filterGroupChallenges);
-    }
-}
-
-function filterGroupChallenges() {
-    const searchTerm = document.getElementById('search-group-challenges').value.toLowerCase();
-    const statusFilter = document.getElementById('filter-group-challenges').value;
-    const levelFilter = document.getElementById('filter-group-level').value;
-
-    const filtered = groupChallengesData.filter(challenge => {
-        const matchesSearch = challenge.name.toLowerCase().includes(searchTerm);
-
-        let matchesStatus = true;
-        if (statusFilter === 'joined') {
-            matchesStatus = challenge.joined === true;
-        } else if (statusFilter === 'open') {
-            matchesStatus = !challenge.joined && !challenge.completed;
-        } else if (statusFilter === 'completed') {
-            matchesStatus = challenge.completed === true;
-        }
-
-        let matchesLevel = true;
-        if (levelFilter !== 'all') {
-            matchesLevel = challenge.level.toLowerCase() === levelFilter;
-        }
-
-        return matchesSearch && matchesStatus && matchesLevel;
+    onAuthStateChanged(auth, async user => {
+        if (!user) return window.location.href = '#/register';
+        const params = new URLSearchParams(location.hash.split('?')[1] || '');
+        groupId = params.get('id');
+        members = (await getDoc(doc(db, 'Groups', groupId))).data().members || [];
+        memberInfos = await Promise.all(
+            members.map(async uid => {
+                const u = await getDoc(doc(db, 'Users', uid));
+                return { id: uid, name: u.exists() ? (u.data().name || u.data().email) : 'Unknown' };
+            })
+        );
+        instanceMap = (await getDocs(collection(db, 'Groups', groupId, 'challenges')))
+            .docs.reduce((m, s) => (m[s.data().challengeId] = { id: s.id, ...s.data() }, m), {});
+        await loadChallenges();
+        setupFilters();
     });
-
-    renderGroupChallenges(filtered);
 }
 
-function renderGroupChallenges(challenges) {
-    const container = document.getElementById('group-cards-container');
-    if (!container) return;
+async function loadChallenges() {
+    challenges = (await getDocs(collection(db, 'GroupChallenges')))
+        .docs.map(s => {
+            const d = s.data(), inst = instanceMap[s.id] || {};
+            return {
+                id: s.id,
+                name: d.name,
+                shortDescription: d.shortDescription,
+                description: d.description,
+                details: d.details,
+                tips: d.tips || [],
+                points: d.points,
+                level: d.level,
+                duration: d.duration,
+                category: d.category,
+                joined: !!inst.id,
+                completed: inst.completed || false,
+                acceptedTimestamp: inst.acceptedTimestamp,
+                membersAssigned: inst.members || []
+            };
+        });
+    render(challenges);
+}
 
-    if (!challenges || challenges.length === 0) {
-        container.innerHTML = '<p>No group challenges available</p>';
+function setupFilters() {
+    document.getElementById('search-group-challenges').oninput = applyFilter;
+    document.getElementById('filter-group-challenges').onchange = applyFilter;
+    document.getElementById('filter-group-level').onchange = applyFilter;
+}
+
+function applyFilter() {
+    const term = document.getElementById('search-group-challenges').value.toLowerCase();
+    const status = document.getElementById('filter-group-challenges').value;
+    const level = document.getElementById('filter-group-level').value;
+    render(challenges.filter(c => {
+        if (!c.name.toLowerCase().includes(term)) return false;
+        if (status === 'joined' && !c.joined) return false;
+        if (status === 'open' && (c.joined || c.completed)) return false;
+        if (status === 'completed' && !c.completed) return false;
+        if (level !== 'all' && c.level.toLowerCase() !== level) return false;
+        return true;
+    }));
+}
+
+function render(list) {
+    const container = document.getElementById('group-cards-container');
+    if (!list.length) {
+        container.innerHTML = '<p class="no-results"><i class="fas fa-exclamation-circle"></i>No group challenges available</p>';
         return;
     }
-
-    container.innerHTML = challenges.map(challenge => `
-        <article class="card group-card" data-id="${challenge.id}">
-            <div class="card-header">
-                <h2>${challenge.name}</h2>
-                <span class="tag ${challenge.level.toLowerCase()}">${challenge.level}</span>
-                <button class="join-group-challenge" data-id="${challenge.id}">
-                    <i class="fas fa-user-plus"></i>
-                </button>
-            </div>
-            <p>${challenge.shortDescription}</p>
-        </article>
-    `).join('');
-
-    setupGroupCardClickListeners();
-    setupJoinButtons();
-}
-
-function setupJoinButtons() {
-    const joinButtons = document.querySelectorAll('.join-group-challenge');
-    joinButtons.forEach(button => {
-        button.removeEventListener('click', button.clickHandler);
-
-        button.clickHandler = (e) => {
-            e.stopPropagation();
-            const challengeId = button.getAttribute('data-id');
-            joinGroupChallenge(challengeId);
-        };
-
-        button.addEventListener('click', button.clickHandler);
-    });
-}
-
-function joinGroupChallenge(challengeId) {
-    const challenge = groupChallengesData.find(c => c.id == challengeId);
-    if (!challenge) return;
-
-    challenge.joined = true;
-    challenge.joinDate = new Date().toISOString();
-
-    console.log(`Joined to the group challenge"${challenge.name}"`);
-    showGroupChallengeDetails(challengeId);
-    filterGroupChallenges();
-}
-
-function setupGroupCardClickListeners() {
-    const cards = document.querySelectorAll('.group-card');
-    cards.forEach(card => {
-        card.removeEventListener('click', card.clickHandler);
-
-        card.clickHandler = (e) => {
-            if (!e.target.closest('.join-group-challenge')) {
-                const challengeId = card.getAttribute('data-id');
-                showGroupChallengeDetails(challengeId);
-            }
-        };
-
-        card.addEventListener('click', card.clickHandler);
-    });
-}
-
-async function showGroupChallengeDetails(challengeId) {
-    const challenge = groupChallengesData.find(c => c.id == challengeId);
-    const detailContainer = document.getElementById('group-challenge-detail');
-
-    if (!challenge || !detailContainer) return;
-
-    detailContainer.innerHTML = `
-        <div class="detail-content">
-            <div class="detail-header">
-                <h2>${challenge.name}</h2>
-                <div class="challenge-meta">
-                    <span class="tag ${challenge.level.toLowerCase()}">${challenge.level}</span>
-                    <span class="points">${challenge.points} pts</span>
-                    <span class="duration"><i class="far fa-clock"></i> ${challenge.duration} días</span>
-                </div>
-            </div>
-            <div class="detail-body">
-                <p>${challenge.description}</p>
-                ${!challenge.joined ? `
-                    <button class="btn join-btn" data-id="${challenge.id}">
-                        <i class="fas fa-user-plus"></i> Unirse al desafío
-                    </button>
-                ` : ''}
-                ${challenge.joined && !challenge.completed ? `
-                    <button class="btn complete-btn" data-id="${challenge.id}">
-                        <i class="fas fa-flag-checkered"></i> Mark as Completed
-                    </button>
-                ` : ''}
-                ${challenge.completed ? '<span class="completed-badge">Completed</span>' : ''}
-            </div>
+    container.innerHTML = list.map(c => {
+        const state = c.completed ? 'completed' : c.joined ? 'active' : '';
+        return `
+      <article class="card group-card ${state}" data-id="${c.id}">
+        <div class="card-header">
+          <h2>${c.name}</h2>
+          <span class="tag ${c.level.toLowerCase()}">${c.level}</span>
+          <button class="join-btn" data-id="${c.id}" ${c.joined?'disabled':''}>
+            <i class="fas fa-check-circle"></i>
+          </button>
         </div>
+        <p>${c.shortDescription}</p>
+      </article>
     `;
-    const groupId = getGroupIdFromURL();
-    if (groupId) {
-        const memberIds = await fetchGroupMembers(groupId);
-        const memberInfos = await fetchUsernamesFromIds(memberIds);
-
-        const checklistHTML = memberInfos.map(member => `
-            <label class="member-checkbox">
-                <input type="checkbox" name="members" value="${member.id}" />
-                ${member.name}
-            </label>
-        `).join('');
-
-        const checklistContainer = document.createElement('div');
-        checklistContainer.classList.add('member-checklist');
-        checklistContainer.innerHTML = `
-            <h4>Assign to members</h4>
-            ${checklistHTML}
-        `;
-
-        detailContainer.querySelector('.detail-body').appendChild(checklistContainer);
-    }
-
-
-    const joinBtn = detailContainer.querySelector('.join-btn');
-    if (joinBtn) {
-        joinBtn.addEventListener('click', () => {
-            joinGroupChallenge(challengeId);
-        });
-    }
-
-    const completeBtn = detailContainer.querySelector('.complete-btn');
-    if (completeBtn) {
-        completeBtn.addEventListener('click', () => {
-            completeGroupChallenge(challengeId);
-        });
-    }
+    }).join('');
+    document.querySelectorAll('.join-btn').forEach(b => {
+        b.onclick = e => { e.stopPropagation(); showDetails(b.dataset.id); };
+    });
+    document.querySelectorAll('.group-card').forEach(card => {
+        card.onclick = () => showDetails(card.dataset.id);
+    });
 }
 
-function completeGroupChallenge(challengeId) {
-    const challenge = groupChallengesData.find(c => c.id == challengeId);
-    if (!challenge) return;
-
-    challenge.completed = true;
-    challenge.completedDate = new Date().toISOString();
-
-    console.log(`Desafío grupal "${challenge.name}" completado.`);
-    showGroupChallengeDetails(challengeId);
-    filterGroupChallenges();
+async function showDetails(id) {
+    const c = challenges.find(x => x.id === id);
+    const cont = document.getElementById('group-challenge-detail');
+    let timerHtml = '';
+    if (c.joined && !c.completed && c.acceptedTimestamp) {
+        const start = c.acceptedTimestamp.toDate();
+        const end = new Date(start.getTime() + c.duration*24*60*60*1000);
+        const daysLeft = Math.ceil((end - Date.now())/(1000*60*60*24));
+        timerHtml = `<p class="time-left"><i class="fa-solid fa-clock-rotate-left"></i> Time left: ${daysLeft>0?daysLeft+' days':'Expired'}</p>`;
+    }
+    cont.innerHTML = `
+    <div class="detail-content">
+      <div class="detail-header-group">
+        <h2>${c.name}</h2>
+        <div class="challenge-meta">
+          <p class="meta-item"><i class="far fa-clock"></i>${c.duration} days</p>
+          <p class="meta-item"><i class="fas fa-star"></i>${c.points} pts</p>
+          <p class="meta-item meta-category">${c.category}</p>
+        </div>
+      </div>
+      <div class="details-description">
+        <h2>Description</h2>
+        <p class="description-section">${c.description}</p>
+        
+        <div class="details-section-group"><h3><i class="fa-solid fa-circle-info"></i> Details</h3>
+            ${c.details}
+        </div>
+      </div>
+      <div class="tips-section"><h3><i class="fas fa-lightbulb"></i> Tips</h3>
+        <ul class="tips-list">${c.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+      </div>
+      ${timerHtml}
+      <div class="member-checklist"><h4>Assign to members</h4>
+        ${memberInfos.map(m => `
+          <label class="member-checkbox">
+            <input type="checkbox" name="members" value="${m.id}" ${c.membersAssigned.includes(m.id)?'checked':''}>
+            <span class="member-name">${m.name}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="actions-section">
+        ${!c.joined?'<button class="btn accept-challenge"><i class="fas fa-check-circle"></i> Join Challenge</button>':''}
+        ${c.joined && !c.completed?'<button class="btn complete-challenge"><i class="fas fa-flag-checkered"></i> Mark as Completed</button>':''}
+        ${c.completed?'<span class="completed-badge">Completed</span>':''}
+      </div>
+    </div>
+  `;
+    if (!c.joined) cont.querySelector('.accept-challenge').onclick = () => accept(id);
+    if (c.joined && !c.completed) cont.querySelector('.complete-challenge').onclick = () => complete(id);
 }
 
-function showGroupError(message) {
-    const container = document.getElementById('group-cards-container');
-    if (container) {
-        container.innerHTML = `
-            <div class="error-message">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>${message}</p>
-                <button class="retry-btn" onclick="window.location.reload()">
-                    <i class="fas fa-sync-alt"></i> Reintentar
-                </button>
-            </div>
-        `;
-    }
+async function accept(challengeId) {
+    const cont = document.getElementById('group-challenge-detail');
+    const selected = Array.from(
+        cont.querySelectorAll('input[name="members"]:checked')
+    ).map(i => i.value);
+    const membersToAssign = selected.length ? selected : members;
+
+    await addDoc(
+        collection(db, 'Groups', groupId, 'challenges'),
+        {
+            challengeId,
+            acceptedTimestamp: serverTimestamp(),
+            members: membersToAssign,
+            completed: false,
+            createdBy: auth.currentUser.uid
+        }
+    );
+
+    const instSnaps = await getDocs(
+        collection(db, 'Groups', groupId, 'challenges')
+    );
+    instanceMap = instSnaps.docs.reduce((m, s) => {
+        const d = s.data();
+        m[d.challengeId] = { id: s.id, ...d };
+        return m;
+    }, {});
+
+    await loadChallenges();
+    await showDetails(challengeId);
+}
+
+async function complete(challengeId) {
+    const inst=instanceMap[challengeId];
+    if(!inst||inst.completed) return;
+    const ref=doc(db,'Groups',groupId,'challenges',inst.id);
+    await updateDoc(ref,{
+        completed:true,
+        completedBy:auth.currentUser.uid,
+        completedTimestamp:serverTimestamp()
+    });
+    inst.completed=true;
+
+    const pts = challenges.find(c => c.id === challengeId).points || 0;
+    await addPoints(pts);
+
+    challenges.find(c=>c.id===challengeId).completed=true;
+    render(challenges);
+    await showDetails(challengeId);
 }
 
 window.addEventListener('hashchange', () => {
-    if (window.location.hash.includes('groupchallenges')) {
-        initGroupChallenges();
-    }
+    if (location.hash.includes('groupchallenges')) initGroupChallenges();
 });
 
 initGroupChallenges();

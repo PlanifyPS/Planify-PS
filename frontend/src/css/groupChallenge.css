@@ -213,7 +213,7 @@
     align-items: center;
     margin-top: auto;
     padding-top: 1rem;
-    border-top: 1px solid var(--gray-border);
+    border-top: 1px solid var(--light-blue);
 }
 
 .tag {
@@ -255,7 +255,7 @@
     gap: 0.25rem;
 }
 
-.detail-card {
+.detail-card-group {
     background: var(--white);
     padding: 1.5rem;
     border-radius: 0.5rem;
@@ -264,9 +264,10 @@
     top: 1rem;
     max-height: calc(100vh - 2rem);
     overflow-y: auto;
+    margin-top: 50px;
 }
 
-.empty-detail {
+.empty-detail-group {
     text-align: center;
     padding: 2rem 0;
     color: var(--grey);
@@ -296,23 +297,28 @@
 .detail-content {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.2rem;
 }
 
-.detail-header {
+.detail-header-group {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--gray-border);
+    border-bottom: 1px solid var(--light-blue);
 }
 
-.detail-header h2 {
+.detail-header-group h2 {
     color: var(--dark-blue);
     margin: 0;
     font-family: var(--heading-font), sans-serif;
     font-size: 1.5rem;
+}
+
+.details-description{
+    display: flex;
+    flex-direction: column;
 }
 
 .challenge-meta {
@@ -336,6 +342,26 @@
     color: var(--blue-medium);
 }
 
+.meta-category{
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 2px solid var(--main-blue);
+}
+
+.join-btn{
+    border-radius: 0.5rem;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    color: var(--white);
+    background: var(--dark-blue);
+    transition: all 0.3s ease;
+}
+
+.join-btn:hover{
+    background: var(--main-blue);
+    cursor: pointer;
+}
+
 .description-section {
     color: var(--dark-grey);
     line-height: 1.6;
@@ -350,10 +376,23 @@
     font-size: 1.25rem;
 }
 
-.details-section {
-    background: var(--light-bg);
+.details-section-group {
+    background: rgba(7, 226, 255, 0.1);
     padding: 1.25rem;
     border-radius: 0.5rem;
+    border-left: 3px solid var(--blue-medium);
+    margin-top: 10px;
+}
+
+.details-section-group h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--dark-blue);
+}
+
+.details-section-group h3 i {
+    color: var(--blue-medium);
 }
 
 .challenge-details {
@@ -500,4 +539,93 @@
     border-radius: 5px;
     transition: width 0.3s ease-in-out;
 }
+
+.member-checklist {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--light-bg);
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+}
+.member-checklist h4 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    color: var(--dark-blue);
+}
+.member-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+.member-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--blue-dark);
+}
+.member-checkbox .member-name {
+    flex-grow: 1;
+}
+
+.group-card.active {
+    border: 2px solid var(--blue-dark);
+    background-color: rgba(59, 130, 246, 0.1);
+    transition: background 0.2s, border-color 0.2s;
+}
+.group-card.active:hover {
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+.group-card.completed {
+    border: 2px solid #10B981;
+    background-color: rgba(16, 185, 129, 0.1);
+    opacity: 0.8;
+    pointer-events: none;
+}
+.group-card.completed .join-group-challenge {
+    color: #10B981;
+    cursor: not-allowed;
+}
+
+.detail-card .detail-content {
+    padding: 1.5rem;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.detail-card .detail-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--dark-blue);
+}
+.detail-card .detail-body {
+    margin-top: 1rem;
+}
+.detail-card .detail-body .btn {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+.detail-card .detail-body .join-btn {
+    background: var(--blue-dark);
+    color: var(--white);
+}
+.detail-card .detail-body .complete-btn {
+    background: #10B981;
+    color: var(--white);
+}
+.detail-card .detail-body .completed-badge {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.4rem 0.8rem;
+    background: #D1FAE5;
+    color: #065F46;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
 
