@@ -25,13 +25,13 @@ function initHome() {
 }
 
 function initTextContent() {
-    document.getElementById("title-tasks").textContent = "Tasks";
+    document.getElementById("TitleHabitsTasks").textContent = "Tasks";
 }
 
 function initModal() {
     let openModalButton = document.getElementById('add-button');
     let modal = document.getElementById('AddTaskModal');
-    let closeButton = document.getElementById('close-task-button');
+    let closeButton = document.getElementById('closeTaskButton');
     let saveButton = document.getElementById('saveTask');
 
     openModalButton.addEventListener('click', () => { modal.style.display = 'flex'; });
@@ -61,13 +61,13 @@ function initFilterButton() {
 }
 
 function initSearchFunction() {
-    const searchInput = document.getElementById('search-tasks');
+    const searchInput = document.getElementById('search-HabitsTasks');
 
     let debounceTimeout;
     searchInput.addEventListener('input', () => {
         clearTimeout(debounceTimeout);
         debounceTimeout = setTimeout(async () => {
-            document.querySelector('.tasks-content').classList.toggle('search-active', searchInput.value.trim() !== '');
+            document.querySelector('.habits-content').classList.toggle('search-active', searchInput.value.trim() !== '');
             await sortTasks();
         }, 200);
     });
@@ -75,7 +75,7 @@ function initSearchFunction() {
     searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             searchInput.value = '';
-            document.querySelector('.tasks-content').classList.remove('search-active');
+            document.querySelector('.habits-content').classList.remove('search-active');
             sortTasks().then();
         }
     });
@@ -182,7 +182,7 @@ async function sortTasks() {
     const completed = [];
     const incomplete = [];
     const selectedCategory = document.querySelector('input[name="category-filter"]:checked').value;
-    const searchQuery = document.getElementById('search-tasks').value.trim().toLowerCase();
+    const searchQuery = document.getElementById('search-HabitsTasks').value.trim().toLowerCase();
 
     for (const taskId in tasksData) {
         const task = tasksData[taskId];
@@ -213,7 +213,7 @@ async function sortTasks() {
     }
 
     for (const task of [...incomplete, ...completed]) {
-        await addTemplate("user-content", "../src/templates/tasksItem.html", task, task.id);
+        await addTemplate("user-content", "../src/templates/habitsItem.html", task, task.id);
     }
 
     await setupTasksListeners();
@@ -221,20 +221,20 @@ async function sortTasks() {
 }
 
 function addStylesToCompletedTasks() {
-    document.querySelectorAll('.tasks-list-item').forEach(task => {
+    document.querySelectorAll('.habits-list-item').forEach(task => {
         const id = task.getAttribute('data-id');
         if (tasksData[id].completed) {
-            task.classList.add('task-completed');
+            task.classList.add('habit-completed');
         } else {
-            task.classList.remove('task-completed');
+            task.classList.remove('habit-completed');
         }
     });
 }
 
 function getTaskInfo(button) {
-    const taskItem = button.closest('.tasks-list-item');
+    const taskItem = button.closest('.habits-list-item');
     const taskId = taskItem.getAttribute('data-id');
-    const taskTitle = taskItem.querySelector('.tasks-title').textContent;
+    const taskTitle = taskItem.querySelector('.habits-task-title').textContent;
     return { taskItem, taskId, taskTitle };
 }
 
@@ -263,15 +263,15 @@ function handleEditTask(button) {
 }
 
 async function setupTasksListeners() {
-    document.querySelectorAll('.Task-complete-btn').forEach(button => {
+    document.querySelectorAll('.Task-Habit-complete-btn').forEach(button => {
         button.addEventListener('click', () => handleCompleteTask(button));
     });
 
-    document.querySelectorAll('.Task-delete-btn').forEach(button => {
+    document.querySelectorAll('.Task-Habit-delete-btn').forEach(button => {
         button.addEventListener('click', () => handleDeleteTask(button));
     });
 
-    document.querySelectorAll('.Task-edit-btn').forEach(button => {
+    document.querySelectorAll('.Task-Habit-edit-btn').forEach(button => {
         button.addEventListener('click', () => handleEditTask(button));
     });
 }
@@ -291,26 +291,26 @@ async function addTemplate(id, url, item, taskId) {
         const newElement = document.createElement("div");
         newElement.innerHTML = await response.text();
 
-        const searchQuery = document.getElementById('search-tasks').value.trim();
+        const searchQuery = document.getElementById('search-HabitsTasks').value.trim();
         if (searchQuery) {
-            newElement.querySelector(".tasks-title").innerHTML =
+            newElement.querySelector(".habits-task-title").innerHTML =
                 highlightSearchTerm(item.title, searchQuery);
         } else {
-            newElement.querySelector(".tasks-title").textContent = item.title;
+            newElement.querySelector(".habits-task-title").textContent = item.title;
         }
 
-        newElement.querySelector(".tasks-list-item").setAttribute("data-id", taskId);
+        newElement.querySelector(".habits-list-item").setAttribute("data-id", taskId);
 
-        const taskItem = newElement.querySelector(".tasks-list-item");
+        const taskItem = newElement.querySelector(".habits-list-item");
 
         const categoryIndicator = document.createElement("div");
-        categoryIndicator.classList.add("tasks-list-item-indicator");
+        categoryIndicator.classList.add("habits-list-item-indicator");
         categoryIndicator.classList.add(`category-${item.category || 'other'}`);
         taskItem.prepend(categoryIndicator);
 
-        const titleElement = newElement.querySelector(".tasks-title");
+        const titleElement = newElement.querySelector(".habits-task-title");
         const categoryLabel = document.createElement("span");
-        categoryLabel.classList.add("tasks-list-item-category");
+        categoryLabel.classList.add("habits-list-item-category");
         categoryLabel.classList.add(`category-${item.category || 'other'}`);
         categoryLabel.textContent = item.category || 'other';
         titleElement.after(categoryLabel);

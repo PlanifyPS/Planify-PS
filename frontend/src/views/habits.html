@@ -49,9 +49,19 @@
             <textarea id="TaskDescription" placeholder="Describe your Task..."></textarea>
             <label for="TaskDueDate">Due Date</label>
             <input type="date" id="TaskDueDate">
+            <label for="TaskCategory">Category</label>
+            <select id="TaskCategory">
+                <option value="Wellness">Wellness</option>
+                <option value="Fitness">Fitness</option>
+                <option value="Education">Education</option>
+                <option value="Career">Career</option>
+                <option value="Social">Social</option>
+                <option value="Other">Other</option>
+            </select>
             <button id="saveTask">Save Task</button>
         </div>
     </div>
+
     <div id="AddHabitModal" class="TaskModal">
         <div class="Task-modal-content">
             <button id="closeHabitButton" class="closeTask">&times;</button>
@@ -78,4 +88,5 @@
             <button id="saveHabit">Save Habit</button>
         </div>
     </div>
+
 </main>
