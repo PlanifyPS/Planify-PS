@@ -1,6 +1,6 @@
-import { deleteUserField, getUserData, saveUserData } from "../../../backend/utils/firestore_utils.js";
-import { addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-import { db } from "/backend/utils/firebase_config.js";
+import {deleteUserField, getUserData, saveUserData} from "../../../backend/utils/firestore_utils.js";
+import {addDoc, collection, serverTimestamp} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import {db} from "/backend/utils/firebase_config.js";
 
 const userUID = sessionStorage.getItem("uid");
 let habitsData;
@@ -25,14 +25,14 @@ function initHome() {
 }
 
 function initTextContent() {
-    document.getElementById("title-habits").textContent = "Habits";
+    document.getElementById("TitleHabitsTasks").textContent = "Habits";
 }
 
 function initModal() {
     let openModalButton = document.getElementById('add-button');
     let modal = document.getElementById('AddHabitModal');
     let closeHabitButton = document.getElementById('closeHabitButton');
-    let saveHabitButton = document.getElementById('save-habit');
+    let saveHabitButton = document.getElementById('saveHabit');
 
     openModalButton.addEventListener('click', () => { modal.style.display = 'flex'; });
     closeHabitButton.addEventListener('click', () => { modal.style.display = 'none'; clearInputs(); });
@@ -61,7 +61,7 @@ function initFilterButton() {
 }
 
 function initSearchFunction() {
-    const searchInput = document.getElementById('search-habits');
+    const searchInput = document.getElementById('search-HabitsTasks');
 
     let debounceTimeout;
     searchInput.addEventListener('input', () => {
@@ -144,14 +144,15 @@ async function completeHabit(habitId) {
     }
 
     habitsData[habitId].completed = true;
-
     await saveUserData(userUID, {
         [`habits.${habitId}`]: habitsData[habitId],
     });
 
     await sortHabits();
 
-    await addDoc(collection(db, "Users", userUID, "habitsHistory"), {
+    await addDoc(
+        collection(db, "Users", userUID, "habitsHistory"),
+        {
             timestamp: serverTimestamp(),
             userId: userUID,
             habitId: habitId
@@ -163,7 +164,7 @@ async function sortHabits() {
     const completed = [];
     const incomplete = [];
     const selectedCategory = document.querySelector('input[name="category-filter"]:checked').value;
-    const searchQuery = document.getElementById('search-habits').value.trim().toLowerCase();
+    const searchQuery = document.getElementById('search-HabitsTasks').value.trim().toLowerCase();
 
     for (const habitId in habitsData) {
         const habit = habitsData[habitId];
@@ -215,7 +216,7 @@ function addStylesToCompletedHabits() {
 function getHabitInfo(button) {
     const habitItem = button.closest('.habits-list-item');
     const habitId = habitItem.getAttribute('data-id');
-    const habitTitle = habitItem.querySelector('.habits-title').textContent;
+    const habitTitle = habitItem.querySelector('.habits-task-title').textContent;
     return { habitItem, habitId, habitTitle };
 }
 
@@ -244,15 +245,15 @@ function handleEditHabit(button) {
 }
 
 async function setupHabitsListeners() {
-    document.querySelectorAll('.Habit-complete-btn').forEach(button => {
+    document.querySelectorAll('.Task-Habit-complete-btn').forEach(button => {
         button.addEventListener('click', () => handleCompleteHabit(button));
     });
 
-    document.querySelectorAll('.Habit-delete-btn').forEach(button => {
+    document.querySelectorAll('.Task-Habit-delete-btn').forEach(button => {
         button.addEventListener('click', () => handleDeleteHabit(button));
     });
 
-    document.querySelectorAll('.Habit-edit-btn').forEach(button => {
+    document.querySelectorAll('.Task-Habit-edit-btn').forEach(button => {
         button.addEventListener('click', () => handleEditHabit(button));
     });
 }
@@ -272,12 +273,12 @@ async function addTemplate(id, url, item, habitId) {
         const newElement = document.createElement("div");
         newElement.innerHTML = await response.text();
 
-        const searchQuery = document.getElementById('search-habits').value.trim();
+        const searchQuery = document.getElementById('search-HabitsTasks').value.trim();
         if (searchQuery) {
-            newElement.querySelector(".habits-title").innerHTML =
+            newElement.querySelector(".habits-task-title").innerHTML =
                 highlightSearchTerm(item.title, searchQuery);
         } else {
-            newElement.querySelector(".habits-title").textContent = item.title;
+            newElement.querySelector(".habits-task-title").textContent = item.title;
         }
 
         newElement.querySelector(".habits-list-item").setAttribute("data-id", habitId);
@@ -289,7 +290,7 @@ async function addTemplate(id, url, item, habitId) {
         categoryIndicator.classList.add(`category-${item.category || 'other'}`);
         habitItem.prepend(categoryIndicator);
 
-        const titleElement = newElement.querySelector(".habits-title");
+        const titleElement = newElement.querySelector(".habits-task-title");
         const categoryLabel = document.createElement("span");
         categoryLabel.classList.add("habits-list-item-category");
         categoryLabel.classList.add(`category-${item.category || 'other'}`);
@@ -298,8 +299,8 @@ async function addTemplate(id, url, item, habitId) {
 
         if (item.completed) {
             habitItem.classList.add("completed");
-            //const completeBtn = habitItem.querySelector(".complete-btn");
-            //if (completeBtn) completeBtn.style.display = 'none';
+            const completeBtn = habitItem.querySelector(".complete-btn");
+            if (completeBtn) completeBtn.style.display = 'none';
         }
 
         container.appendChild(newElement);

@@ -105,14 +105,14 @@
     background: none;
 }
 
-.habits-title {
+.habits-task-title {
     color: var(--dark-blue);
     font-size: 1.2rem;
     font-family: var(--heading-font), sans-serif;
     font-weight: var(--semibold);
 }
 
-#search-habits {
+#search-HabitsTasks {
     display: flex;
     margin: 0;
 }
@@ -202,7 +202,7 @@
     transform: translateY(-3px);
 }
 
-.habit-modal {
+.TaskModal {
     display: none;
     position: fixed;
     top: 0;
@@ -215,7 +215,7 @@
     z-index: 999;
 }
 
-.habit-modal-content {
+.Task-modal-content {
     background: white;
     padding: 20px;
     border-radius: 12px;
@@ -225,7 +225,7 @@
     position: relative;
 }
 
-.close-habit {
+.closeTask {
     position: absolute;
     top: 10px;
     right: 15px;
@@ -235,9 +235,9 @@
     cursor: pointer;
 }
 
-.habit-modal-content input,
-.habit-modal-content textarea,
-.habit-modal-content select {
+.Task-modal-content input,
+.Task-modal-content textarea,
+.Task-modal-content select {
     width: 100%;
     padding: 10px;
     margin: 5px 0 15px;
@@ -245,14 +245,14 @@
     border-radius: 8px;
 }
 
-.habit-modal-content textarea {
+.Task-modal-content textarea {
     resize: none;
     height: 80px;
     max-height: 100px;
     overflow-y: auto;
 }
 
-#save-habit {
+#saveTask, #saveHabit {
     background-color: #007bff;
     color: white;
     border: none;
@@ -262,13 +262,13 @@
     transition: all 0.3s ease-in-out;
 }
 
-#save-habit:hover,
-#save-habit:hover {
+#saveTask:hover,
+#saveHabit:hover {
     background-color: #0056b3;
     transform: scale(1.05);
 }
 
-.habit-options-icon {
+.habitTask-options-icon {
     font-size: 1.2rem;
     color: var(--secondary-blue);
 }
