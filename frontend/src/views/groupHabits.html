@@ -1,65 +1,40 @@
-<main id="habits">
-    <section class="main-content">
-        <div class="habits-content">
-            <div id="habits-list" class="habits-list">
-                <div class="habits-list-header">
-                    <div class="habits-list-title"><h2 id="TitleHabitsTasks"></h2></div>
-                    <div class="habits-list-header-options">
-                        <input type="text" id="search-HabitsTasks" placeholder="Search...">
-                        <button id="add-button" class="options-button">Add Habit</button>
-                        <button id="filter-button" class="options-button">Filter</button>
-                        <div id="filterDropdown" class="filter-dropdown" style="display: none;">
-                            <label><input type="radio" name="category-filter" value="all" checked> All</label>
-                            <label><input type="radio" name="category-filter" value="Wellness"> Wellness</label>
-                            <label><input type="radio" name="category-filter" value="Fitness"> Fitness</label>
-                            <label><input type="radio" name="category-filter" value="Education"> Education</label>
-                            <label><input type="radio" name="category-filter" value="Career"> Career</label>
-                            <label><input type="radio" name="category-filter" value="Social"> Social</label>
-                            <label><input type="radio" name="category-filter" value="Other"> Other</label>
-                        </div>
-                    </div>
-                </div>
-                <div id="user-content" class="user-habits"></div>
+<main id="group-habits">
+    <div class="habits-header">
+        <h1><i class="fas fa-people-group"></i> Group Habits</h1>
+        <div class="habits-controls">
+            <input type="text" id="search-HabitsTasks" placeholder="Search…">
+            <button id="add-button" class="options-button">Add Habit</button>
+            <button id="filter-button" class="options-button">Filter</button>
+            <div id="filterDropdown" class="filter-dropdown" style="display:none;">
+                <label><input type="radio" name="category-filter" value="all" checked> All</label>
+                <label><input type="radio" name="category-filter" value="Wellness"> Wellness</label>
+                <label><input type="radio" name="category-filter" value="Fitness"> Fitness</label>
+                <label><input type="radio" name="category-filter" value="Education"> Education</label>
+                <label><input type="radio" name="category-filter" value="Career"> Career</label>
+                <label><input type="radio" name="category-filter" value="Social"> Social</label>
+                <label><input type="radio" name="category-filter" value="Other"> Other</label>
             </div>
-            <div class="habits-item-description">
-                <div class="habits-item-description_row_a">
-                    <div class="habits-item-description_4">Lorem ipsum</div>
-                </div>
-                <div class="habits-item-description_row_b">
-                    <div class="habits-item-description_col_1">
-                        <div class="habits-item-description_1">Lorem ipsum</div>
-                        <div class="habits-item-description_2">Lorem ipsum</div>
-                    </div>
-                    <div class="habits-item-description_col_2">
-                        <div class="habits-item-description_1">Lorem ipsum</div>
-                        <div class="habits-item-description_3">Lorem ipsum</div>
-                        <div class="habits-item-description_3">Lorem ipsum</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <div id="AddTaskModal" class="TaskModal">
-        <div class="Task-modal-content">
-            <button id="closeTaskButton" class="closeTask">&times;</button>
-            <h2 id="addNewTitle">Add New Task</h2>
-            <label for="NewTaskTitle">Title</label>
-            <input type="text" id="NewTaskTitle" placeholder="My New Task">
-            <label for="TaskDescription">Description</label>
-            <textarea id="TaskDescription" placeholder="Describe your Task..."></textarea>
-            <label for="TaskDueDate">Due Date</label>
-            <input type="date" id="TaskDueDate">
-            <button id="saveTask">Save Task</button>
         </div>
     </div>
-    <div id="AddHabitModal" class="TaskModal">
+
+    <div id="group-habits-layout">
+        <div id="group-habits-cards" class="cards-carousel"></div>
+             <div id="group-habit-detail" class="detail-panel">
+              <div class="empty-detail-group">
+                <i class="fas fa-people-arrows"></i>
+              <h2>Select a Group Habit</h2>
+                <p>Click one to see details and join!</p>
+             </div>
+             </div>
+    </div>
+    <div id="AddHabitModal" class="TaskModal" style="display:none;">
         <div class="Task-modal-content">
             <button id="closeHabitButton" class="closeTask">&times;</button>
             <h2>Add New Habit</h2>
             <label for="NewHabitTitle">Title</label>
             <input type="text" id="NewHabitTitle" placeholder="My New Habit">
             <label for="HabitDescription">Description</label>
-            <textarea id="HabitDescription" placeholder="Describe your Habit..."></textarea>
+            <textarea id="HabitDescription" placeholder="Describe your Habit…"></textarea>
             <label for="HabitFrequency">Frequency</label>
             <select id="HabitFrequency">
                 <option value="daily">Daily</option>
@@ -75,7 +50,7 @@
                 <option value="Social">Social</option>
                 <option value="Other">Other</option>
             </select>
-            <button id="saveHabit">Save Habit</button>
+            <button id="saveHabit" class="btn">Save Habit</button>
         </div>
     </div>
 </main>
