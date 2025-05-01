@@ -1,7 +1,7 @@
 import {
     addUserToForum,
     createForum,
-    getAllForumsAvoidingUserForum,
+    getAllForumsAvoidingUserForum, getForumMessages,
     getUserForum, sendMessage
 } from "../../../backend/utils/forum_utils.js";
 
@@ -9,15 +9,36 @@ const forumList = [];
 let currentForum = "Forum Name";
 const forumPosts = {};
 
-function initChat(forumTitle) {
+function renderMessage(msg) {
+    const template = document.getElementById("chat-message-template");
+    const clone = template.content.cloneNode(true);
+
+    clone.querySelector(".sender-name").textContent = msg.senderName + ":";
+    clone.querySelector(".message-body").textContent = msg.body;
+
+    return clone;
+}
+
+async function initChat(forumTitle) {
 
     document.getElementById('chat-title').textContent = forumTitle;
     // traer los mensajes y mostrarlos
 
+    const chatMessages = document.getElementById("chatMessages");
+    chatMessages.innerHTML = "";
+
+    const messages = await getForumMessages(forumTitle);
+    messages.forEach(msg => {
+        const messageNode = renderMessage(msg);
+        chatMessages.appendChild(messageNode);
+    });
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
 
 }
 
-function userForumListener(forumTitle){
+function initChatModal(forumTitle){
     document.getElementById('forumName').textContent = forumTitle;
     document.getElementById('forumContainer').innerHTML = '';
     currentForum = forumTitle;
@@ -32,7 +53,7 @@ function addForumToList(forumTitle) {
     const newForum = document.createElement('li');
     newForum.textContent = forumTitle;
     newForum.addEventListener('click', function(event){
-        userForumListener(forumTitle);
+        initChatModal(forumTitle);
     });
     forumListElement.appendChild(newForum);
     document.getElementById('forumModal').style.display = 'none';
@@ -168,13 +189,6 @@ document.getElementById('savePost').addEventListener('click', function() {
     }
 });
 
-document.addEventListener('click', function(e) {
-    console.log("click");
-    const searchBox = document.getElementById('searchForum');
-    const resultsContainer = document.getElementById('searchResults');
-    if (!searchBox.contains(e.target) && !resultsContainer.contains(e.target)) {
-        resultsContainer.innerHTML = '';
-    }
-});
+
 
 await initHome();

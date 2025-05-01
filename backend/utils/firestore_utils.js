@@ -1,10 +1,15 @@
-import { db} from "./firebase_config.js";
+import {db} from "./firebase_config.js";
 import {
     addDoc,
     collection,
     deleteField,
     doc,
-    getDoc, getDocs, serverTimestamp, setDoc,
+    getDoc,
+    getDocs,
+    orderBy,
+    query,
+    serverTimestamp,
+    setDoc,
     updateDoc
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
@@ -127,18 +132,28 @@ export const addPointsToUser = async (uid, pointsToAdd) => {
     }
 };
 
-export async function sendForumMessage(forumId, senderUid, messageBody) {
+export async function sendForumMessage(forumId, senderUid, messageBody, senderName) {
     try {
         const messageRef = collection(db, "Forums", forumId, "messages");
         await addDoc(messageRef, {
             body:messageBody,
             sender: senderUid,
+            senderName:senderName,
             timestamp: serverTimestamp(),
         });
         
     }catch (error) {
         console.error("Error al guardar mensajes:", error);
     }
-    
-    
+}
+
+export async function getForumMessagesFromFirebase(forumId) {
+    try {
+        const messageRef = collection(db, "Forums", forumId, "messages");
+        const queryRef = query(messageRef, orderBy("timestamp", "asc"));
+        return await getDocs(queryRef);
+
+    }catch (error) {
+        console.error("Error al guardar mensajes:", error);
+    }
 }

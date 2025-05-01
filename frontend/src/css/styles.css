@@ -12,6 +12,7 @@
 @import 'foro.css';
 @import 'loading.css';
 @import 'groups.css';
+@import 'groupChallenge.css';
 
 body {
     font-family: var(--text-font), sans-serif;

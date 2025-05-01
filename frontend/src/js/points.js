@@ -9,154 +9,92 @@ import {
     setDoc,
     updateDoc
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-import {
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
-
-let currentUserUid = null;
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
 export function initPoints() {
-    if (document.readyState === 'complete') {
-        loadPoints();
-    } else {
-        document.addEventListener('DOMContentLoaded', loadPoints);
+    onAuthStateChanged(auth, user => {
+        if (!user) return;
+        loadPoints(user.uid);
+    });
+    document.addEventListener("pointsUpdated", () => {
+        if (auth.currentUser) loadPoints(auth.currentUser.uid);
+    });
+}
+
+async function loadPoints(uid) {
+    const userRef = doc(db, "Users", uid);
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) {
+        await setDoc(userRef, { points: 0, streak: 0, lastTaskDate: "" });
     }
-
-    document.addEventListener('pointsUpdated', () => {
-        updatePointsUI();
-    });
+    const data = (await getDoc(userRef)).data();
+    const pts = data.points || 0;
+    updatePointsUI(pts);
+    updateMedals(pts);
+    updateRank(Math.floor(pts / 50));
+    updateStreakUI(data.streak);
+    checkStreak(data.lastTaskDate, data.streak);
 }
 
-async function loadPoints() {
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            currentUserUid = user.uid;
-            const docRef = doc(db, "Users", currentUserUid);
-            const docSnap = await getDoc(docRef);
+export async function addPoints(amount) {
+    const user = auth.currentUser;
+    if (!user) {
+        console.error("addPoints: no user logged in");
+        return;
+    }
+    const uid = user.uid;
+    const userRef = doc(db, "Users", uid);
+    const snap = await getDoc(userRef);
+    const old = snap.exists() ? snap.data().points || 0 : 0;
+    const next = old + amount;
 
-            if (!docSnap.exists()) {
-                await setDoc(docRef, {
-                    points: 0,
-                    streak: 0,
-                    lastTaskDate: ""
-                });
-            }
-
-            const data = (await getDoc(docRef)).data();
-            const points = data.points || 0;
-
-            updatePointsUI(points);
-            updateMedals(points);
-            updateRank(Math.floor(points / 50));
-            updateStreakUI(data.streak);
-            checkStreak(data.lastTaskDate, data.streak);
-
-            setupTaskButton();
-        }
-    });
-}
-
-async function addPoint() {
-    const userRef = doc(db, "Users", currentUserUid);
-    const userSnap = await getDoc(userRef);
-    const data = userSnap.data() || {};
-
-    const newPoints = (data.points || 0) + 1;
-    await updateDoc(userRef, { points: newPoints });
-
+    await updateDoc(userRef, { points: next });
     await addDoc(
-        collection(db, "Users", currentUserUid, "pointsHistory"),
-        {
-            timestamp: serverTimestamp(),
-            points:    newPoints
-        }
+        collection(db, "Users", uid, "pointsHistory"),
+        { timestamp: serverTimestamp(), delta: amount, total: next }
     );
 
-    updatePointsUI(newPoints);
-    updateMedals(newPoints);
-    await addToStreak(data.streak, data.lastTaskDate);
+    document.dispatchEvent(new Event("pointsUpdated"));
+    return next;
 }
 
-function updatePointsUI(points = 0) {
-    document.querySelectorAll('#points').forEach(el => {
-        el.textContent = points + 'pts';
-    });
+function updatePointsUI(pts) {
+    document.querySelectorAll("#points").forEach(el => el.textContent = pts + "pts");
 }
 
-function updateMedals(points) {
-    const medalsContainer = document.getElementById('medals-container');
-    if (!medalsContainer) return;
-
-    medalsContainer.innerHTML = "";
-
-    const totalMedals = Math.floor(points / 50);
-    for (let i = 0; i < totalMedals; i++) {
-        const medalIcon = document.createElement('i');
-        medalIcon.className = "fa-solid fa-medal";
-        medalsContainer.appendChild(medalIcon);
+function updateMedals(pts) {
+    const m = document.getElementById("medals-container");
+    if (!m) return;
+    m.innerHTML = "";
+    const medals = Math.floor(pts / 50);
+    for (let i = 0; i < medals; i++) {
+        const iEl = document.createElement("i");
+        iEl.className = "fa-solid fa-medal";
+        m.appendChild(iEl);
     }
-
-    updateRank(totalMedals);
+    updateRank(medals);
 }
 
-function updateRank(totalMedals) {
-    const rankDisplay = document.getElementById('rank-display');
-    if (!rankDisplay) return;
-
-    const ranks = ["Beginner", "Apprentice", "Novice", "Intermediate",
-        "Advanced", "Expert", "Master", "Elite", "Legend", "Mythical"];
-
-    const newRankIndex = Math.min(Math.floor(totalMedals / 3), ranks.length - 1);
-    const newRank = ranks[newRankIndex];
-
-    rankDisplay.textContent = `Range: ${newRank}`;
+function updateRank(medals) {
+    const r = document.getElementById("rank-display");
+    if (!r) return;
+    const ranks = ["Beginner","Apprentice","Novice","Intermediate","Advanced","Expert","Master","Elite","Legend","Mythical"];
+    r.textContent = `Range: ${ranks[Math.min(Math.floor(medals/3), ranks.length-1)]}`;
 }
 
-function updateStreakUI(streak = 0) {
-    const streakElement = document.getElementById('streak');
-    if (streakElement) {
-        streakElement.textContent = streak;
-    }
+function updateStreakUI(streak=0) {
+    const s = document.getElementById("streak");
+    if (s) s.textContent = streak;
 }
 
-async function checkStreak(lastDate, currentStreak) {
+async function checkStreak(lastDate, streak) {
     const today = new Date().toDateString();
-
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toDateString();
-
-    if (lastDate !== today && lastDate !== yesterdayStr) {
-        await updateDoc(doc(db, "Users", currentUserUid), {
-            streak: 0
-        });
+    const y = new Date(); y.setDate(y.getDate()-1);
+    const yesterday = y.toDateString();
+    if (lastDate!==today && lastDate!==yesterday) {
+        await updateDoc(doc(db,"Users",auth.currentUser.uid),{ streak:0 });
         updateStreakUI(0);
     }
 }
-
-async function addToStreak(currentStreak = 0, lastDate = "") {
-    const today = new Date().toDateString();
-
-    if (lastDate !== today) {
-        const newStreak = currentStreak + 1;
-        await updateDoc(doc(db, "Users", currentUserUid), {
-            streak: newStreak,
-            lastTaskDate: today
-        });
-        updateStreakUI(newStreak);
-    }
-}
-
-function setupTaskButton() {
-    document.querySelectorAll('.complete-task-button').forEach(button => {
-        button.addEventListener('click', async () => {
-            await addPoint();
-        });
-    });
-}
-
-document.addEventListener('streakUpdated', () => {
-    updateStreakUI();
-});
 
 window.initPoints = initPoints;
