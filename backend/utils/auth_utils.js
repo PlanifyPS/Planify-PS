@@ -31,6 +31,7 @@ export const loginUser = async (email, password) => {
         sessionStorage.setItem("uid", userCredential.user.uid);
 
         const userData = await getUserData(userCredential.user.uid);
+        sessionStorage.setItem("userName", userData.userName);
         if (userData) {
             console.log("User Data:", userData);
         }

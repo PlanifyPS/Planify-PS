@@ -288,13 +288,34 @@ dialog::backdrop {
     background-color: var(--blue-dark);
     border: none;
     border-radius: 4px;
-    transition: background 0.2s ease-in-out;
+    transition: background 0.3s ease-in-out;
     font-size: 0.9rem;
 }
 
 .btn-view-group:hover {
     background-color: var(--blue-medium);
     cursor: pointer;
+}
+
+.btn-view-challenges {
+    align-self: flex-end;
+    padding: 0.5rem 1rem;
+    color: var(--black);
+    background-color: var(--light-blue);
+    border: none;
+    border-radius: 4px;
+    transition: background 0.3s ease-in-out;
+    font-size: 0.9rem;
+}
+
+.btn-view-challenges:hover {
+    background-color: var(--blue-medium);
+    color: var(--white);
+    cursor: pointer;
+}
+
+.group-buttons{
+    margin-top: 1rem;
 }
 
 .member-flex {
