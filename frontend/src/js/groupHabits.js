@@ -3,22 +3,24 @@ import {
     collection,
     getDocs,
     doc,
+    setDoc,
     getDoc,
     addDoc,
     updateDoc,
     serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
-import { addPoints } from './points.js';
 import { getUserData, saveUserData, deleteUserField } from '../../../backend/utils/firestore_utils.js';
 import { deleteDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-import {uid} from "chart.js/helpers";
+import { addPoints } from './points.js';
 
 
-let groupId, members = [], memberInfos = [], instanceMap = {}, definitions = {},  habits = [];             // mezcla de definitions + instanceMap
+let groupId, members = [], memberInfos = [], instanceMap = {}, definitions = {},  habits = [];
 
 export function initGroupHabits() {
     onAuthStateChanged(auth, async user => {
+        initModal();
+        setupFilters();
         if (!user) return window.location.href = '#/register';
         const params = new URLSearchParams(location.hash.split('?')[1] || '');
         groupId = params.get('id');
@@ -36,20 +38,18 @@ export function initGroupHabits() {
             m[d.habitId] = { id: s.id, ...d };
             return m;
         }, {});
-        initModal();
-        setupFilters();
+
         await loadDefinitions();
         renderHabits();
     });
 }
 
 async function loadDefinitions() {
-    const userData = await getUserData(auth.currentUser.uid);
-    const allDefs = userData.habits || {};
-    definitions = Object.fromEntries(
-        Object.entries(allDefs)
-            .filter(([_, def]) => def.groupId === groupId)
-    );
+    const defsSnap = await getDocs(collection(db, 'Groups', groupId, 'habitDefinitions'));
+    definitions = defsSnap.docs.reduce((m, d) => {
+        m[d.id] = d.data();
+        return m;
+    }, {});
 }
 
 function setupFilters() {
@@ -77,7 +77,7 @@ function renderHabits() {
                 description: d.description,
                 frequency: d.frequency,
                 category: d.category,
-                points: d.points || 0,
+                points: d.points,
                 joined: !!inst.id,
                 completed: inst.completed || false,
                 membersAssigned: inst.members || []
@@ -112,11 +112,11 @@ function renderHabits() {
         .forEach(b => b.onclick = e => { e.stopPropagation(); showHabitDetails(b.dataset.id); });
     container.querySelectorAll('.delete-card-btn')
         .forEach(b => b.onclick = async e => {
-              e.stopPropagation();
-              const id = b.dataset.id;
-              if (!confirm('¿Seguro que quieres eliminar este hábito?')) return;
-              await deleteHabitDefinition(id);
-            });
+            e.stopPropagation();
+            const id = b.dataset.id;
+            if (!confirm('¿Seguro que quieres eliminar este hábito?')) return;
+            await deleteHabitDefinition(id);
+        });
 
 
     container.querySelectorAll('.group-card')
@@ -180,25 +180,25 @@ function startEditingHabit(habitId) {
 }
 
 async function deleteHabitDefinition(habitId) {
-        delete definitions[habitId];
-        delete instanceMap[habitId];
-        renderHabits();
-        document.getElementById('group-habit-detail').innerHTML = `...`;
+    delete definitions[habitId];
+    delete instanceMap[habitId];
+    renderHabits();
+    document.getElementById('group-habit-detail').innerHTML = `...`;
 
-        await deleteUserField(auth.currentUser.uid, `habits.${habitId}`);
-        const inst = instanceMap[habitId];
-       if (inst && inst.id) {
-             await deleteDoc(doc(db, 'Groups', groupId, 'habits', inst.id));
-       }
-        await loadDefinitions();
-       const snaps = await getDocs(collection(db, 'Groups', groupId, 'habits'));
-       instanceMap = snaps.docs.reduce((m, s) => {
-             const d = s.data();
-             m[d.habitId] = { id: s.id, ...d };
-             return m;
-           }, {});
-       renderHabits();
-       document.getElementById('group-habit-detail').innerHTML = `
+    await deleteUserField(auth.currentUser.uid, `habits.${habitId}`);
+    const inst = instanceMap[habitId];
+    if (inst && inst.id) {
+        await deleteDoc(doc(db, 'Groups', groupId, 'habits', inst.id));
+    }
+    await loadDefinitions();
+    const snaps = await getDocs(collection(db, 'Groups', groupId, 'habits'));
+    instanceMap = snaps.docs.reduce((m, s) => {
+        const d = s.data();
+        m[d.habitId] = { id: s.id, ...d };
+        return m;
+    }, {});
+    renderHabits();
+    document.getElementById('group-habit-detail').innerHTML = `
      <div class="empty-detail-group">
        <i class="fas fa-people-arrows"></i>
        <h2>Select a Group Habit</h2>
@@ -209,17 +209,21 @@ async function deleteHabitDefinition(habitId) {
 
 
 async function acceptHabit(habitId) {
-    const sel = Array.from(
+    const selected = Array.from(
         document.querySelectorAll('#group-habit-detail input[name="members"]:checked')
-    ).map(i=>i.value);
-    const membersToAssign = sel.length ? sel : members;
-    await addDoc(collection(db,'Groups',groupId,'habits'), {
-        habitId,
-        acceptedTimestamp: serverTimestamp(),
-        members: membersToAssign,
-        completed: false,
-        createdBy: auth.currentUser.uid
-    });
+    ).map(i => i.value);
+    const membersToAssign = selected;
+
+    await addDoc(
+        collection(db,'Groups',groupId,'habits'),
+        {
+            habitId,
+            acceptedTimestamp: serverTimestamp(),
+            members: membersToAssign,
+            completed: false,
+            createdBy: auth.currentUser.uid
+        }
+    );
     const snaps = await getDocs(collection(db,'Groups',groupId,'habits'));
     instanceMap = snaps.docs.reduce((m,s)=>{ const d=s.data(); m[d.habitId]={id:s.id,...d}; return m; }, {});
     await loadDefinitions();
@@ -234,9 +238,10 @@ async function completeHabit(habitId) {
     await updateDoc(ref,{
         completed: true,
         completedBy: auth.currentUser.uid,
-        completedTimestamp: serverTimestamp()
+        completedTimestamp: serverTimestamp(),
+        members: [ auth.currentUser.uid ]
     });
-    const pts = habits.find(h=>h.id===habitId).points;
+    const pts = habits.find(h=>h.id===habitId).points || 0;
     await addPoints(pts);
     instanceMap[habitId].completed = true;
     renderHabits();
@@ -258,23 +263,28 @@ function clearInputs() {
 }
 
 async function saveHabit() {
-    const title = document.getElementById('NewHabitTitle').value.trim();
+    const title       = document.getElementById('NewHabitTitle').value.trim();
     const description = document.getElementById('HabitDescription').value.trim();
-    const frequency = document.getElementById('HabitFrequency').value;
-    const category = document.getElementById('HabitCategory').value;
-    if (!title||!description) return alert('Complete todos los campos.');
+    const frequency   = document.getElementById('HabitFrequency').value;
+    const category    = document.getElementById('HabitCategory').value;
+    if (!title || !description) {
+        return alert('Complete todos los campos.');
+    }
 
     const habitId = editingHabitId || crypto.randomUUID();
-    const newHabit = { title, description, frequency, category, points:0, groupId};
-    await saveUserData(auth.currentUser.uid, { [`habits.${habitId}`]: newHabit });
-    await saveUserData(uid, { [`habits.${id}`]: newHabit });
-    await saveUserData(auth.currentUser.uid, { [`habits.${habitId}`]: newHabit });
+    const newHabit = { title, description, frequency, category, points: 1, groupId };
+    await setDoc(
+        doc(db, 'Groups', groupId, 'habitDefinitions', habitId),
+        newHabit
+    );
+    await saveUserData(auth.currentUser.uid, { [`habits.${habitId}`]: { ...newHabit, groupId } });
 
     editingHabitId = null;
     document.getElementById('AddHabitModal').style.display = 'none';
     clearInputs();
     await loadDefinitions();
     renderHabits();
+
 }
 
 window.addEventListener('hashchange', () => {
