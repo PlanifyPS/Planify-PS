@@ -37,6 +37,7 @@ export function initProfile() {
 function initAvatarDialog() {
     const dialog    = document.getElementById("avatar-dialog");
     const btnOpen   = document.getElementById("change-avatar-btn");
+    const btnCancel   = document.getElementById("cancel-button");
     const grid      = document.getElementById("avatar-options");
     const btnSave   = document.getElementById("avatar-save-btn");
 
@@ -55,14 +56,16 @@ function initAvatarDialog() {
 
     btnOpen.addEventListener("click", () => dialog.showModal());
 
-    dialog.addEventListener("cancel", e => {
+    btnCancel.addEventListener("click", e => {
         e.preventDefault();
+        dialog.style.display = 'none';
         dialog.close();
     });
 
     btnSave.addEventListener("click", () => {
         document.getElementById("profile-avatar")
             .src = `/frontend/public/assets/${selectedAvatar}.webp`;
+        dialog.style.display = 'none';
         dialog.close();
     });
 }
