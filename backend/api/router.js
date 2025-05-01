@@ -57,6 +57,11 @@ class Router {
                 title: 'GroupChallenge',
                 scripts: ['groupChallenge.js']
             },
+            '/groupHabits': {
+                view: 'groupHabits.html',
+                title: 'GroupHabits',
+                scripts: ['groupHabits.js']
+            },
             '/group-information': {
                 view: 'groupInformation.html',
                 title: 'Group Information',

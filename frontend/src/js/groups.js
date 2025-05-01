@@ -140,7 +140,9 @@ async function displayUserGroups() {
         <div class="group-buttons">
             <button class="btn-view-group" data-id="${groupId}">View Group</button>
             <button class="btn-view-challenges" data-id="${groupId}">Challenges</button>
+            <button class="btn-view-habits" data-id="${groupId}">Habits</button>
         </div>
+        
     `;
 
             // Evento para el botón de "View Group"
@@ -151,6 +153,10 @@ async function displayUserGroups() {
             // Evento para el botón de "Challenges"
             li.querySelector('.btn-view-challenges').addEventListener('click', () => {
                 window.location.href = `#/groupChallenge?id=${groupId}`;
+            });
+
+            li.querySelector('.btn-view-habits').addEventListener('click', () => {
+                window.location.href = `#/groupHabits?id=${groupId}`;
             });
 
             groupsList.appendChild(li);
