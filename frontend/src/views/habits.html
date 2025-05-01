@@ -1,11 +1,13 @@
 <main id="habits">
     <section class="main-content">
+
         <div class="habits-content">
             <div id="habits-list" class="habits-list">
                 <div class="habits-list-header">
-                    <div class="habits-list-title"><h2 id="TitleHabitsTasks"></h2></div>
+                    <div class="habits-list-title"><h2 id="title-habits"></h2></div>
                     <div class="habits-list-header-options">
-                        <input type="text" id="search-HabitsTasks" placeholder="Search...">
+
+                        <input type="text" id="search-habits" placeholder="Search...">
                         <button id="add-button" class="options-button">Add Habit</button>
                         <button id="filter-button" class="options-button">Filter</button>
                         <div id="filterDropdown" class="filter-dropdown" style="display: none;">
@@ -18,9 +20,11 @@
                             <label><input type="radio" name="category-filter" value="Other"> Other</label>
                         </div>
                     </div>
+
                 </div>
                 <div id="user-content" class="user-habits"></div>
             </div>
+
             <div class="habits-item-description">
                 <div class="habits-item-description_row_a">
                     <div class="habits-item-description_4">Lorem ipsum</div>
@@ -39,6 +43,8 @@
             </div>
         </div>
     </section>
+
+    <!-- Cuando todo funcione, esto puede eliminarse
     <div id="AddTaskModal" class="TaskModal">
         <div class="Task-modal-content">
             <button id="closeTaskButton" class="closeTask">&times;</button>
@@ -49,11 +55,21 @@
             <textarea id="TaskDescription" placeholder="Describe your Task..."></textarea>
             <label for="TaskDueDate">Due Date</label>
             <input type="date" id="TaskDueDate">
+            <label for="TaskCategory">Category</label>
+            <select id="TaskCategory">
+                <option value="Wellness">Wellness</option>
+                <option value="Fitness">Fitness</option>
+                <option value="Education">Education</option>
+                <option value="Career">Career</option>
+                <option value="Social">Social</option>
+                <option value="Other">Other</option>
+            </select>
             <button id="saveTask">Save Task</button>
         </div>
     </div>
+    -->
     <div id="AddHabitModal" class="TaskModal">
-        <div class="Task-modal-content">
+        <div class="Habit-modal-content">
             <button id="closeHabitButton" class="closeTask">&times;</button>
             <h2>Add New Habit</h2>
             <label for="NewHabitTitle">Title</label>

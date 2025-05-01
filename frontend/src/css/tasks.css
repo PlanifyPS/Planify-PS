@@ -112,7 +112,7 @@
     font-weight: var(--semibold);
 }
 
-#search-habits {
+#search-tasks {
     display: flex;
     margin: 0;
 }
@@ -252,7 +252,7 @@
     overflow-y: auto;
 }
 
-#saveHabit {
+#saveTask, #saveHabit {
     background-color: #007bff;
     color: white;
     border: none;
@@ -262,12 +262,13 @@
     transition: all 0.3s ease-in-out;
 }
 
+#saveTask:hover,
 #saveHabit:hover {
     background-color: #0056b3;
     transform: scale(1.05);
 }
 
-.habit-options-icon {
+.task-options-icon {
     font-size: 1.2rem;
     color: var(--secondary-blue);
 }

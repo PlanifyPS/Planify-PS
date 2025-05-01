@@ -1,0 +1,68 @@
+<main id="tasks">
+  <section class="main-content">
+    <div class="tasks-content">
+      <div id="tasks-list" class="tasks-list">
+        <div class="tasks-list-header">
+          <div class="tasks-list-title"><h2 id="title-tasks"></h2></div>
+          <div class="tasks-list-header-options">
+
+            <input type="text" id="search-tasks" placeholder="Search...">
+            <button id="add-button" class="options-button">Add Task</button>
+            <button id="filter-button" class="options-button">Filter</button>
+            <div id="filterDropdown" class="filter-dropdown" style="display: none;">
+              <label><input type="radio" name="category-filter" value="all" checked> All</label>
+              <label><input type="radio" name="category-filter" value="Wellness"> Wellness</label>
+              <label><input type="radio" name="category-filter" value="Fitness"> Fitness</label>
+              <label><input type="radio" name="category-filter" value="Education"> Education</label>
+              <label><input type="radio" name="category-filter" value="Career"> Career</label>
+              <label><input type="radio" name="category-filter" value="Social"> Social</label>
+              <label><input type="radio" name="category-filter" value="Other"> Other</label>
+            </div>
+          </div>
+
+        </div>
+        <div id="user-content" class="user-tasks"></div>
+      </div>
+
+      <div class="tasks-item-description">
+        <div class="tasks-item-description_row_a">
+          <div class="tasks-item-description_4">Lorem ipsum</div>
+        </div>
+        <div class="tasks-item-description_row_b">
+          <div class="tasks-item-description_col_1">
+            <div class="tasks-item-description_1">Lorem ipsum</div>
+            <div class="tasks-item-description_2">Lorem ipsum</div>
+          </div>
+          <div class="tasks-item-description_col_2">
+            <div class="tasks-item-description_1">Lorem ipsum</div>
+            <div class="tasks-item-description_3">Lorem ipsum</div>
+            <div class="tasks-item-description_3">Lorem ipsum</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="AddTaskModal" class="TaskModal">
+    <div class="Task-modal-content">
+      <button id="closeTaskButton" class="closeTask">&times;</button>
+      <h2 id="addNewTitle">Add New Task</h2>
+      <label for="NewTaskTitle">Title</label>
+      <input type="text" id="NewTaskTitle" placeholder="My New Task">
+      <label for="TaskDescription">Description</label>
+      <textarea id="TaskDescription" placeholder="Describe your Task..."></textarea>
+      <label for="TaskDueDate">Due Date</label>
+      <input type="date" id="TaskDueDate">
+      <label for="TaskCategory">Category</label>
+      <select id="TaskCategory">
+        <option value="Wellness">Wellness</option>
+        <option value="Fitness">Fitness</option>
+        <option value="Education">Education</option>
+        <option value="Career">Career</option>
+        <option value="Social">Social</option>
+        <option value="Other">Other</option>
+      </select>
+      <button id="saveTask">Save Task</button>
+    </div>
+  </div>
+</main>
