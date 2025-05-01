@@ -1,4 +1,4 @@
-.main-content {
+.tasks-main-content {
     width: 100%;
     height: 100vh;
     display: flex;
@@ -6,7 +6,7 @@
     gap: 10px;
 }
 
-.habits-content {
+.tasks-content {
     justify-content: space-between;
     display: flex;
     flex-direction: row;
@@ -18,26 +18,26 @@
     gap: 20px;
 }
 
-.habits-list {
+.tasks-list {
     width: 100%;
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
-.habits-list-header {
+.tasks-list-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-bottom: 20px;
 }
 
-.habits-list-title {
+.tasks-list-title {
     display: flex;
     align-items: center;
 }
 
-.habits-list-header-options {
+.tasks-list-header-options {
     display: flex;
     align-items: center;
     gap: 2rem;
@@ -66,7 +66,7 @@
     transform: scale(0.95);
 }
 
-.user-habits {
+.user-tasks {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -76,7 +76,7 @@
     padding-top: 8px;
 }
 
-.habits-list-item {
+.tasks-list-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -90,22 +90,22 @@
     overflow: hidden;
 }
 
-.habit-completed {
+.task-completed {
     background-color: var(--grey);
     text-decoration: line-through;
     opacity: 0.7;
 }
 
-.habits-list-item:hover {
+.tasks-list-item:hover {
     transform: translateY(-3px);
 }
 
-.habits-list-item-options button {
+.tasks-list-item-options button {
     border: none;
     background: none;
 }
 
-.habits-title {
+.tasks-title {
     color: var(--dark-blue);
     font-size: 1.2rem;
     font-family: var(--heading-font), sans-serif;
@@ -117,30 +117,30 @@
     margin: 0;
 }
 
-.habits-list-item-logo {
+.tasks-list-item-logo {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-.habits-list-item-logo img {
+.tasks-list-item-logo img {
     width: 50px;
     height: 50px;
 }
 
-.habits-list-item-options {
+.tasks-list-item-options {
     display: flex;
     gap: 1rem;
 }
 
-.habits-item-description {
+.tasks-item-description {
     display: flex;
     flex-direction: column;
     width: 100%;
     gap: 8px;
 }
 
-.habits-item-description_row_a {
+.tasks-item-description_row_a {
     flex-direction: column;
     display: flex;
     justify-content: space-between;
@@ -148,7 +148,7 @@
     height: 20%;
 }
 
-.habits-item-description_row_b {
+.tasks-item-description_row_b {
     flex-direction: row;
     display: flex;
     justify-content: space-between;
@@ -156,18 +156,18 @@
     height: 80%;
 }
 
-.habits-item-description_col_1,
-.habits-item-description_col_2 {
+.tasks-item-description_col_1,
+.tasks-item-description_col_2 {
     display: flex;
     flex-direction: column;
     gap: 8px;
     width: 50%;
 }
 
-.habits-item-description_1,
-.habits-item-description_2,
-.habits-item-description_3,
-.habits-item-description_4 {
+.tasks-item-description_1,
+.tasks-item-description_2,
+.tasks-item-description_3,
+.tasks-item-description_4 {
     background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-lighter) 100%);
     border-radius: 15px;
     padding: 12px;
@@ -179,26 +179,26 @@
     text-align: center;
 }
 
-.habits-item-description_1 {
+.tasks-item-description_1 {
     height: 30%;
 }
 
-.habits-item-description_2 {
+.tasks-item-description_2 {
     height: 70%;
 }
 
-.habits-item-description_3 {
+.tasks-item-description_3 {
     height: 34%;
 }
 
-.habits-item-description_4 {
+.tasks-item-description_4 {
     height: 100%;
 }
 
-.habits-item-description_1:hover,
-.habits-item-description_2:hover,
-.habits-item-description_3:hover,
-.habits-item-description_4:hover {
+.tasks-item-description_1:hover,
+.tasks-item-description_2:hover,
+.tasks-item-description_3:hover,
+.tasks-item-description_4:hover {
     transform: translateY(-3px);
 }
 
@@ -225,7 +225,7 @@
     position: relative;
 }
 
-.closeTask {
+.close-task {
     position: absolute;
     top: 10px;
     right: 15px;
@@ -281,7 +281,7 @@
     font-size: 1.5rem;
 }
 
-.habits-list-item-category {
+.tasks-list-item-category {
     display: inline-block;
     padding: 3px 8px;
     border-radius: 12px;
@@ -376,7 +376,7 @@
     }
 }
 
-.habits-list-item-indicator {
+.tasks-list-item-indicator {
     width: 4px;
     height: 100%;
     position: absolute;

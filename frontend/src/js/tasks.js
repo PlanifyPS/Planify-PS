@@ -31,7 +31,7 @@ function initTextContent() {
 function initModal() {
     let openModalButton = document.getElementById('add-button');
     let modal = document.getElementById('AddTaskModal');
-    let closeButton = document.getElementById('closeTaskButton');
+    let closeButton = document.getElementById('close-task-button');
     let saveButton = document.getElementById('saveTask');
 
     openModalButton.addEventListener('click', () => { modal.style.display = 'flex'; });
@@ -310,7 +310,7 @@ async function addTemplate(id, url, item, taskId) {
 
         const titleElement = newElement.querySelector(".tasks-title");
         const categoryLabel = document.createElement("span");
-        categoryLabel.classList.add("task-list-item-category");
+        categoryLabel.classList.add("tasks-list-item-category");
         categoryLabel.classList.add(`category-${item.category || 'other'}`);
         categoryLabel.textContent = item.category || 'other';
         titleElement.after(categoryLabel);

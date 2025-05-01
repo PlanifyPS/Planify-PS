@@ -32,7 +32,7 @@ function initModal() {
     let openModalButton = document.getElementById('add-button');
     let modal = document.getElementById('AddHabitModal');
     let closeHabitButton = document.getElementById('closeHabitButton');
-    let saveHabitButton = document.getElementById('saveHabit');
+    let saveHabitButton = document.getElementById('save-habit');
 
     openModalButton.addEventListener('click', () => { modal.style.display = 'flex'; });
     closeHabitButton.addEventListener('click', () => { modal.style.display = 'none'; clearInputs(); });
