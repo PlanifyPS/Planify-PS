@@ -199,3 +199,25 @@
 .modal-footer button:hover {
     background-color: #0056b3;
 }
+
+.chat-message-bubble {
+    background-color: #e1f5fe; /* cambia este color si quieres */
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    max-width: 80%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sender-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #0277bd; /* azul oscuro */
+}
+
+.message-body {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #333;
+}
+

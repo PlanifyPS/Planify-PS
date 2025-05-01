@@ -1,6 +1,6 @@
 import {
     getAllDocumentsFromCollection,
-    getForum,
+    getForum, getForumMessagesFromFirebase,
     getUserData,
     initForum,
     saveForumUser,
@@ -9,6 +9,7 @@ import {
 
 
 const userUID = sessionStorage.getItem("uid");
+const userName = sessionStorage.getItem("userName");
 
 
 export async function getUserForum() {
@@ -77,5 +78,23 @@ export async function getAllForumsAvoidingUserForum(){
 
 }
 export async function sendMessage(forumId, messageBody){
-    await sendForumMessage(forumId, userUID, messageBody);
+    await sendForumMessage(forumId, userUID, messageBody, userName);
+}
+
+export async function getForumMessages(forumId){
+
+    const forumData = await getForumMessagesFromFirebase(forumId);
+    const messages = [];
+    forumData.forEach(doc => {
+        const data = doc.data();
+        messages.push({
+            id: doc.id,
+            ...data,
+            senderName: data.sender === userUID ? "You" : data.senderName,
+
+        });
+    });
+
+    return messages;
+    
 }

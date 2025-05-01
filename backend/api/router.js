@@ -28,7 +28,7 @@ class Router {
                 scripts: ['habits.js',]
             },
             '/tasks': {
-                view: 'habits.html',
+                view: 'tasks.html',
                 title: 'My Tasks',
                 scripts: ['tasks.js']
             },

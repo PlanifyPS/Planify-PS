@@ -55,6 +55,7 @@ async function createNewGroup(name, description) {
             inviteCode,
             challenges: [],
             habits: [],
+            tasks: [],
             createdAt: serverTimestamp()
         });
 
