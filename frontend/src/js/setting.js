@@ -46,7 +46,6 @@ function setupDarkMode() {
     const modeToggle = document.getElementById('mode-toggle');
     if (!modeToggle) return;
 
-    // Cargar preferencia guardada o usar preferencia del sistema
     const savedMode = localStorage.getItem('darkMode') === 'true';
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initialMode = savedMode ?? systemPrefersDark;

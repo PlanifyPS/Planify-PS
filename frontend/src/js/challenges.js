@@ -15,11 +15,9 @@ import { app } from "../../../backend/utils/firebase_config.js";
 const db = getFirestore(app);
 
 
-let challengesData = []; // Almacenar los desafíos cargados
+let challengesData = [];
 
-// Función principal que se ejecuta al cargar la página
 export function initChallenges() {
-    // Esperar a que el DOM esté listo
     if (document.readyState === 'complete') {
         loadChallenges();
     } else {
@@ -301,9 +299,8 @@ function acceptChallenge(challengeId) {
     challenge.accepted = true;
     challenge.acceptedDate = new Date().toISOString();
 
-    // Actualizar la vista
     showChallengeDetails(challengeId);
-    filterChallenges(); // Para actualizar la lista si hay filtros aplicados
+    filterChallenges();
 
     console.log(`Desafío "${challenge.name}" aceptado`);
 }
@@ -318,7 +315,6 @@ async function completeChallenge(challengeId) {
 
         const userRef = doc(db, "Users", user.uid, "CompletedChallenges", challengeId);
 
-        // Guardamos que lo completó
         await setDoc(userRef, {
             completed: true,
             completedAt: new Date()
@@ -339,11 +335,6 @@ async function completeChallenge(challengeId) {
     }
 }
 
-
-
-
-
-// Añadir puntos
 async function addPointsToFirebase(pointsToAdd) {
     try {
         const user = getAuth().currentUser;
@@ -353,14 +344,12 @@ async function addPointsToFirebase(pointsToAdd) {
         const userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
-            // Si no existe, lo creamos con los puntos iniciales
             await setDoc(userRef, {
                 points: pointsToAdd,
                 streak: 0,
                 lastTaskDate: new Date().toDateString()
             });
         } else {
-            // Si ya existe, incrementamos los puntos
             await updateDoc(userRef, {
                 points: increment(pointsToAdd)
             });
@@ -381,8 +370,6 @@ async function addPointsToFirebase(pointsToAdd) {
     }
 }
 
-
-// Añadir a racha
 async function addToStreak() {
     try {
         const today = new Date().toDateString();
@@ -447,7 +434,6 @@ async function markCompletedChallenges() {
         console.error("Error marcando desafíos completados:", error);
     }
 }
-
 
 window.addEventListener('hashchange', () => {
     if (window.location.hash.includes('challenges')) {

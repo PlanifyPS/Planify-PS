@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
-    /* Colores base (light mode) */
+    /* Colores base*/
     --dark-blue: #03045E;
     --main-blue: #0077B6;
     --secondary-blue: #023E8A;
@@ -32,7 +32,7 @@
     --heading-font: 'Montserrat', sans-serif;
     --text-font: 'Roboto', sans-serif;
 
-    /* Escala de azules */
+    /* Escala azules */
     --blue-darkest: #03045E;  /* Federal blue */
     --blue-dark: #023E8A;     /* Marian blue */
     --blue-medium: #0077B6;   /* Honolulu Blue */
@@ -43,7 +43,7 @@
     --blue-lighter: #ADE8F4;  /* Non Photo blue */
     --cyan-lightest: #CAF0F8; /* Light cyan */
 
-    /* Breakpoints */
+    /* Tamaños */
     --tablet: 768px;
     --mobile: 480px;
     --desktop: 1024px;

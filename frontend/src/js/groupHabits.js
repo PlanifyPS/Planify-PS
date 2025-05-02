@@ -206,8 +206,6 @@ async function deleteHabitDefinition(habitId) {
      </div>`;
 }
 
-
-
 async function acceptHabit(habitId) {
     const selected = Array.from(
         document.querySelectorAll('#group-habit-detail input[name="members"]:checked')

@@ -1,4 +1,3 @@
-// js/auth_utils.js
 import { auth, googleProvider, db, signOut } from "./firebase_config.js";
 import {
     createUserWithEmailAndPassword,

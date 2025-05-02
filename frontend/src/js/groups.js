@@ -146,12 +146,10 @@ async function displayUserGroups() {
         
     `;
 
-            // Evento para el botón de "View Group"
             li.querySelector('.btn-view-group').addEventListener('click', () => {
                 window.location.href = `#/group-information?id=${groupId}`;
             });
 
-            // Evento para el botón de "Challenges"
             li.querySelector('.btn-view-challenges').addEventListener('click', () => {
                 window.location.href = `#/groupChallenge?id=${groupId}`;
             });

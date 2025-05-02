@@ -1,4 +1,3 @@
-// analytics.js
 import Chart from 'https://esm.run/chart.js/auto';
 import { auth, db } from '../../../backend/utils/firebase_config.js';
 import { collection, getDocs, getDoc, doc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';

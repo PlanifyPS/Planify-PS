@@ -1,6 +1,7 @@
 import { deleteUserField, getUserData, saveUserData } from "../../../backend/utils/firestore_utils.js";
 import { addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import { db } from "/backend/utils/firebase_config.js";
+import { addPoints } from './points.js';
 
 const userUID = sessionStorage.getItem("uid");
 let tasksData;
@@ -166,7 +167,17 @@ async function completeTask(taskId) {
         localStorage.setItem('lastTaskDate', today);
     }
      */
-
+    const category = tasksData[taskId].category;
+        const pointsByCategory = {
+            Wellness: 1,
+            Fitness: 3,
+            Education: 3,
+            Career: 3,
+            Social: 1,
+            Other: 2
+        };
+        const pts = pointsByCategory[category];
+        await addPoints(pts);
     await sortTasks();
 
     await addDoc(collection(db, "Users", userUID, "tasksHistory"), {

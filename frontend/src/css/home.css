@@ -473,7 +473,6 @@
     background-color: var(--blue-dark);
 }
 
-/* Estilos para los botones de editar y eliminar en las tareas */
 .edit-task-btn, .delete-task-btn {
     background: none;
     border: none;

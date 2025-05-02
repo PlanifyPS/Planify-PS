@@ -1,4 +1,3 @@
-// js/points.js
 import { auth, db } from "../../../backend/utils/firebase_config.js";
 import {
     doc,

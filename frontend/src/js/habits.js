@@ -1,6 +1,8 @@
 import {deleteUserField, getUserData, saveUserData} from "../../../backend/utils/firestore_utils.js";
 import {addDoc, collection, serverTimestamp} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import {db} from "/backend/utils/firebase_config.js";
+import { addPoints } from './points.js';
+
 
 const userUID = sessionStorage.getItem("uid");
 let habitsData;
@@ -147,6 +149,18 @@ async function completeHabit(habitId) {
     await saveUserData(userUID, {
         [`habits.${habitId}`]: habitsData[habitId],
     });
+
+    const category = habitsData[habitId].category;
+        const pointsByCategory = {
+              Wellness: 1,
+              Fitness: 5,
+              Education: 5,
+              Career: 5,
+              Social: 3,
+              Other: 2
+        };
+        const pts = pointsByCategory[category];
+        await addPoints(pts);
 
     await sortHabits();
 
