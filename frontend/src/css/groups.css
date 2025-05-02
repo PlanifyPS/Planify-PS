@@ -416,6 +416,14 @@ dialog::backdrop {
     margin: 0.5rem 0 1rem;
 }
 
+#group-habits{
+    width: 100%;
+    padding: 30px;
+    background-color: var(--light-bg);
+    border-radius: 15px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
 
 
 
