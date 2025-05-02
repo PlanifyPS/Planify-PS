@@ -253,6 +253,11 @@ dialog::backdrop {
     justify-content: space-between;
     min-width: 240px;
     max-width: 320px;
+    transition: all .3s ease-in-out;
+}
+
+.group-item:hover{
+    transform: translateY(-4px);
 }
 
 .group-item .group-info h3 {
@@ -348,6 +353,12 @@ dialog::backdrop {
     flex: 1;
     max-height: 300px;
     overflow-y: auto;
+}
+
+.group-information-actions{
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .members-list ul {
