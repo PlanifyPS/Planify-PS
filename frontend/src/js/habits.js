@@ -28,6 +28,7 @@ function initHome() {
 
 function initTextContent() {
     document.getElementById("TitleHabitsTasks").textContent = "Habits";
+    document.getElementById("add-button").textContent = "Add Habit";
 }
 
 function initModal() {
