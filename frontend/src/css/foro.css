@@ -205,9 +205,27 @@
     padding: 10px 14px;
     border-radius: 12px;
     margin-bottom: 10px;
-    max-width: 80%;
+    max-width: 70%;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: inline-block;
 }
+
+/* Mensaje ajeno (izquierda por defecto) */
+.chat-message-wrapper {
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* Mensaje propio */
+.chat-message-wrapper.you {
+    justify-content: flex-end;
+}
+
+/* Opcional: burbuja diferente para uno mismo */
+.chat-message-wrapper.you .chat-message-bubble {
+    background-color: #dcedc8; /* verde claro */
+}
+
 
 .sender-name {
     font-weight: bold;

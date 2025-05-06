@@ -13,16 +13,23 @@ function renderMessage(msg) {
     const template = document.getElementById("chat-message-template");
     const clone = template.content.cloneNode(true);
 
-    clone.querySelector(".sender-name").textContent = msg.senderName + ":";
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("chat-message-wrapper");
+    if (msg.senderName === "You") {
+        wrapper.classList.add("you");
+    }
+
+    const bubble = clone.querySelector(".chat-message-bubble");
+    clone.querySelector(".sender-name").textContent = msg.senderName;
     clone.querySelector(".message-body").textContent = msg.body;
 
-    return clone;
+    wrapper.appendChild(bubble);
+    return wrapper;
 }
 
 async function initChat(forumTitle) {
 
     document.getElementById('chat-title').textContent = forumTitle;
-    // traer los mensajes y mostrarlos
 
     const chatMessages = document.getElementById("chatMessages");
     chatMessages.innerHTML = "";
@@ -38,13 +45,33 @@ async function initChat(forumTitle) {
 
 }
 
-function initChatModal(forumTitle){
+async function showMessage() {
+    const chatInput = document.getElementById("chatInput");
+    const chatMessages = document.getElementById("chatMessages");
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+
+
+    chatMessages.appendChild(renderMessage({
+        senderName: "You",
+        body: message,
+    }));
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    const forumTitle = document.getElementById('chat-title').textContent
+    await sendMessage(forumTitle, chatInput.value);
+    chatInput.value = "";
+}
+
+async function initChatModal(forumTitle) {
     document.getElementById('forumName').textContent = forumTitle;
     document.getElementById('forumContainer').innerHTML = '';
     currentForum = forumTitle;
 
     document.getElementById('chatModal').style.display = 'flex';
-    initChat(forumTitle);
+    await initChat(forumTitle);
 }
 function addForumToList(forumTitle) {
 
@@ -76,6 +103,7 @@ function addToAutoCompleteList(forum) {
 
     resultItem.addEventListener('click', () => {
         document.getElementById('searchForum').value = forum.id;
+        document.getElementById('searchResults').innerHTML = '';
     })
 
     resultsContainer.appendChild(resultItem);
@@ -84,6 +112,7 @@ function addToAutoCompleteList(forum) {
 async function autoCompleteForums() {
 
     const query = document.getElementById('searchForum').value;
+    document.getElementById('searchResults').innerHTML = '';
 
     if (!query) {
         return;
@@ -94,8 +123,6 @@ async function autoCompleteForums() {
             addToAutoCompleteList(forumsList[index]);
         }
     }
-
-
 }
 
 async function joinForum() {
@@ -120,6 +147,11 @@ async function setupForumListeners() {
     document.getElementById('addPost').addEventListener('click', joinForum)
     document.getElementById('saveForum').addEventListener('click', saveNewForum);
     document.getElementById('send-message').addEventListener('click', showMessage);
+    document.getElementById('chatInput').addEventListener('keydown',(e)=>{
+        if (e.key === 'Enter') {
+            showMessage();
+        }
+    })
    
 }
 
@@ -139,25 +171,6 @@ document.getElementById('close-chat-button').addEventListener("click", function(
     console.log('close-chat-button');
     document.getElementById('chatModal').style.display = 'none';
 })
-
-async function showMessage() {
-    const chatInput = document.getElementById("chatInput");
-    const chatMessages = document.getElementById("chatMessages");
-    const message = chatInput.value.trim();
-    if (!message) return;
-
-    const messageEl = document.createElement("div");
-    messageEl.innerHTML = `<strong>You:</strong> ${message}`;
-    messageEl.style.marginBottom = "10px";
-
-    chatMessages.appendChild(messageEl);
-
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-
-    const forumTitle = document.getElementById('chat-title').textContent
-    await sendMessage(forumTitle, chatInput.value);
-    chatInput.value = "";
-}
 
 
 document.getElementById('createForum').addEventListener('click', async function () {
