@@ -4,8 +4,9 @@ import {db} from "/backend/utils/firebase_config.js";
 import { addPoints } from './points.js';
 
 
+
 const userUID = sessionStorage.getItem("uid");
-let habitsData;
+export let habitsData;
 let editingHabitId = null;
 
 function initHome() {
@@ -39,7 +40,7 @@ function initModal() {
 
     openModalButton.addEventListener('click', () => { modal.style.display = 'flex'; });
     closeHabitButton.addEventListener('click', () => { modal.style.display = 'none'; clearInputs(); });
-    saveHabitButton.addEventListener('click', () => { saveHabit(); });
+    saveHabitButton.addEventListener('click', async () => {await saveHabit();});
 }
 
 function initFilterButton() {
@@ -105,7 +106,7 @@ async function saveHabit() {
         alert("Please complete all fields.");
         return;
     }
-
+    //Todo refactorizar todo y abstraerlo a un habits utils para tocar firebase desde ahí y tener codigo más limpio.
     const newHabit = {
         title,
         description,
@@ -113,6 +114,7 @@ async function saveHabit() {
         category,
         completed: false,
         streak: 0,
+        lastCompleted: null,
     };
     const habitId = editingHabitId || crypto.randomUUID().toString();
 
@@ -129,9 +131,72 @@ async function saveHabit() {
     await reloadUserHabits();
 }
 
+//Todo refactorizar desde aquí
+
+function getWeekYear(date) {
+    const d = new Date(date.getTime());
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+    const week1 = new Date(d.getFullYear(), 0, 4);
+    return {
+        week: Math.ceil((((d - week1) / 86400000) + 1) / 7),
+        year: d.getFullYear()
+    };
+}
+
+
+function hasPeriodPassed(lastCompleted, frequency) {
+    const last = new Date(lastCompleted);
+    const now = new Date();
+
+    switch (frequency) {
+        case 'daily':
+
+            return now.getFullYear() !== last.getFullYear() || now.getMonth() !== last.getMonth() || now.getDate() !== last.getDate();
+
+        case 'weekly':
+            const nowWeek = getWeekYear(now);
+            const lastWeek = getWeekYear(last);
+            return nowWeek.week !== lastWeek.week || nowWeek.year !== lastWeek.year;
+
+        case 'monthly':
+            return now.getFullYear() !== last.getFullYear() || now.getMonth() !== last.getMonth();
+
+        default:
+            return false;
+    }
+}
+
+async function checkFrequencyHabits() {
+    const now = new Date();
+
+    for (const habitId in habitsData) {
+        const habit = habitsData[habitId];
+        let lastCompleted;
+        if (habit.lastCompleted && typeof habit.lastCompleted.toDate === 'function') {
+            lastCompleted = habit.lastCompleted.toDate();
+        } else {
+            lastCompleted = null; //
+        }
+
+
+        if (!lastCompleted || hasPeriodPassed(lastCompleted, habit.frequency)) {
+            habit.completed = false;
+            habit.lastCompleted = now;
+
+            await saveUserData(userUID, {
+                [`habits.${habitId}`]: habit,
+            });
+        }
+    }
+}
+
+//Todo hasta aquí
+
 async function loadUserHabits() {
     const userData = await getUserData(userUID);
     habitsData = userData.habits;
+    await checkFrequencyHabits();
     await sortHabits();
 }
 
@@ -147,6 +212,7 @@ async function completeHabit(habitId) {
     }
 
     habitsData[habitId].completed = true;
+    habitsData[habitId].lastCompleted = new Date();
     await saveUserData(userUID, {
         [`habits.${habitId}`]: habitsData[habitId],
     });
