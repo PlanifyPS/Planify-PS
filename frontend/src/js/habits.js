@@ -1,9 +1,8 @@
 import {deleteUserField, getUserData, saveUserData} from "../../../backend/utils/firestore_utils.js";
-import {addDoc, collection, serverTimestamp} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import {addDoc, getDocs, collection, serverTimestamp} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import {db} from "/backend/utils/firebase_config.js";
 import { addPoints } from './points.js';
-
-
+import Chart from 'https://esm.run/chart.js/auto';
 
 const userUID = sessionStorage.getItem("uid");
 export let habitsData;
@@ -16,6 +15,9 @@ function initHome() {
         initFilterButton();
         initSearchFunction();
         loadUserHabits().then();
+        initCalendar();
+        initPieByCategory();
+        initPiecompleted();
     } else {
         document.addEventListener('DOMContentLoaded', () => {
             initTextContent();
@@ -23,6 +25,9 @@ function initHome() {
             initFilterButton();
             initSearchFunction();
             loadUserHabits().then();
+            initCalendar();
+            initPieByCategory();
+            initPiecompleted();
         });
     }
 }
@@ -130,6 +135,8 @@ async function saveHabit() {
     document.getElementById('AddHabitModal').style.display = 'none';
     clearInputs();
     await reloadUserHabits();
+    await loadHabitsPieByCategory(userUID);
+    await loadHabitsPiecompleted(userUID);
 }
 
 //Todo refactorizar desde aquí
@@ -231,6 +238,8 @@ async function completeHabit(habitId) {
         await addPoints(pts);
 
     await sortHabits();
+    await loadHabitsPieByCategory(userUID);
+    await loadHabitsPiecompleted(userUID);
 
     await addDoc(
         collection(db, "Users", userUID, "habitsHistory"),
@@ -339,6 +348,8 @@ async function setupHabitsListeners() {
     document.querySelectorAll('.Task-Habit-edit-btn').forEach(button => {
         button.addEventListener('click', () => handleEditHabit(button));
     });
+
+    await loadHabitsPieByCategory(userUID);
 }
 
 function highlightSearchTerm(text, searchTerm) {
@@ -391,5 +402,324 @@ async function addTemplate(id, url, item, habitId) {
         console.log(error);
     }
 }
+
+// ------------------------------ CALENDARIO ------------------------------
+
+function initCalendar() {
+
+    const today = new Date();
+
+    const calendarContainer = document.getElementById('calendar-container');
+
+    if (!calendarContainer) {
+        console.error('No se encontró el contenedor del calendario');
+        return;
+    }
+
+    calendarContainer.innerHTML = createCalendar(today.getFullYear(), today.getMonth());
+    displayEvents();
+    setupEventListeners();
+    const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    updateTaskList(formattedDate);
+}
+
+const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+
+function createCalendar(year, month) {
+    const today = new Date();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+
+    let calendarHTML = `
+        <div class="calendar-header">
+            <button id="prev-month" class="calendar-nav-btn">←</button>
+            <h3>${monthNames[month]} ${year}</h3>
+            <button id="next-month" class="calendar-nav-btn">→</button>
+        </div>
+        <div class="weekdays">
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+            <div>Sun</div>
+        </div>
+        <div class="days">
+    `;
+
+    let startingDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
+
+    for (let i = 0; i < startingDay; i++) {
+        calendarHTML += `<div class="day empty"></div>`;
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear();
+
+        calendarHTML += `
+            <div class="day ${isToday ? 'today' : ''}" data-date="${year}-${month+1}-${day}">
+                ${day}
+                <div class="day-events"></div>
+            </div>
+        `;
+    }
+
+    calendarHTML += `</div>`;
+    return calendarHTML;
+}
+
+function displayEvents() {
+    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+    const days = document.querySelectorAll('.day:not(.empty)');
+
+    days.forEach(day => {
+        const date = day.getAttribute('data-date');
+        const dayEvents = events[date] || [];
+        const eventsContainer = day.querySelector('.day-events');
+
+        eventsContainer.innerHTML = '';
+        day.classList.remove('has-events');
+
+        if (dayEvents.length > 0) {
+            day.classList.add('has-events');
+            eventsContainer.innerHTML = `<div class="event-dot" title="${dayEvents.length} evento(s)"></div>`;
+        }
+    });
+}
+
+function setupEventListeners() {
+    document.addEventListener('click', (e) => {
+        if (e.target.id === 'prev-month' || e.target.id === 'next-month') {
+            const header = document.querySelector('.calendar-header h3');
+            const [monthName, year] = header.textContent.split(' ');
+            const monthIndex = monthNames.indexOf(monthName);
+            const currentYear = parseInt(year);
+            const calendarContainer = document.getElementById('calendar-container');
+
+            let newMonth, newYear;
+
+            if (e.target.id === 'prev-month') {
+                newMonth = monthIndex === 0 ? 11 : monthIndex - 1;
+                newYear = monthIndex === 0 ? currentYear - 1 : currentYear;
+            } else {
+                newMonth = monthIndex === 11 ? 0 : monthIndex + 1;
+                newYear = monthIndex === 11 ? currentYear + 1 : currentYear;
+            }
+
+            calendarContainer.innerHTML = createCalendar(newYear, newMonth);
+            displayEvents();
+        }
+
+        if (e.target.classList.contains('day') && !e.target.classList.contains('empty')) {
+            const date = e.target.getAttribute('data-date');
+            updateTaskList(date);
+        }
+    });
+}
+
+async function updateTaskList(dateString) {
+    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+
+    const dayEvents = events[dateString] || [];
+
+    const userData = await getUserData(userUID);
+    const tasks = userData?.tasks ? Object.values(userData.tasks) : [];
+
+    const formattedDate = new Date(dateString);
+    const isoDateString = formattedDate.toISOString().split('T')[0];
+
+    const tasksInProgress = tasks.filter(t => t.completed === false);
+
+    const dayTasks = tasksInProgress.filter(task => {
+        const taskDate = new Date(task.dueDate);
+        // const taskDateString = taskDate.toISOString().split('T')[0];
+        const taskDateString = `${taskDate.getFullYear()}-${String(taskDate.getMonth() + 1).padStart(2, '0')}-${String(taskDate.getDate()).padStart(2, '0')}`;
+        return taskDateString === isoDateString;
+
+    });
+
+
+    const combined = [
+        ...dayEvents.map(event => ({
+            type: 'event',
+            name: event.name,
+            time: event.time || ''
+        })),
+        ...dayTasks.map(task => ({
+            type: 'task',
+            name: task.title,
+            time: task.time || ''
+        }))
+    ];
+
+    // Ordenar por hora (vacíos al final)
+    combined.sort((a, b) => {
+        if (!a.time) return 1;
+        if (!b.time) return -1;
+        return a.time.localeCompare(b.time);
+    });
+
+    const taskList = document.querySelector('.task-list');
+    if (!taskList) return;
+
+    document.querySelector('.day.selected')?.classList.remove('selected');
+    document.querySelector(`.day[data-date="${dateString}"]`)?.classList.add('selected');
+
+    taskList.innerHTML = combined.length > 0 // muestra lista de eventos y tareas del día seleccionado con sus iconos.
+        ? combined.map(item => `
+            <div class="task-item">
+                <div class="task-icon">${item.type === 'event' ? '📆' : '<i class="fas fa-sticky-note" style="color: #219ebc;"></i>'}</div>
+                <span>${item.name}</span>
+                <span>${item.time}</span>
+            </div>
+        `).join('')
+        : `<div class="task-item">
+                <div class="task-icon">ℹ️</div>
+                <span>There are no events or tasks</span>
+                <span></span>
+           </div>`;
+}
+
+// ------------------------------ FIN CALENDARIO ------------------------------
+
+// ------------------------------ INICIO GRÁFICO COMPLETADAS/PENDIENTES ------------------------------
+
+let habitsCompletedPieChart;
+
+async function initPiecompleted() {
+    await loadHabitsPiecompleted(userUID);
+
+}
+
+function drawPie(containerId, habitsDone, habitsInProgress) {
+    const ctx = document.createElement('canvas');
+    const cont = document.getElementById(containerId);
+    cont.innerHTML = '';
+    cont.appendChild(ctx);
+
+    const cfg = {
+        type: 'pie',
+        data: {
+            labels: ['Done','Pending'],
+            datasets: [{
+                data: [habitsDone, habitsInProgress],
+                backgroundColor: ['#2563EB', '#93C5FD']
+            }]
+        },
+        options: { responsive: true }
+    };
+
+    habitsCompletedPieChart?.destroy();
+    habitsCompletedPieChart = new Chart(ctx.getContext('2d'), cfg);
+}
+
+
+
+async function loadHabitsPiecompleted(uid) {
+    // 1) Obtener tareas completadas desde Firestore ('habitsHistory')
+    const historySnap = await getDocs(collection(db, 'Users', uid, 'habitsHistory'));
+    const habitsDone = historySnap.docs.length;
+
+    // 2) Obtener tareas pendientes desde userData.habits
+    const userData = await getUserData(uid);
+    const allHabits = userData?.habits ? Object.values(userData.habits) : [];
+    const habitsInProgress = allHabits.filter(t => t.completed === false).length;
+
+    // 3) Dibujar gráfico
+    drawPie('circle-progress', habitsDone, habitsInProgress);
+}
+
+// ------------------------------ FIN GRÁFICO COMPLETADAS/PENDIENTES ------------------------------
+
+// ------------------------------ INICIO GRÁFICO POR CATEGORÍAS ------------------------------
+
+async function initPieByCategory() {
+    await loadHabitsPieByCategory(userUID);
+}
+
+function groupSumByCategory(habits) {
+    const counts = {};
+
+    for (const habit of habits) {
+        console.log('Habit category:', habit.category);               // ******    corregir esto: no lee las categorías
+        const category = habit.category?.trim() || 'Other';
+        counts[category] = (counts[category] || 0) + 1;
+    }
+
+    return counts;
+}
+
+function drawPieByCategory(containerId, categoryCounts) {
+
+    const ctx = document.createElement('canvas');
+    const cont = document.getElementById(containerId);
+    cont.innerHTML = '';
+    cont.appendChild(ctx);
+
+
+    // Mapa de colores fijos por categoría (coincide con tus clases CSS)
+    const categoryColors = {
+        Wellness: '#8ecae6',
+        Fitness: '#219ebc',
+        Education: '#fb8500',
+        Career: '#023047',
+        Social: '#ffb703',
+        Other: '#606c38'
+    };
+
+    // Preparamos datos para el gráfico
+    const labels = Object.keys(categoryCounts);
+    const data = Object.values(categoryCounts);
+    const backgroundColors = labels.map(category => categoryColors[category] || '#999999');
+
+    // Destruye el gráfico anterior si existe (evita superposición)
+    if (window.pieChartByCategory) {
+        window.pieChartByCategory.destroy();
+    }
+
+    // Creamos nuevo gráfico
+    window.pieChartByCategory = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels,
+            datasets: [{
+                data,
+                backgroundColor: backgroundColors,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Pending habits'
+                }
+            }
+        }
+    });
+}
+
+async function loadHabitsPieByCategory(uid) {
+    const userData = await getUserData(uid);
+    const habits = userData.habits || {};
+
+    // Filtramos solo las tareas que no están completadas
+    const incompleteHabits = Object.values(habits).filter(habit => !habit.completed);
+
+    // Contamos por categoría
+    const categoryCounts = groupSumByCategory(incompleteHabits);
+
+    // Dibujamos el gráfico
+    drawPieByCategory('circle-categories', categoryCounts);
+}
+
+// ------------------------------ FIN GRÁFICO POR CATEGORÍAS------------------------------
 
 initHome();

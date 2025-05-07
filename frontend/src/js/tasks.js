@@ -17,7 +17,6 @@ function initHome() {
         initFilterButton();
         initSearchFunction();
         loadUserTasks().then();
-        console.log(tasksData)
         initCalendar();
         initPieByCategory();
         initPiecompleted();
@@ -28,7 +27,6 @@ function initHome() {
             initFilterButton();
             initSearchFunction();
             loadUserTasks().then();
-            console.log(tasksData)
             initCalendar();
             initPieByCategory();
             initPiecompleted();
@@ -46,7 +44,7 @@ function initModal() {
     let modal = document.getElementById('AddTaskModal');
     let closeButton = document.getElementById('closeTaskButton');
     let saveButton = document.getElementById('saveTask');
-    document.getElementById("HabitModalTitle").textContent = "Add New Task";
+    document.getElementById("TaskModalTitle").textContent = "Add New Task";
 
     openModalButton.addEventListener('click', () => { modal.style.display = 'flex'; });
     closeButton.addEventListener('click', () => { modal.style.display = 'none'; clearInputs(); });
@@ -144,6 +142,7 @@ async function saveTask() {
     clearInputs();
     await reloadUserTasks();
     await loadTasksPieByCategory(userUID);
+    await loadTasksPiecompleted(userUID);
 }
 
 async function loadUserTasks() {
@@ -289,7 +288,7 @@ function handleEditTask(button) {
     document.getElementById("TaskDescription").value = tasksData[taskInfo.taskId].description;
     document.getElementById("TaskDueDate").value = tasksData[taskInfo.taskId].dueDate;
     document.getElementById("TaskCategory").value = tasksData[taskInfo.taskId].category || "other";
-    document.getElementById("HabitModalTitle").textContent = "Edit Task";
+    document.getElementById("TaskModalTitle").textContent = "Edit Task";
 }
 
 async function setupTasksListeners() {
@@ -304,6 +303,8 @@ async function setupTasksListeners() {
     document.querySelectorAll('.Task-Habit-edit-btn').forEach(button => {
         button.addEventListener('click', () => handleEditTask(button));
     });
+
+    await loadTasksPieByCategory(userUID);
 }
 
 function highlightSearchTerm(text, searchTerm) {
@@ -445,6 +446,7 @@ function displayEvents() {
     });
 }
 
+
 function setupEventListeners() {
     document.addEventListener('click', (e) => {
         if (e.target.id === 'prev-month' || e.target.id === 'next-month') {
@@ -475,7 +477,7 @@ function setupEventListeners() {
     });
 }
 
-export async function updateTaskList(dateString) {
+async function updateTaskList(dateString) {
     const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
 
     const dayEvents = events[dateString] || [];
@@ -526,7 +528,7 @@ export async function updateTaskList(dateString) {
     taskList.innerHTML = combined.length > 0 // muestra lista de eventos y tareas del día seleccionado con sus iconos.
         ? combined.map(item => `
             <div class="task-item">
-                <div class="task-icon">${item.type === 'event' ? '📆' : '✅'}</div>
+                <div class="task-icon">${item.type === 'event' ? '📆' : '<i class="fas fa-sticky-note" style="color: #219ebc;"></i>'}</div>
                 <span>${item.name}</span>
                 <span>${item.time}</span>
             </div>
@@ -548,30 +550,6 @@ async function initPiecompleted() {
     await loadTasksPiecompleted(userUID);
 
 }
-
-async function loadPiecompleted(uid) {
-    await loadTasksPiecompleted(uid);
-}
-
-function getLastNDates(n) {
-    const arr = [];
-    const today = new Date();
-    for (let i = n - 1; i >= 0; i--) {
-        const d = new Date(today);
-        d.setDate(today.getDate() - i);
-        arr.push(d);
-    }
-    return arr;
-}
-
-function groupSum(records, keyFn) {
-    return records.reduce((acc, r) => {
-        const k = keyFn(r);
-        acc[k] = (acc[k] || 0) + 1;
-        return acc;
-    }, {});
-}
-
 
 function drawPie(containerId, tasksDone, tasksInProgress) {
     const ctx = document.createElement('canvas');
@@ -614,14 +592,9 @@ async function loadTasksPiecompleted(uid) {
 // ------------------------------ FIN GRÁFICO COMPLETADAS/PENDIENTES ------------------------------
 
 // ------------------------------ INICIO GRÁFICO POR CATEGORÍAS ------------------------------
-let tasksCategoryPieChart;
 
 async function initPieByCategory() {
     await loadTasksPieByCategory(userUID);
-}
-
-async function loadPieByCategory(uid) {
-    await loadTasksPieByCategory(uid);
 }
 
 function groupSumByCategory(tasks) {
