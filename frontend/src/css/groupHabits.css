@@ -165,7 +165,7 @@
     width: 50%;
 }
 
-.habits-item-description_1,
+.habits-tasks-streak,
 .habits-item-description_2,
 .habits-item-description_3,
 .habits-item-description_4 {
@@ -180,8 +180,8 @@
     text-align: center;
 }
 
-.habits-item-description_1 {
-    height: 30%;
+.habits-tasks-streak {
+    height: 100%;
 }
 
 .habits-item-description_2 {
@@ -196,7 +196,7 @@
     height: 100%;
 }
 
-.habits-item-description_1:hover,
+.habits-tasks-streak:hover,
 .habits-item-description_2:hover,
 .habits-item-description_3:hover,
 .habits-item-description_4:hover {
@@ -465,7 +465,7 @@
     border: none;
     cursor: pointer;
     font-size: 1rem;
-    color: var(--danger-red);
+    color: var(#e63946);
     opacity: 0.7;
     transition: opacity 0.2s;
 }

@@ -141,19 +141,19 @@
 }
 
 .habits-item-description_row_a {
-    flex-direction: column;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    height: 20%;
-}
-
-.habits-item-description_row_b {
     flex-direction: row;
     display: flex;
     justify-content: space-between;
     gap: 8px;
-    height: 80%;
+    height: 40%;
+}
+
+.habits-item-description_row_b {
+    flex-direction: column;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    height: 60%;
 }
 
 .habits-item-description_col_1,
@@ -163,14 +163,15 @@
     gap: 8px;
     width: 50%;
 }
+.habits-tasks-streak {
+    color: var(--main-blue);
+    font-size: 50px;
+}
 
-.habits-item-description_1,
-.habits-item-description_2,
-.habits-item-description_3,
+.habits-tasks-streak,
 .habits-item-description_4 {
-    background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-lighter) 100%);
-    border-radius: 15px;
-    padding: 12px;
+    /* background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-lighter) 100%); */
+    background-color: var(--white);
     gap: 8px;
     box-shadow: 0 4px 8px var(--shadow);
     margin: 0;
@@ -179,27 +180,40 @@
     text-align: center;
 }
 
-.habits-item-description_1 {
-    height: 30%;
+.habits-tasks-graph {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    background-color: var(--white);
+    box-shadow: 0 4px 8px var(--shadow);
+    min-height: 180px;
 }
 
-.habits-item-description_2 {
-    height: 70%;
-}
-
-.habits-item-description_3 {
-    height: 34%;
+.habits-tasks-streak,
+.habits-tasks-graph,
+.habits-item-description_4 {
+    height: 100%;
+    border-radius: 15px;
+    padding: 12px;
 }
 
 .habits-item-description_4 {
-    height: 100%;
+    display: flex;
+    flex-direction: row;
 }
 
-.habits-item-description_1:hover,
-.habits-item-description_2:hover,
-.habits-item-description_3:hover,
+.habits-tasks-streak:hover,
+.habits-tasks-graph:hover,
 .habits-item-description_4:hover {
     transform: translateY(-3px);
+}
+
+.habits-tasks-graph canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 200px;
+    max-height: 200px;
 }
 
 .TaskModal {

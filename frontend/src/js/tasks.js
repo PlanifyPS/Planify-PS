@@ -1,11 +1,14 @@
 import { deleteUserField, getUserData, saveUserData } from "../../../backend/utils/firestore_utils.js";
-import { addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { addDoc, getDocs, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import { db } from "/backend/utils/firebase_config.js";
 import { addPoints } from './points.js';
+import Chart from 'https://esm.run/chart.js/auto';
 
-const userUID = sessionStorage.getItem("uid");
 let tasksData;
 let editingTaskId = null;
+
+const userUID = sessionStorage.getItem("uid");
+
 
 function initHome() {
     if (document.readyState === 'complete') {
@@ -14,6 +17,10 @@ function initHome() {
         initFilterButton();
         initSearchFunction();
         loadUserTasks().then();
+        console.log(tasksData)
+        initCalendar();
+        initPieByCategory();
+        initPiecompleted();
     } else {
         document.addEventListener('DOMContentLoaded', () => {
             initTextContent();
@@ -21,6 +28,10 @@ function initHome() {
             initFilterButton();
             initSearchFunction();
             loadUserTasks().then();
+            console.log(tasksData)
+            initCalendar();
+            initPieByCategory();
+            initPiecompleted();
         });
     }
 }
@@ -99,9 +110,10 @@ async function reloadUserTasks() {
 async function saveTask() {
     const title = document.getElementById("NewTaskTitle").value.trim().toString();
     const description = document.getElementById("TaskDescription").value.trim().toString();
-    const dueDate = document.getElementById("TaskDueDate").value;
+    //const dueDate = document.getElementById("TaskDueDate").value;
+    const dueDateRaw = document.getElementById("TaskDueDate").value;
+    const dueDate = dueDateRaw + "T12:00:00";  // forzar al mediodía
     const category = document.getElementById("TaskCategory").value;
-
 
     if (!title || !description || !dueDate) {
         alert("Please complete all fields.");
@@ -130,6 +142,7 @@ async function saveTask() {
     document.getElementById('AddTaskModal').style.display = 'none';
     clearInputs();
     await reloadUserTasks();
+    await loadTasksPieByCategory(userUID);
 }
 
 async function loadUserTasks() {
@@ -187,7 +200,10 @@ async function completeTask(taskId) {
             taskId: taskId
         }
     );
-    //alert(`Task completed! You earned ${taskPoints} points.`);
+
+    await loadTasksPieByCategory(userUID);
+    await loadTasksPiecompleted(userUID);
+
 }
 
 async function sortTasks() {
@@ -338,5 +354,353 @@ async function addTemplate(id, url, item, taskId) {
         console.error(error);
     }
 }
+
+// ------------------------------ CALENDARIO ------------------------------
+
+function initCalendar() {
+
+    const today = new Date();
+
+    const calendarContainer = document.getElementById('calendar-container');
+
+    if (!calendarContainer) {
+        console.error('No se encontró el contenedor del calendario');
+        return;
+    }
+
+    calendarContainer.innerHTML = createCalendar(today.getFullYear(), today.getMonth());
+    displayEvents();
+    setupEventListeners();
+    const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    updateTaskList(formattedDate);
+}
+
+const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+
+function createCalendar(year, month) {
+    const today = new Date();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+
+    let calendarHTML = `
+        <div class="calendar-header">
+            <button id="prev-month" class="calendar-nav-btn">←</button>
+            <h3>${monthNames[month]} ${year}</h3>
+            <button id="next-month" class="calendar-nav-btn">→</button>
+        </div>
+        <div class="weekdays">
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+            <div>Sun</div>
+        </div>
+        <div class="days">
+    `;
+
+    let startingDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
+
+    for (let i = 0; i < startingDay; i++) {
+        calendarHTML += `<div class="day empty"></div>`;
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear();
+
+        calendarHTML += `
+            <div class="day ${isToday ? 'today' : ''}" data-date="${year}-${month+1}-${day}">
+                ${day}
+                <div class="day-events"></div>
+            </div>
+        `;
+    }
+
+    calendarHTML += `</div>`;
+    return calendarHTML;
+}
+
+function displayEvents() {
+    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+    const days = document.querySelectorAll('.day:not(.empty)');
+
+    days.forEach(day => {
+        const date = day.getAttribute('data-date');
+        const dayEvents = events[date] || [];
+        const eventsContainer = day.querySelector('.day-events');
+
+        eventsContainer.innerHTML = '';
+        day.classList.remove('has-events');
+
+        if (dayEvents.length > 0) {
+            day.classList.add('has-events');
+            eventsContainer.innerHTML = `<div class="event-dot" title="${dayEvents.length} evento(s)"></div>`;
+        }
+    });
+}
+
+function setupEventListeners() {
+    document.addEventListener('click', (e) => {
+        if (e.target.id === 'prev-month' || e.target.id === 'next-month') {
+            const header = document.querySelector('.calendar-header h3');
+            const [monthName, year] = header.textContent.split(' ');
+            const monthIndex = monthNames.indexOf(monthName);
+            const currentYear = parseInt(year);
+            const calendarContainer = document.getElementById('calendar-container');
+
+            let newMonth, newYear;
+
+            if (e.target.id === 'prev-month') {
+                newMonth = monthIndex === 0 ? 11 : monthIndex - 1;
+                newYear = monthIndex === 0 ? currentYear - 1 : currentYear;
+            } else {
+                newMonth = monthIndex === 11 ? 0 : monthIndex + 1;
+                newYear = monthIndex === 11 ? currentYear + 1 : currentYear;
+            }
+
+            calendarContainer.innerHTML = createCalendar(newYear, newMonth);
+            displayEvents();
+        }
+
+        if (e.target.classList.contains('day') && !e.target.classList.contains('empty')) {
+            const date = e.target.getAttribute('data-date');
+            updateTaskList(date);
+        }
+    });
+}
+
+export async function updateTaskList(dateString) {
+    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+
+    const dayEvents = events[dateString] || [];
+
+    const userData = await getUserData(userUID);
+    const tasks = userData?.tasks ? Object.values(userData.tasks) : [];
+
+    const formattedDate = new Date(dateString);
+    const isoDateString = formattedDate.toISOString().split('T')[0];
+
+    const tasksInProgress = tasks.filter(t => t.completed === false);
+
+    const dayTasks = tasksInProgress.filter(task => {
+        const taskDate = new Date(task.dueDate);
+        // const taskDateString = taskDate.toISOString().split('T')[0];
+        const taskDateString = `${taskDate.getFullYear()}-${String(taskDate.getMonth() + 1).padStart(2, '0')}-${String(taskDate.getDate()).padStart(2, '0')}`;
+        return taskDateString === isoDateString;
+
+    });
+
+
+    const combined = [
+        ...dayEvents.map(event => ({
+            type: 'event',
+            name: event.name,
+            time: event.time || ''
+        })),
+        ...dayTasks.map(task => ({
+            type: 'task',
+            name: task.title,
+            time: task.time || ''
+        }))
+    ];
+
+    // Ordenar por hora (vacíos al final)
+    combined.sort((a, b) => {
+        if (!a.time) return 1;
+        if (!b.time) return -1;
+        return a.time.localeCompare(b.time);
+    });
+
+    const taskList = document.querySelector('.task-list');
+    if (!taskList) return;
+
+    document.querySelector('.day.selected')?.classList.remove('selected');
+    document.querySelector(`.day[data-date="${dateString}"]`)?.classList.add('selected');
+
+    taskList.innerHTML = combined.length > 0 // muestra lista de eventos y tareas del día seleccionado con sus iconos.
+        ? combined.map(item => `
+            <div class="task-item">
+                <div class="task-icon">${item.type === 'event' ? '📆' : '✅'}</div>
+                <span>${item.name}</span>
+                <span>${item.time}</span>
+            </div>
+        `).join('')
+        : `<div class="task-item">
+                <div class="task-icon">ℹ️</div>
+                <span>There are no events or tasks</span>
+                <span></span>
+           </div>`;
+}
+
+// ------------------------------ FIN CALENDARIO ------------------------------
+
+// ------------------------------ INICIO GRÁFICO COMPLETADAS/PENDIENTES ------------------------------
+
+let tasksCompletedPieChart;
+
+async function initPiecompleted() {
+    await loadTasksPiecompleted(userUID);
+
+}
+
+async function loadPiecompleted(uid) {
+    await loadTasksPiecompleted(uid);
+}
+
+function getLastNDates(n) {
+    const arr = [];
+    const today = new Date();
+    for (let i = n - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        arr.push(d);
+    }
+    return arr;
+}
+
+function groupSum(records, keyFn) {
+    return records.reduce((acc, r) => {
+        const k = keyFn(r);
+        acc[k] = (acc[k] || 0) + 1;
+        return acc;
+    }, {});
+}
+
+
+function drawPie(containerId, tasksDone, tasksInProgress) {
+    const ctx = document.createElement('canvas');
+    const cont = document.getElementById(containerId);
+    cont.innerHTML = '';
+    cont.appendChild(ctx);
+
+    const cfg = {
+        type: 'pie',
+        data: {
+            labels: ['Done','Pending'],
+            datasets: [{
+                data: [tasksDone, tasksInProgress],
+                backgroundColor: ['#2563EB', '#93C5FD']
+            }]
+        },
+        options: { responsive: true }
+    };
+
+    tasksCompletedPieChart?.destroy();
+    tasksCompletedPieChart = new Chart(ctx.getContext('2d'), cfg);
+}
+
+
+
+async function loadTasksPiecompleted(uid) {
+    // 1) Obtener tareas completadas desde Firestore ('tasksHistory')
+    const historySnap = await getDocs(collection(db, 'Users', uid, 'tasksHistory'));
+    const tasksDone = historySnap.docs.length;
+
+    // 2) Obtener tareas pendientes desde userData.tasks
+    const userData = await getUserData(uid);
+    const allTasks = userData?.tasks ? Object.values(userData.tasks) : [];
+    const tasksInProgress = allTasks.filter(t => t.completed === false).length;
+
+    // 3) Dibujar gráfico
+    drawPie('circle-progress', tasksDone, tasksInProgress);
+}
+
+// ------------------------------ FIN GRÁFICO COMPLETADAS/PENDIENTES ------------------------------
+
+// ------------------------------ INICIO GRÁFICO POR CATEGORÍAS ------------------------------
+let tasksCategoryPieChart;
+
+async function initPieByCategory() {
+    await loadTasksPieByCategory(userUID);
+}
+
+async function loadPieByCategory(uid) {
+    await loadTasksPieByCategory(uid);
+}
+
+function groupSumByCategory(tasks) {
+    const counts = {};
+
+    for (const task of tasks) {
+        console.log('Task category:', task.category);               // ******    corregir esto: no lee las categorías
+        const category = task.category?.trim() || 'Other';
+        counts[category] = (counts[category] || 0) + 1;
+    }
+
+    return counts;
+}
+
+function drawPieByCategory(containerId, categoryCounts) {
+
+    const ctx = document.createElement('canvas');
+    const cont = document.getElementById(containerId);
+    cont.innerHTML = '';
+    cont.appendChild(ctx);
+
+
+    // Mapa de colores fijos por categoría (coincide con tus clases CSS)
+    const categoryColors = {
+        Wellness: '#8ecae6',
+        Fitness: '#219ebc',
+        Education: '#fb8500',
+        Career: '#023047',
+        Social: '#ffb703',
+        Other: '#606c38'
+    };
+
+    // Preparamos datos para el gráfico
+    const labels = Object.keys(categoryCounts);
+    const data = Object.values(categoryCounts);
+    const backgroundColors = labels.map(category => categoryColors[category] || '#999999');
+
+    // Destruye el gráfico anterior si existe (evita superposición)
+    if (window.pieChartByCategory) {
+        window.pieChartByCategory.destroy();
+    }
+
+    // Creamos nuevo gráfico
+    window.pieChartByCategory = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels,
+            datasets: [{
+                data,
+                backgroundColor: backgroundColors,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Pending tasks'
+                }
+            }
+        }
+    });
+}
+
+async function loadTasksPieByCategory(uid) {
+    const userData = await getUserData(uid);
+    const tasks = userData.tasks || {};
+
+    // Filtramos solo las tareas que no están completadas
+    const incompleteTasks = Object.values(tasks).filter(task => !task.completed);
+
+    // Contamos por categoría
+    const categoryCounts = groupSumByCategory(incompleteTasks);
+
+    // Dibujamos el gráfico
+    drawPieByCategory('circle-categories', categoryCounts);
+}
+
+// ------------------------------ FIN GRÁFICO POR CATEGORÍAS------------------------------
 
 initHome();
