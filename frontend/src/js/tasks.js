@@ -46,6 +46,7 @@ function initModal() {
     let modal = document.getElementById('AddTaskModal');
     let closeButton = document.getElementById('closeTaskButton');
     let saveButton = document.getElementById('saveTask');
+    document.getElementById("HabitModalTitle").textContent = "Add New Task";
 
     openModalButton.addEventListener('click', () => { modal.style.display = 'flex'; });
     closeButton.addEventListener('click', () => { modal.style.display = 'none'; clearInputs(); });
@@ -288,6 +289,7 @@ function handleEditTask(button) {
     document.getElementById("TaskDescription").value = tasksData[taskInfo.taskId].description;
     document.getElementById("TaskDueDate").value = tasksData[taskInfo.taskId].dueDate;
     document.getElementById("TaskCategory").value = tasksData[taskInfo.taskId].category || "other";
+    document.getElementById("HabitModalTitle").textContent = "Edit Task";
 }
 
 async function setupTasksListeners() {

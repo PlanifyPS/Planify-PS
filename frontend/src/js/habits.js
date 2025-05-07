@@ -37,6 +37,7 @@ function initModal() {
     let modal = document.getElementById('AddHabitModal');
     let closeHabitButton = document.getElementById('closeHabitButton');
     let saveHabitButton = document.getElementById('saveHabit');
+    document.getElementById("HabitModalTitle").textContent = "Add New Habit";
 
     openModalButton.addEventListener('click', () => { modal.style.display = 'flex'; });
     closeHabitButton.addEventListener('click', () => { modal.style.display = 'none'; clearInputs(); });
@@ -323,6 +324,7 @@ function handleEditHabit(button) {
     document.getElementById("HabitDescription").value = habitsData[habitInfo.habitId].description;
     document.getElementById("HabitFrequency").value = habitsData[habitInfo.habitId].frequency;
     document.getElementById("HabitCategory").value = habitsData[habitInfo.habitId].category || "other";
+    document.getElementById("HabitModalTitle").textContent = "Edit Habit";
 }
 
 async function setupHabitsListeners() {
