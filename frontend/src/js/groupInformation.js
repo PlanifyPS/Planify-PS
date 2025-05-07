@@ -48,8 +48,15 @@ async function loadGroupInformation() {
 
     document.getElementById('group-name').textContent = g.name;
     document.getElementById('group-desc').textContent = g.description || '';
-    document.getElementById('invite-code').textContent =
-        g.createdBy === currentUser.uid ? `${g.inviteCode}` : '';
+    const inviteCodeEl = document.getElementById('invite-code');
+    if (g.createdBy === currentUser.uid) {
+        inviteCodeEl.textContent = g.inviteCode;
+    } else {
+        inviteCodeEl.textContent = 'Ask the admin for the invite code';
+        inviteCodeEl.style.fontStyle = 'Roboto';
+        inviteCodeEl.style.color = '03045EFF';
+    }
+
 
     // 2) Trae miembros y suma puntos
     const snaps = await Promise.all(
