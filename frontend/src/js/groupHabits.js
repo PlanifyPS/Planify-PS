@@ -182,13 +182,15 @@ function startEditingHabit(habitId) {
 async function deleteHabitDefinition(habitId) {
     delete definitions[habitId];
     delete instanceMap[habitId];
-    renderHabits();
-    document.getElementById('group-habit-detail').innerHTML = `...`;
-
+    await deleteDoc(
+        doc(db, 'Groups', groupId, 'habitDefinitions', habitId)
+    );
     await deleteUserField(auth.currentUser.uid, `habits.${habitId}`);
     const inst = instanceMap[habitId];
     if (inst && inst.id) {
-        await deleteDoc(doc(db, 'Groups', groupId, 'habits', inst.id));
+        await deleteDoc(
+            doc(db, 'Groups', groupId, 'habits', inst.id)
+        );
     }
     await loadDefinitions();
     const snaps = await getDocs(collection(db, 'Groups', groupId, 'habits'));
@@ -199,11 +201,11 @@ async function deleteHabitDefinition(habitId) {
     }, {});
     renderHabits();
     document.getElementById('group-habit-detail').innerHTML = `
-     <div class="empty-detail-group">
-       <i class="fas fa-people-arrows"></i>
-       <h2>Select a Group Habit</h2>
-       <p>Click one to see details and join!</p>
-     </div>`;
+    <div class="empty-detail-group">
+      <i class="fas fa-people-arrows"></i>
+      <h2>Select a Group Habit</h2>
+      <p>Click one to see details and join!</p>
+    </div>`;
 }
 
 async function acceptHabit(habitId) {
