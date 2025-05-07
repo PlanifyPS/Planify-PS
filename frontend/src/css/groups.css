@@ -253,6 +253,11 @@ dialog::backdrop {
     justify-content: space-between;
     min-width: 240px;
     max-width: 320px;
+    transition: all .3s ease-in-out;
+}
+
+.group-item:hover{
+    transform: translateY(-4px);
 }
 
 .group-item .group-info h3 {
@@ -350,6 +355,12 @@ dialog::backdrop {
     overflow-y: auto;
 }
 
+.group-information-actions{
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
 .members-list ul {
     list-style: none;
     padding: 0;
@@ -403,6 +414,14 @@ dialog::backdrop {
     font-style: italic;
     color: var(--text-secondary);
     margin: 0.5rem 0 1rem;
+}
+
+#group-habits{
+    width: 100%;
+    padding: 30px;
+    background-color: var(--light-bg);
+    border-radius: 15px;
+    box-shadow: 0 2px 8px var(--shadow);
 }
 
 

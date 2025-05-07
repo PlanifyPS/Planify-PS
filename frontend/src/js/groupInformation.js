@@ -26,6 +26,22 @@ async function loadGroupInformation() {
     const groupId  = params.get('id');
     if (!groupId) return console.error('No group ID');
 
+    const btnChallenges = document.getElementById('group-challenges');
+    const btnHabits     = document.getElementById('group-habits');
+
+    if (groupId && btnChallenges && btnHabits) {
+        btnChallenges.dataset.id = groupId;
+        btnHabits.dataset.id     = groupId;
+
+        btnChallenges.addEventListener('click', () => {
+            window.location.href = `#/groupChallenge?id=${groupId}`;
+        });
+
+        btnHabits.addEventListener('click', () => {
+            window.location.href = `#/groupHabits?id=${groupId}`;
+        });
+    }
+
     const gSnap = await getDoc(doc(db, 'Groups', groupId));
     if (!gSnap.exists()) return console.error('Group not found');
     const g = gSnap.data();
