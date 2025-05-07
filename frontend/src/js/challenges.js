@@ -37,7 +37,7 @@ async function fetchChallengesFromFirebase() {
 async function loadChallenges() {
     try {
         const container = document.getElementById('cards-container');
-        if (container) container.innerHTML = '<p>Cargando desafíos...</p>';
+        if (container) container.innerHTML = '<p>Loading Challenges...</p>';
 
         challengesData = await fetchChallengesFromFirebase();
         await markCompletedChallenges();
@@ -107,7 +107,7 @@ function renderChallenges(challenges) {
     if (!container) return;
 
     if (!challenges || challenges.length === 0) {
-        container.innerHTML = '<p>No hay desafíos disponibles</p>';
+        container.innerHTML = '<p>No challenges available</p>';
         return;
     }
 
@@ -237,20 +237,20 @@ function showChallengeDetails(challengeId) {
             </div>
             <div class="detail-body">
                 <div class="description-section">
-                    <h3>Descripción</h3>
+                    <h3>Description</h3>
                     <p>${challenge.description}</p>
                 </div>
 
                 ${challenge.details ? `
                 <div class="details-section">
-                    <h3>Detalles</h3>
+                    <h3>Details</h3>
                     <div class="challenge-details">${challenge.details}</div>
                 </div>
                 ` : ''}
 
                 ${Array.isArray(challenge.tips) && challenge.tips.length > 0 ? `
                     <div class="tips-section">
-                        <h3><i class="fas fa-lightbulb"></i> Consejos para completarlo</h3>
+                        <h3><i class="fas fa-lightbulb"></i> Tips to Complete</h3>
                             <ul class="tips-list">
                                 ${challenge.tips.map(tip => `<li>${tip}</li>`).join('')}
                             </ul>
@@ -261,17 +261,17 @@ function showChallengeDetails(challengeId) {
                 <div class="actions-section">
                     ${!challenge.accepted && !challenge.completed ? `
                         <button class="btn accept-challenge">
-                            <i class="fas fa-check-circle"></i> Aceptar Desafío
+                            <i class="fas fa-check-circle"></i> Accept Challenge
                         </button>
                     ` : ''}
                     
                     ${challenge.accepted && !challenge.completed ? `
                         <button class="btn complete-challenge">
-                            <i class="fas fa-flag-checkered"></i> Marcar como Completado
+                            <i class="fas fa-flag-checkered"></i> Mark as completed
                         </button>
                     ` : ''}
                     
-                    ${challenge.completed ? '<span class="completed-badge">Completado</span>' : ''}
+                    ${challenge.completed ? '<span class="completed-badge">Completed</span>' : ''}
                 </div>
             </div>
         </div>
@@ -408,7 +408,7 @@ function showError(message) {
                 <i class="fas fa-exclamation-triangle"></i>
                 <p>${message}</p>
                 <button class="retry-btn" onclick="window.location.reload()">
-                    <i class="fas fa-sync-alt"></i> Reintentar
+                    <i class="fas fa-sync-alt"></i> Retry
                 </button>
             </div>
         `;

@@ -275,7 +275,6 @@ async function saveHabit() {
         doc(db, 'Groups', groupId, 'habitDefinitions', habitId),
         newHabit
     );
-    await saveUserData(auth.currentUser.uid, { [`habits.${habitId}`]: { ...newHabit, groupId } });
 
     editingHabitId = null;
     document.getElementById('AddHabitModal').style.display = 'none';
