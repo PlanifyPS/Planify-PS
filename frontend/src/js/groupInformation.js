@@ -27,7 +27,7 @@ async function loadGroupInformation() {
     if (!groupId) return console.error('No group ID');
 
     const btnChallenges = document.getElementById('group-challenges');
-    const btnHabits     = document.getElementById('group-habits');
+    const btnHabits     = document.getElementById('group-habits-layout');
 
     if (groupId && btnChallenges && btnHabits) {
         btnChallenges.dataset.id = groupId;
