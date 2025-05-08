@@ -462,7 +462,7 @@ async function displayEvents() {
 
         if (totalItems > 0) {
             day.classList.add('has-events');
-            eventsContainer.innerHTML = `<div class="event-dot" title="${totalItems} evento(s)/tarea(s)"></div>`;
+            eventsContainer.innerHTML = `<div class="event-dot" title="${totalItems} event(s)/task(s)"></div>`;
         }
     });
 }
