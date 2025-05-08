@@ -289,7 +289,7 @@ async function saveHabit() {
     const frequency   = document.getElementById('HabitFrequency').value;
     const category    = document.getElementById('HabitCategory').value;
     if (!title || !description) {
-        return alert('Complete todos los campos.');
+        return alert('Complete all fields.');
     }
 
     const habitId = editingHabitId || crypto.randomUUID();
