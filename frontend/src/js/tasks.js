@@ -362,8 +362,6 @@ async function addTemplate(id, url, item, taskId) {
     }
 }
 
-// ------------------------------ CALENDARIO ------------------------------
-
 const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
 
@@ -435,8 +433,6 @@ async function displayEvents() {
     const userData = await getUserData(userUID);
     const tasks = userData?.tasks ? Object.values(userData.tasks) : [];
     const tasksInProgress = tasks.filter(t => t.completed === false);
-
-    // Agrupar tareas por fecha en formato YYYY-M-D (sin ceros a la izquierda, igual que en los data-date)
     const taskDates = {};
     for (const task of tasksInProgress) {
         const due = new Date(task.dueDate);
@@ -528,8 +524,6 @@ async function updateTaskList(dateString) {
             time: task.time || ''
         }))
     ];
-
-    // Ordenar por hora (vacíos al final)
     combined.sort((a, b) => {
         if (!a.time) return 1;
         if (!b.time) return -1;
@@ -542,7 +536,7 @@ async function updateTaskList(dateString) {
     document.querySelector('.day.selected')?.classList.remove('selected');
     document.querySelector(`.day[data-date="${dateString}"]`)?.classList.add('selected');
 
-    taskList.innerHTML = combined.length > 0 // muestra lista de eventos y tareas del día seleccionado con sus iconos.
+    taskList.innerHTML = combined.length > 0
         ? combined.map(item => `
             <div class="task-item">
                 <div class="task-icon">${item.type === 'event' ? '📆' : '<i class="fas fa-sticky-note" style="color: #219ebc;"></i>'}</div>
@@ -556,10 +550,6 @@ async function updateTaskList(dateString) {
                 <span></span>
            </div>`;
 }
-
-// ------------------------------ FIN CALENDARIO ------------------------------
-
-// ------------------------------ INICIO GRÁFICO COMPLETADAS/PENDIENTES ------------------------------
 
 let tasksCompletedPieChart;
 
@@ -593,22 +583,15 @@ function drawPie(containerId, tasksDone, tasksInProgress) {
 
 
 async function loadTasksPiecompleted(uid) {
-    // 1) Obtener tareas completadas desde Firestore ('tasksHistory')
     const historySnap = await getDocs(collection(db, 'Users', uid, 'tasksHistory'));
     const tasksDone = historySnap.docs.length;
-
-    // 2) Obtener tareas pendientes desde userData.tasks
     const userData = await getUserData(uid);
     const allTasks = userData?.tasks ? Object.values(userData.tasks) : [];
     const tasksInProgress = allTasks.filter(t => t.completed === false).length;
 
-    // 3) Dibujar gráfico
     drawPie('circle-progress', tasksDone, tasksInProgress);
 }
 
-// ------------------------------ FIN GRÁFICO COMPLETADAS/PENDIENTES ------------------------------
-
-// ------------------------------ INICIO GRÁFICO POR CATEGORÍAS ------------------------------
 
 async function initPieByCategory() {
     await loadTasksPieByCategory(userUID);
@@ -632,8 +615,6 @@ function drawPieByCategory(containerId, categoryCounts) {
     cont.innerHTML = '';
     cont.appendChild(ctx);
 
-
-    // Mapa de colores fijos por categoría (coincide con tus clases CSS)
     const categoryColors = {
         Wellness: '#8ecae6',
         Fitness: '#219ebc',
@@ -643,17 +624,13 @@ function drawPieByCategory(containerId, categoryCounts) {
         Other: '#606c38'
     };
 
-    // Preparamos datos para el gráfico
     const labels = Object.keys(categoryCounts);
     const data = Object.values(categoryCounts);
     const backgroundColors = labels.map(category => categoryColors[category] || '#999999');
 
-    // Destruye el gráfico anterior si existe (evita superposición)
     if (window.pieChartByCategory) {
         window.pieChartByCategory.destroy();
     }
-
-    // Creamos nuevo gráfico
     window.pieChartByCategory = new Chart(ctx, {
         type: 'pie',
         data: {
@@ -681,17 +658,9 @@ function drawPieByCategory(containerId, categoryCounts) {
 async function loadTasksPieByCategory(uid) {
     const userData = await getUserData(uid);
     const tasks = userData.tasks || {};
-
-    // Filtramos solo las tareas que no están completadas
     const incompleteTasks = Object.values(tasks).filter(task => !task.completed);
-
-    // Contamos por categoría
     const categoryCounts = groupSumByCategory(incompleteTasks);
-
-    // Dibujamos el gráfico
     drawPieByCategory('circle-categories', categoryCounts);
 }
-
-// ------------------------------ FIN GRÁFICO POR CATEGORÍAS------------------------------
 
 initHome();
