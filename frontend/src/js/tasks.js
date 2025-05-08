@@ -107,7 +107,8 @@ async function saveTask() {
     const title = document.getElementById("NewTaskTitle").value.trim().toString();
     const description = document.getElementById("TaskDescription").value.trim().toString();
     const dueDateRaw = document.getElementById("TaskDueDate").value;
-    const dueDate = dueDateRaw + "T12:00:00";  // forzar al mediodía
+
+    const dueDate = dueDateRaw;
 
     const category = document.getElementById("TaskCategory").value;
 
@@ -436,12 +437,14 @@ async function displayEvents() {
     const tasks = userData?.tasks ? Object.values(userData.tasks) : [];
     const tasksInProgress = tasks.filter(t => t.completed === false);
 
-    // Agrupar tareas por fecha en formato YYYY-M-D (sin ceros a la izquierda, igual que en los data-date)
     const taskDates = {};
     for (const task of tasksInProgress) {
-        const due = new Date(task.dueDate);
-        const key = `${due.getFullYear()}-${due.getMonth() + 1}-${due.getDate()}`;
+        const dateParts = task.dueDate.split('-');
+        const year = parseInt(dateParts[0]);
+        const month = parseInt(dateParts[1]);
+        const day = parseInt(dateParts[2]);
 
+        const key = `${year}-${month}-${day}`;
         taskDates[key] = (taskDates[key] || 0) + 1;
     }
 
@@ -503,18 +506,22 @@ async function updateTaskList(dateString) {
     const tasks = userData?.tasks ? Object.values(userData.tasks) : [];
 
     const formattedDate = new Date(dateString);
-    const isoDateString = formattedDate.toISOString().split('T')[0];
+    const year = formattedDate.getFullYear();
+    const month = formattedDate.getMonth() + 1;
+    const day = formattedDate.getDate();
+    const normalizedSelectedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
     const tasksInProgress = tasks.filter(t => t.completed === false);
 
     const dayTasks = tasksInProgress.filter(task => {
         const taskDate = new Date(task.dueDate);
-        // const taskDateString = taskDate.toISOString().split('T')[0];
-        const taskDateString = `${taskDate.getFullYear()}-${String(taskDate.getMonth() + 1).padStart(2, '0')}-${String(taskDate.getDate()).padStart(2, '0')}`;
-        return taskDateString === isoDateString;
+        const taskYear = taskDate.getFullYear();
+        const taskMonth = taskDate.getMonth() + 1;
+        const taskDay = taskDate.getDate();
+        const normalizedTaskDate = `${taskYear}-${String(taskMonth).padStart(2, '0')}-${String(taskDay).padStart(2, '0')}`;
 
+        return normalizedTaskDate === normalizedSelectedDate;
     });
-
 
     const combined = [
         ...dayEvents.map(event => ({
