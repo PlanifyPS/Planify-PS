@@ -531,25 +531,25 @@ function setupEventListeners() {
 
 async function updateTaskList(dateString) {
     const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-
     const dayEvents = events[dateString] || [];
 
     const userData = await getUserData(userUID);
     const tasks = userData?.tasks ? Object.values(userData.tasks) : [];
-
-    const formattedDate = new Date(dateString);
-    const isoDateString = formattedDate.toISOString().split('T')[0];
-
     const tasksInProgress = tasks.filter(t => t.completed === false);
 
+    const [year, month, day] = dateString.split('-').map(num => parseInt(num, 10));
+
+    const normalizedDateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
     const dayTasks = tasksInProgress.filter(task => {
+        if (!task.dueDate) return false;
+
         const taskDate = new Date(task.dueDate);
-        // const taskDateString = taskDate.toISOString().split('T')[0];
+
         const taskDateString = `${taskDate.getFullYear()}-${String(taskDate.getMonth() + 1).padStart(2, '0')}-${String(taskDate.getDate()).padStart(2, '0')}`;
-        return taskDateString === isoDateString;
 
+        return taskDateString === normalizedDateString;
     });
-
 
     const combined = [
         ...dayEvents.map(event => ({
