@@ -17,9 +17,9 @@ export const createUser = async(uid,data) =>{
     try {
         const userRef = doc(db, "Users", uid);
         await setDoc(userRef, data);
-        console.log("Datos actualizados correctamente.");
+        console.log("Data updated successfully.");
     } catch (error) {
-        console.error("Error al guardar datos:", error);
+        console.error("Error saving data:", error);
     }
 }
 
@@ -27,9 +27,9 @@ export const saveUserData = async (uid, data) => {
     try {
         const userRef = doc(db, "Users", uid);
         await updateDoc(userRef, data);
-        console.log("Datos actualizados correctamente.");
+        console.log("Data updated successfully.");
     } catch (error) {
-        console.error("Error al guardar datos:", error);
+        console.error("Error saving data:", error);
     }
 };
 
@@ -44,7 +44,6 @@ export async function getUserData(userUid) {
         console.error("User data not found");
     }
 }
-
 
 export async function getForum(forumUid) {
     const forumRef = doc(db, "Forums", forumUid);
@@ -62,9 +61,9 @@ export async function saveForumUser(forumUid,data) {
     try {
         const forumRef = doc(db, "Forums", forumUid);
         await updateDoc(forumRef, data);
-        console.log("Datos actualizados correctamente.");
+        console.log("Data updated successfully.");
     } catch (error) {
-        console.error("Error al guardar datos:", error);
+        console.error("Error saving data:", error);
     }
 }
 
@@ -72,13 +71,11 @@ export async function initForum(forumUid, data) {
     try {
         const userRef = doc(db, "Forums", forumUid);
         await setDoc(userRef, data);
-        
-        console.log("Datos actualizados correctamente.");
+        console.log("Data updated successfully.");
     } catch (error) {
-        console.error("Error al guardar datos:", error);
+        console.error("Error saving data:", error);
     }
 }
-
 
 export async function getGroupData(groupUID) {
     const groupRef = doc(db, "Groups", groupUID);
@@ -122,13 +119,13 @@ export const addPointsToUser = async (uid, pointsToAdd) => {
 
             await updateDoc(userRef, { points: newPoints });
 
-            console.log(`Puntos actualizados en Firestore. Total: ${newPoints}`);
+            console.log(`Points updated in Firestore. Total: ${newPoints}`);
             return newPoints;
         } else {
-            console.error("Usuario no encontrado en Firestore");
+            console.error("User not found in Firestore");
         }
     } catch (error) {
-        console.error("Error al añadir puntos al usuario:", error);
+        console.error("Error adding points to user:", error);
     }
 };
 
@@ -141,9 +138,8 @@ export async function sendForumMessage(forumId, senderUid, messageBody, senderNa
             senderName:senderName,
             timestamp: serverTimestamp(),
         });
-        
     }catch (error) {
-        console.error("Error al guardar mensajes:", error);
+        console.error("Error saving messages:", error);
     }
 }
 
@@ -152,8 +148,7 @@ export async function getForumMessagesFromFirebase(forumId) {
         const messageRef = collection(db, "Forums", forumId, "messages");
         const queryRef = query(messageRef, orderBy("timestamp", "asc"));
         return await getDocs(queryRef);
-
     }catch (error) {
-        console.error("Error al guardar mensajes:", error);
+        console.error("Error saving messages:", error);
     }
 }
