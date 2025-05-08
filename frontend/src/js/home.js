@@ -1,7 +1,3 @@
-import {  getUserData  } from "../../../backend/utils/firestore_utils.js";
-
-const userUID = sessionStorage.getItem("uid");
-
 const monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
 
 function initHome() {
@@ -19,7 +15,7 @@ function initHome() {
 
             const today = new Date();
             const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-            updateTaskList(formattedDate, userUID);
+            updateTaskList(formattedDate);
         });
     }
 }
@@ -208,7 +204,153 @@ function setupEventDialogListeners() {
     });
 }
 
-// ------------------------- NUEVO CALENDARIO QUE MUESTRA TAREAS Y PUNTITO -------------------------
+
+function createCalendar(year, month) {
+    const today = new Date();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+
+    let calendarHTML = `
+        <div class="calendar-header">
+            <button id="prev-month" class="calendar-nav-btn">←</button>
+            <h3>${monthNames[month]} ${year}</h3>
+            <button id="next-month" class="calendar-nav-btn">→</button>
+        </div>
+        <div class="weekdays">
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+            <div>Sun</div>
+        </div>
+        <div class="days">
+    `;
+
+    let startingDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
+
+    for (let i = 0; i < startingDay; i++) {
+        calendarHTML += `<div class="day empty"></div>`;
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear();
+
+        calendarHTML += `
+            <div class="day ${isToday ? 'today' : ''}" data-date="${year}-${month+1}-${day}">
+                ${day}
+                <div class="day-events"></div>
+            </div>
+        `;
+    }
+
+    calendarHTML += `</div>`;
+    return calendarHTML;
+}
+
+function initCalendar() {
+    const today = new Date();
+    const calendarContainer = document.getElementById('calendar-container');
+
+    if (!calendarContainer) {
+        console.error('No se encontró el contenedor del calendario');
+        return;
+    }
+
+    calendarContainer.innerHTML = createCalendar(today.getFullYear(), today.getMonth());
+    displayEvents();
+    setupEventListeners();
+}
+
+function displayEvents() {
+    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+    const days = document.querySelectorAll('.day:not(.empty)');
+
+    days.forEach(day => {
+        const date = day.getAttribute('data-date');
+        const dayEvents = events[date] || [];
+        const eventsContainer = day.querySelector('.day-events');
+
+        eventsContainer.innerHTML = '';
+        day.classList.remove('has-events');
+
+        if (dayEvents.length > 0) {
+            day.classList.add('has-events');
+            eventsContainer.innerHTML = `<div class="event-dot" title="${dayEvents.length} evento(s)"></div>`;
+        }
+    });
+}
+
+function setupEventListeners() {
+    document.addEventListener('click', (e) => {
+        if (e.target.id === 'prev-month' || e.target.id === 'next-month') {
+            const header = document.querySelector('.calendar-header h3');
+            const [monthName, year] = header.textContent.split(' ');
+            const monthIndex = monthNames.indexOf(monthName);
+            const currentYear = parseInt(year);
+            const calendarContainer = document.getElementById('calendar-container');
+
+            let newMonth, newYear;
+
+            if (e.target.id === 'prev-month') {
+                newMonth = monthIndex === 0 ? 11 : monthIndex - 1;
+                newYear = monthIndex === 0 ? currentYear - 1 : currentYear;
+            } else {
+                newMonth = monthIndex === 11 ? 0 : monthIndex + 1;
+                newYear = monthIndex === 11 ? currentYear + 1 : currentYear;
+            }
+
+            calendarContainer.innerHTML = createCalendar(newYear, newMonth);
+            displayEvents();
+        }
+
+        if (e.target.classList.contains('day') && !e.target.classList.contains('empty')) {
+            const date = e.target.getAttribute('data-date');
+            updateTaskList(date);
+        }
+    });
+}
+
+function updateTaskList(dateString) {
+    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+    let dayEvents = events[dateString] || [];
+    const taskList = document.querySelector('.task-list');
+
+    document.querySelector('.day.selected')?.classList.remove('selected');
+
+    const selectedDay = document.querySelector(`.day[data-date="${dateString}"]`);
+    selectedDay?.classList.add('selected');
+
+    if (!taskList) return;
+
+    dayEvents.sort((a, b) => {
+        if (!a.time) return 1;
+        if (!b.time) return -1;
+
+        return a.time.localeCompare(b.time);
+    });
+
+    taskList.innerHTML = dayEvents.length > 0
+        ? dayEvents.map(event => `
+            <div class="task-item">
+                <div class="task-icon">📆</div>
+                <span>${event.name}</span>
+                <span>${event.time || ''}</span>
+            </div>
+        `).join('')
+        : `<div class="task-item">
+            <div class="task-icon">ℹ️</div>
+            <span>There are no events</span>
+            <span></span>
+          </div>`;
+
+
+}
+
+/*-------------------------  COSAS ALE -------------------------
 
 async function initCalendar() {
 
@@ -400,219 +542,7 @@ async function updateTaskList(dateString) {
            </div>`;
 }
 
-// ------------------------------ FIN NUEVO CALENDARIO ------------------------------
+ ------------------------------ FIN NUEVO COSAS ALE ------------------------------ */
 
-// ------------------------- CALENDARIO DE RAÚL -------------------------
-/*
-function createCalendar(year, month) {
-    const today = new Date();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
-
-    let calendarHTML = `
-        <div class="calendar-header">
-            <button id="prev-month" class="calendar-nav-btn">←</button>
-            <h3>${monthNames[month]} ${year}</h3>
-            <button id="next-month" class="calendar-nav-btn">→</button>
-        </div>
-        <div class="weekdays">
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
-            <div>Sun</div>
-        </div>
-        <div class="days">
-    `;
-
-    let startingDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
-
-    for (let i = 0; i < startingDay; i++) {
-        calendarHTML += `<div class="day empty"></div>`;
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-        const isToday = day === today.getDate() &&
-            month === today.getMonth() &&
-            year === today.getFullYear();
-
-        calendarHTML += `
-            <div class="day ${isToday ? 'today' : ''}" data-date="${year}-${month+1}-${day}">
-                ${day}
-                <div class="day-events"></div>
-            </div>
-        `;
-    }
-
-    calendarHTML += `</div>`;
-    return calendarHTML;
-}
-
-function initCalendar() {
-    const today = new Date();
-    const calendarContainer = document.getElementById('calendar-container');
-
-    if (!calendarContainer) {
-        console.error('No se encontró el contenedor del calendario');
-        return;
-    }
-
-    calendarContainer.innerHTML = createCalendar(today.getFullYear(), today.getMonth());
-    displayEvents();
-    setupEventListeners();
-}
-
-function displayEvents() {
-    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-    const days = document.querySelectorAll('.day:not(.empty)');
-
-    days.forEach(day => {
-        const date = day.getAttribute('data-date');
-        const dayEvents = events[date] || [];
-        const eventsContainer = day.querySelector('.day-events');
-
-        eventsContainer.innerHTML = '';
-        day.classList.remove('has-events');
-
-        if (dayEvents.length > 0) {
-            day.classList.add('has-events');
-            eventsContainer.innerHTML = `<div class="event-dot" title="${dayEvents.length} evento(s)"></div>`;
-        }
-    });
-}
-
-function setupEventListeners() {
-    document.addEventListener('click', (e) => {
-        if (e.target.id === 'prev-month' || e.target.id === 'next-month') {
-            const header = document.querySelector('.calendar-header h3');
-            const [monthName, year] = header.textContent.split(' ');
-            const monthIndex = monthNames.indexOf(monthName);
-            const currentYear = parseInt(year);
-            const calendarContainer = document.getElementById('calendar-container');
-
-            let newMonth, newYear;
-
-            if (e.target.id === 'prev-month') {
-                newMonth = monthIndex === 0 ? 11 : monthIndex - 1;
-                newYear = monthIndex === 0 ? currentYear - 1 : currentYear;
-            } else {
-                newMonth = monthIndex === 11 ? 0 : monthIndex + 1;
-                newYear = monthIndex === 11 ? currentYear + 1 : currentYear;
-            }
-
-            calendarContainer.innerHTML = createCalendar(newYear, newMonth);
-            displayEvents();
-        }
-
-        if (e.target.classList.contains('day') && !e.target.classList.contains('empty')) {
-            const date = e.target.getAttribute('data-date');
-            updateTaskList(date);
-        }
-    });
-}
-*/
-/* ------------------   original ---------------------------------------------------------------------------
-function updateTaskList(dateString) {
-    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-    let dayEvents = events[dateString] || [];
-    const taskList = document.querySelector('.task-list');
-
-    document.querySelector('.day.selected')?.classList.remove('selected');
-
-    const selectedDay = document.querySelector(`.day[data-date="${dateString}"]`);
-    selectedDay?.classList.add('selected');
-
-    if (!taskList) return;
-
-    dayEvents.sort((a, b) => {
-        if (!a.time) return 1;
-        if (!b.time) return -1;
-
-        return a.time.localeCompare(b.time);
-    });
-
-    taskList.innerHTML = dayEvents.length > 0
-        ? dayEvents.map(event => `
-            <div class="task-item">
-                <div class="task-icon">📆</div>
-                <span>${event.name}</span>
-                <span>${event.time || ''}</span>
-            </div>
-        `).join('')
-        : `<div class="task-item">
-            <div class="task-icon">ℹ️</div>
-            <span>There are no events</span>
-            <span></span>
-          </div>`;
-
-
-}
-*/
-
-/*
-async function updateTaskList(dateString) {
-    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-
-    const dayEvents = events[dateString] || [];
-
-    const userData = await getUserData(userUID);
-    const tasks = userData?.tasks ? Object.values(userData.tasks) : [];
-
-    const formattedDate = new Date(dateString);
-    const isoDateString = formattedDate.toISOString().split('T')[0];
-
-    const tasksInProgress = tasks.filter(t => t.completed === false);
-
-    const dayTasks = tasksInProgress.filter(task => {
-        const taskDate = new Date(task.dueDate);
-        const taskDateString = taskDate.toISOString().split('T')[0];
-        return taskDateString === isoDateString;
-    });
-
-
-    const combined = [
-        ...dayEvents.map(event => ({
-            type: 'event',
-            name: event.name,
-            time: event.time || ''
-        })),
-        ...dayTasks.map(task => ({
-            type: 'task',
-            name: task.title,
-            time: task.time || ''
-        }))
-    ];
-
-    // Ordenar por hora (vacíos al final)
-    combined.sort((a, b) => {
-        if (!a.time) return 1;
-        if (!b.time) return -1;
-        return a.time.localeCompare(b.time);
-    });
-
-    const taskList = document.querySelector('.task-list');
-    if (!taskList) return;
-
-    document.querySelector('.day.selected')?.classList.remove('selected');
-    document.querySelector(`.day[data-date="${dateString}"]`)?.classList.add('selected');
-
-    taskList.innerHTML = combined.length > 0
-        ? combined.map(item => `
-            <div class="task-item">
-                <div class="task-icon">${item.type === 'event' ? '📆' : '<i class="fas fa-sticky-note" style="color: #219ebc;"></i>'}</div>
-                <span>${item.name}</span>
-                <span>${item.time}</span>
-            </div>
-        `).join('')
-        : `<div class="task-item">
-                <div class="task-icon">ℹ️</div>
-                <span>There are no events or tasks</span>
-                <span></span>
-           </div>`;
-}
-*/
-// ---------------------------- FIN CALENDARIO RAÚL ----------------------------
 
 initHome();
