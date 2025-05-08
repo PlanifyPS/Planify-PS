@@ -84,7 +84,7 @@ class Router {
         const [path] = hash.slice(1).split('?');
         const route = this.routes[path];
         if (!route) {
-            return this.showError(new Error('Página no encontrada'));
+            return this.showError(new Error('Page not found'));
         }
 
         document.title = `Planify – ${route.title}`;
@@ -188,9 +188,9 @@ class Router {
     showError(error) {
         document.getElementById('app').innerHTML = `
             <div class="error">
-                <h2>Error al cargar la página</h2>
+                <h2>Error loading page</h2>
                 <p>${error.message}</p>
-                <a href="#/home">Volver al inicio</a>
+                <a href="#/home">Return to home</a>
             </div>
         `;
     }
