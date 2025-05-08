@@ -79,8 +79,8 @@ function addForumToList(forumTitle) {
     const forumListElement = document.getElementById('forumList');
     const newForum = document.createElement('li');
     newForum.textContent = forumTitle;
-    newForum.addEventListener('click', function(event){
-        initChatModal(forumTitle);
+    newForum.addEventListener('click', async function () {
+        await initChatModal(forumTitle);
     });
     forumListElement.appendChild(newForum);
     document.getElementById('forumModal').style.display = 'none';

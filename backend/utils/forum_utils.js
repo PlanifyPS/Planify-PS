@@ -8,13 +8,12 @@ import {
 } from "./firestore_utils.js";
 
 
-const userUID = sessionStorage.getItem("uid");
-const userName = sessionStorage.getItem("userName");
+
 
 
 export async function getUserForum() {
 
-    const userData = await getUserData(userUID);
+    const userData = await getUserData(sessionStorage.getItem("uid"));
     const forums = []
     for(const index in userData.forum) {
         const forumId = userData.forum[index];
@@ -35,7 +34,7 @@ async function updateForum(forumUid) {
     for(const index in forum.users || []){
         updatedForum.push(forum.users[index]);
     }
-    updatedForum.push(userUID);
+    updatedForum.push(sessionStorage.getItem("uid"));
 
 
     await saveForumUser(forumUid, {users: updatedForum});
@@ -45,13 +44,13 @@ export async function addUserToForum(forumName) {
 
     if(!await checkIfForumExists(forumName)){return;}
 
-    const userData = await getUserData(userUID);
+    const userData = await getUserData(sessionStorage.getItem("uid"));
     const userFormData = [];
     for(const index in userData.forum || []) {
         userFormData.push(userData.forum[index])
     }
     userFormData.push(forumName);
-    await saveUserData(userUID, {forum: userFormData});
+    await saveUserData(sessionStorage.getItem("uid"), {forum: userFormData});
     await updateForum(forumName);
 
 }
@@ -72,13 +71,13 @@ export async function getAllForumsAvoidingUserForum(){
     const forumList = await getAllDocumentsFromCollection("Forums");
 
     return forumList.filter((forum) => {
-        return !forum.users.includes(userUID);
+        return !forum.users.includes(sessionStorage.getItem("uid"));
     });
 
 
 }
 export async function sendMessage(forumId, messageBody){
-    await sendForumMessage(forumId, userUID, messageBody, userName);
+    await sendForumMessage(forumId, sessionStorage.getItem("uid"), messageBody, sessionStorage.getItem("userName"));
 }
 
 export async function getForumMessages(forumId){
@@ -90,7 +89,7 @@ export async function getForumMessages(forumId){
         messages.push({
             id: doc.id,
             ...data,
-            senderName: data.sender === userUID ? "You" : data.senderName,
+            senderName: data.sender === sessionStorage.getItem("uid") ? "You" : data.senderName,
 
         });
     });
