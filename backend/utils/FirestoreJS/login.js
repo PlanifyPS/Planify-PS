@@ -11,12 +11,12 @@ const handleLogin = async () => {
 
         if (userData && userData.points !== undefined) {
             const pointsEl = document.getElementById("userPoints");
-            if (pointsEl) pointsEl.textContent = `Puntos: ${userData.points}`;
+            if (pointsEl) pointsEl.textContent = `Points: ${userData.points}`;
         }
 
         window.location.hash = "#/home"; // o lo que uses para navegación
 
     } catch (error) {
-        console.error("Error en login:", error.message);
+        console.error("Error to login:", error.message);
     }
 };
