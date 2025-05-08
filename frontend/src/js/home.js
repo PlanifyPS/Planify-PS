@@ -1,5 +1,8 @@
-const monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
+import {  getUserData  } from "../../../backend/utils/firestore_utils.js";
+
+const userUID = sessionStorage.getItem("uid");
+
+const monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
 
 function initHome() {
     if (document.readyState === 'complete') {
@@ -16,7 +19,7 @@ function initHome() {
 
             const today = new Date();
             const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-            updateTaskList(formattedDate);
+            updateTaskList(formattedDate, userUID);
         });
     }
 }
@@ -314,6 +317,7 @@ function setupEventListeners() {
     });
 }
 
+/* ------------------   original ---------------------------------------------------------------------------
 function updateTaskList(dateString) {
     const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
     let dayEvents = events[dateString] || [];
@@ -346,6 +350,72 @@ function updateTaskList(dateString) {
             <span>There are no events</span>
             <span></span>
           </div>`;
+
+
 }
+*/
+
+
+async function updateTaskList(dateString) {
+    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+
+    const dayEvents = events[dateString] || [];
+
+    const userData = await getUserData(userUID);
+    const tasks = userData?.tasks ? Object.values(userData.tasks) : [];
+
+    const formattedDate = new Date(dateString);
+    const isoDateString = formattedDate.toISOString().split('T')[0];
+
+    const tasksInProgress = tasks.filter(t => t.completed === false);
+
+    const dayTasks = tasksInProgress.filter(task => {
+        const taskDate = new Date(task.dueDate);
+        const taskDateString = taskDate.toISOString().split('T')[0];
+        return taskDateString === isoDateString;
+    });
+
+
+    const combined = [
+        ...dayEvents.map(event => ({
+            type: 'event',
+            name: event.name,
+            time: event.time || ''
+        })),
+        ...dayTasks.map(task => ({
+            type: 'task',
+            name: task.title,
+            time: task.time || ''
+        }))
+    ];
+
+    // Ordenar por hora (vacíos al final)
+    combined.sort((a, b) => {
+        if (!a.time) return 1;
+        if (!b.time) return -1;
+        return a.time.localeCompare(b.time);
+    });
+
+    const taskList = document.querySelector('.task-list');
+    if (!taskList) return;
+
+    document.querySelector('.day.selected')?.classList.remove('selected');
+    document.querySelector(`.day[data-date="${dateString}"]`)?.classList.add('selected');
+
+    taskList.innerHTML = combined.length > 0
+        ? combined.map(item => `
+            <div class="task-item">
+                <div class="task-icon">${item.type === 'event' ? '📆' : '<i class="fas fa-sticky-note" style="color: #219ebc;"></i>'}</div>
+                <span>${item.name}</span>
+                <span>${item.time}</span>
+            </div>
+        `).join('')
+        : `<div class="task-item">
+                <div class="task-icon">ℹ️</div>
+                <span>There are no events or tasks</span>
+                <span></span>
+           </div>`;
+}
+
 
 initHome();
