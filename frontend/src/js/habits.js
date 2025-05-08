@@ -1,7 +1,7 @@
 import { deleteUserField, getUserData, saveUserData } from "../../../backend/utils/firestore_utils.js";
 import { addDoc, getDocs, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import { db } from "/backend/utils/firebase_config.js";
-import { addPoints, checkStreak } from './points.js';
+import { addPoints } from './points.js';
 import Chart from 'https://esm.run/chart.js/auto';
 
 const userUID = sessionStorage.getItem("uid");
