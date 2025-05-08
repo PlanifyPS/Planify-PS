@@ -14,6 +14,14 @@ import { getUserData, saveUserData, deleteUserField } from '../../../backend/uti
 import { deleteDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import { addPoints } from './points.js';
 
+const pointsByCategory = {
+    Wellness: 1,
+    Fitness: 5,
+    Education: 5,
+    Career: 5,
+    Social: 3,
+    Other: 2
+};
 
 let groupId, members = [], memberInfos = [], instanceMap = {}, definitions = {},  habits = [];
 
@@ -233,20 +241,33 @@ async function acceptHabit(habitId) {
 
 async function completeHabit(habitId) {
     const inst = instanceMap[habitId];
-    if (!inst||inst.completed) return;
-    const ref = doc(db,'Groups',groupId,'habits',inst.id);
-    await updateDoc(ref,{
+    if (!inst || inst.completed) return;
+
+    const ref = doc(db, 'Groups', groupId, 'habits', inst.id);
+    await updateDoc(ref, {
         completed: true,
         completedBy: auth.currentUser.uid,
         completedTimestamp: serverTimestamp(),
         members: [ auth.currentUser.uid ]
     });
-    const pts = habits.find(h=>h.id===habitId).points || 0;
-    await addPoints(pts);
+
     instanceMap[habitId].completed = true;
     renderHabits();
     showHabitDetails(habitId);
+
+    const cat = definitions[habitId].category;
+    const pointsByCategory = {
+        Wellness: 1,
+        Fitness: 5,
+        Education: 5,
+        Career: 5,
+        Social: 3,
+        Other: 2
+    };
+    const pts = pointsByCategory[cat] ?? 1;
+    await addPoints(pts);
 }
+
 
 function initModal() {
     const modal = document.getElementById('AddHabitModal');
@@ -272,7 +293,8 @@ async function saveHabit() {
     }
 
     const habitId = editingHabitId || crypto.randomUUID();
-    const newHabit = { title, description, frequency, category, points: 1, groupId };
+    const pts = pointsByCategory[category] ?? 1;
+    const newHabit = { title, description, frequency, category, points: pts, groupId };
     await setDoc(
         doc(db, 'Groups', groupId, 'habitDefinitions', habitId),
         newHabit
