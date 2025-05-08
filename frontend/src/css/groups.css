@@ -322,7 +322,7 @@ dialog::backdrop {
 }
 
 .btn-view-habits {
-    align-self: flex-start;
+    align-self: flex-end;
     padding: 0.5rem 1rem;
     color: var(--black);
     background-color: var(--light-blue);
@@ -330,7 +330,8 @@ dialog::backdrop {
     border-radius: 4px;
     transition: background 0.3s ease-in-out;
     font-size: 0.9rem;
-    margin: 0.5rem;
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
 }
 
 .btn-view-habits:hover {
