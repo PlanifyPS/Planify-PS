@@ -9,30 +9,27 @@ let editingTaskId = null;
 
 const userUID = sessionStorage.getItem("uid");
 
-
-function initHome() {
-    if (document.readyState === 'complete') {
+async function initHome() {
+    async function initAll() {
         initTextContent();
         initModal();
         initFilterButton();
         initSearchFunction();
-        loadUserTasks().then();
-        initCalendar();
-        initPieByCategory();
-        initPiecompleted();
+        await loadUserTasks();
+        await initCalendar();
+        await initPieByCategory();
+        await initPiecompleted();
+    }
+
+    if (document.readyState === 'complete') {
+        await initAll();
     } else {
-        document.addEventListener('DOMContentLoaded', () => {
-            initTextContent();
-            initModal();
-            initFilterButton();
-            initSearchFunction();
-            loadUserTasks().then();
-            initCalendar();
-            initPieByCategory();
-            initPiecompleted();
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initAll();
         });
     }
 }
+
 
 function initTextContent() {
     document.getElementById("TitleHabitsTasks").textContent = "Tasks";
@@ -109,9 +106,9 @@ async function reloadUserTasks() {
 async function saveTask() {
     const title = document.getElementById("NewTaskTitle").value.trim().toString();
     const description = document.getElementById("TaskDescription").value.trim().toString();
-    //const dueDate = document.getElementById("TaskDueDate").value;
     const dueDateRaw = document.getElementById("TaskDueDate").value;
     const dueDate = dueDateRaw + "T12:00:00";  // forzar al mediodía
+
     const category = document.getElementById("TaskCategory").value;
 
     if (!title || !description || !dueDate) {
@@ -143,6 +140,7 @@ async function saveTask() {
     await reloadUserTasks();
     await loadTasksPieByCategory(userUID);
     await loadTasksPiecompleted(userUID);
+    await displayEvents();
 }
 
 async function loadUserTasks() {
@@ -182,16 +180,16 @@ async function completeTask(taskId) {
     }
      */
     const category = tasksData[taskId].category;
-        const pointsByCategory = {
-            Wellness: 1,
-            Fitness: 3,
-            Education: 3,
-            Career: 3,
-            Social: 1,
-            Other: 2
-        };
-        const pts = pointsByCategory[category];
-        await addPoints(pts);
+    const pointsByCategory = {
+        Wellness: 1,
+        Fitness: 3,
+        Education: 3,
+        Career: 3,
+        Social: 1,
+        Other: 2
+    };
+    const pts = pointsByCategory[category];
+    await addPoints(pts);
     await sortTasks();
 
     await addDoc(collection(db, "Users", userUID, "tasksHistory"), {
@@ -200,10 +198,6 @@ async function completeTask(taskId) {
             taskId: taskId
         }
     );
-
-    await loadTasksPieByCategory(userUID);
-    await loadTasksPiecompleted(userUID);
-
 }
 
 async function sortTasks() {
@@ -269,12 +263,20 @@ function getTaskInfo(button) {
 async function handleCompleteTask(button) {
     const taskInfo = getTaskInfo(button);
     await completeTask(taskInfo.taskId);
+
+    await loadTasksPieByCategory(userUID);
+    await loadTasksPiecompleted(userUID);
+    await displayEvents();
 }
 
 async function handleDeleteTask(button) {
     const taskInfo = getTaskInfo(button);
     if (confirm(`Are you sure you want to delete the task "${taskInfo.taskTitle}"?`)) {
         await deleteTask(taskInfo.taskId);
+
+        await loadTasksPieByCategory(userUID);
+        await loadTasksPiecompleted(userUID);
+        await displayEvents();
     }
 }
 
@@ -305,6 +307,8 @@ async function setupTasksListeners() {
     });
 
     await loadTasksPieByCategory(userUID);
+    await displayEvents();
+
 }
 
 function highlightSearchTerm(text, searchTerm) {
@@ -360,10 +364,12 @@ async function addTemplate(id, url, item, taskId) {
 
 // ------------------------------ CALENDARIO ------------------------------
 
-function initCalendar() {
+const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+
+async function initCalendar() {
 
     const today = new Date();
-
     const calendarContainer = document.getElementById('calendar-container');
 
     if (!calendarContainer) {
@@ -372,14 +378,11 @@ function initCalendar() {
     }
 
     calendarContainer.innerHTML = createCalendar(today.getFullYear(), today.getMonth());
-    displayEvents();
+    await displayEvents();
     setupEventListeners();
     const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-    updateTaskList(formattedDate);
+    await updateTaskList(formattedDate);
 }
-
-const monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
 
 function createCalendar(year, month) {
     const today = new Date();
@@ -427,28 +430,42 @@ function createCalendar(year, month) {
     return calendarHTML;
 }
 
-function displayEvents() {
+async function displayEvents() {
     const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-    const days = document.querySelectorAll('.day:not(.empty)');
+    const userData = await getUserData(userUID);
+    const tasks = userData?.tasks ? Object.values(userData.tasks) : [];
+    const tasksInProgress = tasks.filter(t => t.completed === false);
 
+    // Agrupar tareas por fecha en formato YYYY-M-D (sin ceros a la izquierda, igual que en los data-date)
+    const taskDates = {};
+    for (const task of tasksInProgress) {
+        const due = new Date(task.dueDate);
+        const key = `${due.getFullYear()}-${due.getMonth() + 1}-${due.getDate()}`;
+
+        taskDates[key] = (taskDates[key] || 0) + 1;
+    }
+
+    const days = document.querySelectorAll('.day:not(.empty)');
     days.forEach(day => {
         const date = day.getAttribute('data-date');
         const dayEvents = events[date] || [];
-        const eventsContainer = day.querySelector('.day-events');
+        const taskCount = taskDates[date] || 0;
 
+        const totalItems = dayEvents.length + taskCount;
+
+        const eventsContainer = day.querySelector('.day-events');
         eventsContainer.innerHTML = '';
         day.classList.remove('has-events');
 
-        if (dayEvents.length > 0) {
+        if (totalItems > 0) {
             day.classList.add('has-events');
-            eventsContainer.innerHTML = `<div class="event-dot" title="${dayEvents.length} evento(s)"></div>`;
+            eventsContainer.innerHTML = `<div class="event-dot" title="${totalItems} evento(s)/tarea(s)"></div>`;
         }
     });
 }
 
-
 function setupEventListeners() {
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', async (e) => {
         if (e.target.id === 'prev-month' || e.target.id === 'next-month') {
             const header = document.querySelector('.calendar-header h3');
             const [monthName, year] = header.textContent.split(' ');
@@ -467,12 +484,12 @@ function setupEventListeners() {
             }
 
             calendarContainer.innerHTML = createCalendar(newYear, newMonth);
-            displayEvents();
+            await displayEvents();
         }
 
         if (e.target.classList.contains('day') && !e.target.classList.contains('empty')) {
             const date = e.target.getAttribute('data-date');
-            updateTaskList(date);
+            await updateTaskList(date);
         }
     });
 }
@@ -601,7 +618,6 @@ function groupSumByCategory(tasks) {
     const counts = {};
 
     for (const task of tasks) {
-        console.log('Task category:', task.category);               // ******    corregir esto: no lee las categorías
         const category = task.category?.trim() || 'Other';
         counts[category] = (counts[category] || 0) + 1;
     }
