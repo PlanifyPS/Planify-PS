@@ -81,6 +81,25 @@
     background: #f1f1f1;
 }
 
+#forumName {
+    color: #03045e;
+}
+
+#ForumInterest {
+    color: #03045e;
+}
+
+#forumList {
+    color: #03045e;
+}
+
+#ForumCreation {
+    color: #03045e;
+}
+
+#chat-title {
+    color: #03045e;
+}
 .foro-search{
     display: flex;
     justify-content: space-between;
