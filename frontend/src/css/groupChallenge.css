@@ -224,17 +224,17 @@
     text-transform: capitalize;
 }
 
-.tag.fácil {
+.tag.easy {
     background-color: rgba(0, 180, 216, 0.2);
     color: var(--blue-green);
 }
 
-.tag.medio {
+.tag.medium {
     background-color: rgba(0, 119, 182, 0.2);
     color: var(--blue-medium);
 }
 
-.tag.difícil {
+.tag.hard {
     background-color: rgba(2, 62, 138, 0.2);
     color: var(--blue-dark);
 }
