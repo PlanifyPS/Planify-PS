@@ -14,7 +14,6 @@ import { app } from "../../../backend/utils/firebase_config.js";
 
 const db = getFirestore(app);
 
-
 let challengesData = [];
 
 export function initChallenges() {
@@ -53,10 +52,9 @@ async function loadChallenges() {
         setupFilterEvents();
     } catch (error) {
         console.error('Error:', error);
-        showError('Error al cargar los desafíos');
+        showError('Error loading challenges');
     }
 }
-
 
 function setupFilterEvents() {
     const searchInput = document.getElementById('search-challenges');
@@ -194,8 +192,8 @@ function removeChallengeFromView(challengeId) {
             detailContainer.innerHTML = `
                 <div class="empty-detail">
                     <i class="fas fa-flag"></i>
-                    <h2>Selecciona un desafío</h2>
-                    <p>Haz clic en cualquier desafío para ver sus detalles</p>
+                    <h2>Select a challenge</h2>
+                    <p>Click on any challenge to view its details</p>
                 </div>
             `;
         }
@@ -231,7 +229,7 @@ function showChallengeDetails(challengeId) {
                 <div class="challenge-meta">
                     <span class="tag ${challenge.level.toLowerCase()}">${challenge.level}</span>
                     <span class="points">${challenge.points} pts</span>
-                    <span class="duration"><i class="far fa-clock"></i> ${challenge.duration} días</span>
+                    <span class="duration"><i class="far fa-clock"></i> ${challenge.duration} days</span>
                     ${challenge.category ? `<span class="category"><i class="fas fa-tag"></i> ${challenge.category}</span>` : ''}
                 </div>
             </div>
@@ -256,7 +254,6 @@ function showChallengeDetails(challengeId) {
                             </ul>
                     </div>
                 ` : ''}
-
 
                 <div class="actions-section">
                     ${!challenge.accepted && !challenge.completed ? `
@@ -302,7 +299,7 @@ function acceptChallenge(challengeId) {
     showChallengeDetails(challengeId);
     filterChallenges();
 
-    console.log(`Desafío "${challenge.name}" aceptado`);
+    console.log(`Challenge "${challenge.name}" accepted`);
 }
 
 async function completeChallenge(challengeId) {
@@ -311,7 +308,7 @@ async function completeChallenge(challengeId) {
 
     try {
         const user = getAuth().currentUser;
-        if (!user) throw new Error("Usuario no autenticado");
+        if (!user) throw new Error("User not authenticated");
 
         const userRef = doc(db, "Users", user.uid, "CompletedChallenges", challengeId);
 
@@ -328,17 +325,16 @@ async function completeChallenge(challengeId) {
         showChallengeDetails(challengeId);
         filterChallenges();
 
-        console.log(`Desafío "${challenge.name}" completado y registrado. Puntos añadidos: ${challenge.points}`);
-
+        console.log(`Challenge "${challenge.name}" completed and registered. Points added: ${challenge.points}`);
     } catch (error) {
-        console.error("Error al registrar desafío completado:", error);
+        console.error("Error registering completed challenge:", error);
     }
 }
 
 async function addPointsToFirebase(pointsToAdd) {
     try {
         const user = getAuth().currentUser;
-        if (!user) throw new Error("Usuario no autenticado");
+        if (!user) throw new Error("User not authenticated");
 
         const userRef = doc(db, "Users", user.uid);
         const userSnap = await getDoc(userRef);
@@ -358,15 +354,14 @@ async function addPointsToFirebase(pointsToAdd) {
         const updatedSnap = await getDoc(userRef);
         const updatedPoints = updatedSnap.data().points;
 
-        console.log(`Puntos actualizados: ${updatedPoints}`);
+        console.log(`Points updated: ${updatedPoints}`);
 
         const pointsUpdatedEvent = new CustomEvent("pointsUpdated", {
             detail: { points: updatedPoints }
         });
         document.dispatchEvent(pointsUpdatedEvent);
-
     } catch (error) {
-        console.error("Error al actualizar puntos:", error);
+        console.error("Error updating points:", error);
     }
 }
 
@@ -374,7 +369,7 @@ async function addToStreak() {
     try {
         const today = new Date().toDateString();
         const user = getAuth().currentUser;
-        if (!user) throw new Error("Usuario no autenticado");
+        if (!user) throw new Error("User not authenticated");
 
         const userRef = doc(db, "Users", user.uid);
         const userSnap = await getDoc(userRef);
@@ -393,12 +388,10 @@ async function addToStreak() {
             const streakUpdatedEvent = new CustomEvent("streakUpdated");
             document.dispatchEvent(streakUpdatedEvent);
         }
-
     } catch (error) {
-        console.error("Error al actualizar racha:", error);
+        console.error("Error updating streak:", error);
     }
 }
-
 
 function showError(message) {
     const container = document.getElementById('cards-container');
@@ -429,9 +422,8 @@ async function markCompletedChallenges() {
                 challenge.completed = true;
             }
         });
-
     } catch (error) {
-        console.error("Error marcando desafíos completados:", error);
+        console.error("Error marking completed challenges:", error);
     }
 }
 
