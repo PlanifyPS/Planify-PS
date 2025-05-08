@@ -20,9 +20,9 @@ export const loadUserProfile = async () => {
             document.getElementById("city").value = data.city || "";
             document.getElementById("Country").value = data.country || "";
         } else {
-            console.log("No se encontraron datos del perfil.");
+            console.log("Profile data not found.");
         }
     } catch (error) {
-        console.error("Error cargando datos del perfil:", error);
+        console.error("Error loading profile data:", error);
     }
 };
