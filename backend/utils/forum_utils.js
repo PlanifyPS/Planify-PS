@@ -55,11 +55,12 @@ export async function addUserToForum(forumName) {
 
 }
 
-export async function createForum(forumName) {
+export async function createForum(forumName, category) {
     const forumInit = {
         messages : {},
         users : [],
         title : forumName,
+        category: category,
     }
     await initForum(forumName,forumInit);
 

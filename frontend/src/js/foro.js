@@ -4,6 +4,7 @@ import {
     getAllForumsAvoidingUserForum, getForumMessages,
     getUserForum, sendMessage
 } from "../../../backend/utils/forum_utils.js";
+import {getForum} from "../../../backend/utils/firestore_utils.js";
 
 const forumList = [];
 let currentForum = "Forum Name";
@@ -66,22 +67,35 @@ async function showMessage() {
 }
 
 async function initChatModal(forumTitle) {
-    document.getElementById('forumName').textContent = forumTitle;
+
     document.getElementById('forumContainer').innerHTML = '';
     currentForum = forumTitle;
 
     document.getElementById('chatModal').style.display = 'flex';
     await initChat(forumTitle);
 }
-function addForumToList(forumTitle) {
-
-
+function addForumToList(forumTitle, category) {
     const forumListElement = document.getElementById('forumList');
+
     const newForum = document.createElement('li');
-    newForum.textContent = forumTitle;
+
+  
+    const titleSpan = document.createElement('span');
+    titleSpan.textContent = forumTitle;
+    titleSpan.classList.add('forum-title');
+
+    const categorySpan = document.createElement('span');
+    categorySpan.textContent = ` ${category}`;
+    categorySpan.classList.add("forum-list-item-category");
+    categorySpan.classList.add(`category-${category}`);
+
+    newForum.appendChild(titleSpan);
+    newForum.appendChild(categorySpan);
+
     newForum.addEventListener('click', async function () {
         await initChatModal(forumTitle);
     });
+
     forumListElement.appendChild(newForum);
     document.getElementById('forumModal').style.display = 'none';
 }
@@ -90,7 +104,7 @@ async function printUserForums() {
 
     const forumsList = await getUserForum();
     forumsList.forEach(forum => {
-        addForumToList(forum.title);
+        addForumToList(forum.title, forum.category);
     })
 
 }
@@ -128,7 +142,8 @@ async function autoCompleteForums() {
 async function joinForum() {
     const searchForum = document.getElementById('searchForum');
     await addUserToForum(searchForum.value);
-    addForumToList(searchForum.value);
+    const forum = await getForum(searchForum.value);
+    addForumToList(forum.title, forum.category);
     searchForum.value = '';
     document.getElementById('searchResults').value = '';
     
@@ -136,9 +151,10 @@ async function joinForum() {
 
 async function saveNewForum() {
     const forumTitle = document.getElementById('forumTitle').value;
-    await createForum(forumTitle);
+    const category = document.getElementById('ForumCategory').value;
+    await createForum(forumTitle, category);
     await addUserToForum(forumTitle);
-    addForumToList(forumTitle)
+    addForumToList(forumTitle, category)
     document.getElementById('forumModal').style.display = 'none';
 }
 
