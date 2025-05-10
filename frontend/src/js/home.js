@@ -1,9 +1,20 @@
+import { auth, db } from '../../../backend/utils/firebase_config.js';
+import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
+
 const monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
 
 function initHome() {
     if (document.readyState === 'complete') {
         initCalendar();
         setupEventDialogListeners();
+
+        const chartBars = document.querySelectorAll('.chart-bar');
+        chartBars.forEach(bar => {
+            bar.setAttribute('data-value', '0');
+        });
+
+        loadHabitsProgressChart();
 
         const today = new Date();
         const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
@@ -12,12 +23,106 @@ function initHome() {
         document.addEventListener('DOMContentLoaded', () => {
             initCalendar();
             setupEventDialogListeners();
+            const chartBars = document.querySelectorAll('.chart-bar');
+            chartBars.forEach(bar => {
+                bar.setAttribute('data-value', '0');
+            });
+
+            loadHabitsProgressChart();
 
             const today = new Date();
             const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
             updateTaskList(formattedDate);
         });
     }
+}
+
+function getLastNDates(n) {
+    const arr = [];
+    const today = new Date();
+    for (let i = n - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        arr.push(d);
+    }
+    return arr;
+}
+
+function groupSum(records, keyFn) {
+    return records.reduce((acc, r) => {
+        const k = keyFn(r);
+        acc[k] = (acc[k] || 0) + 1;
+        return acc;
+    }, {});
+}
+
+function loadHabitsProgressChart() {
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            // Si no hay usuario, asegurarse de mostrar 0 en lugar de 0%
+            const chartBars = document.querySelectorAll('.chart-bar');
+            chartBars.forEach(bar => {
+                bar.style.height = '0%';
+                bar.setAttribute('data-value', '0');
+            });
+            return;
+        }
+
+        try {
+            const snaps = await getDocs(collection(db, 'Users', user.uid, 'habitsHistory'));
+            const dates = snaps.docs.map(d =>
+                new Date(d.data().timestamp.seconds * 1000)
+            );
+
+            const last7Dates = getLastNDates(7);
+            const grouped = groupSum(dates, d => d.toISOString().slice(0, 10));
+            const dailyCounts = last7Dates.map(d =>
+                grouped[d.toISOString().slice(0, 10)] || 0
+            );
+
+            const maxExpectedHabits = 10;
+            const percentages = dailyCounts.map(count =>
+                Math.min(Math.round((count / maxExpectedHabits) * 100), 100)
+            );
+
+            const dayLabels = last7Dates.map(d =>
+                d.toLocaleDateString('en-US', { weekday: 'short' })
+            );
+
+            updateHomeChart(percentages, dayLabels, dailyCounts);
+        } catch (error) {
+            console.error('Error loading habits progress chart:', error);
+            const chartBars = document.querySelectorAll('.chart-bar');
+            chartBars.forEach(bar => {
+                bar.style.height = '0%';
+                bar.setAttribute('data-value', '0');
+            });
+        }
+    });
+}
+
+function updateHomeChart(percentages, dayLabels, counts) {
+    const chartBars = document.querySelectorAll('.chart-bar');
+    const chartLabels = document.querySelectorAll('.chart-label');
+
+    chartBars.forEach((bar, index) => {
+        if (index < percentages.length) {
+            const percentage = percentages[index];
+            const count = counts[index];
+
+            bar.style.height = `${percentage}%`;
+            bar.setAttribute('data-value', `${count}`);
+        } else {
+            bar.style.height = '0%';
+            bar.setAttribute('data-value', '0');
+        }
+    });
+
+    chartLabels.forEach((label, index) => {
+        if (index < dayLabels.length) {
+            label.textContent = dayLabels[index];
+        }
+    });
 }
 
 function setupEventDialogListeners() {
@@ -204,7 +309,6 @@ function setupEventDialogListeners() {
     });
 }
 
-
 function createCalendar(year, month) {
     const today = new Date();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -346,8 +450,6 @@ function updateTaskList(dateString) {
                 <span>There are no events</span>
                 <span></span>
             </div>`;
-
-
 }
 
 /*-------------------------  COSAS ALE -------------------------

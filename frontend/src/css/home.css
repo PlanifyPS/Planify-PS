@@ -101,7 +101,7 @@
     justify-content: center;
     width: 100%;
     height: 70%;
-    padding: 0 10px;
+    padding: 10px;
 }
 
 .chart-bar {
@@ -119,7 +119,9 @@
     top: -20px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--blue-dark);
 }
 
 .chart-labels {

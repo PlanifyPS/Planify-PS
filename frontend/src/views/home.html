@@ -4,13 +4,13 @@
       <div class="chart">
         <div class="chart-title">Weekly Habits Progress</div>
         <div class="chart-bars">
-          <div class="chart-bar" style="height: 60%;" data-value="60%"></div>
-          <div class="chart-bar" style="height: 75%;" data-value="75%"></div>
-          <div class="chart-bar" style="height: 45%;" data-value="45%"></div>
-          <div class="chart-bar" style="height: 90%;" data-value="90%"></div>
-          <div class="chart-bar" style="height: 65%;" data-value="65%"></div>
-          <div class="chart-bar" style="height: 30%;" data-value="30%"></div>
-          <div class="chart-bar" style="height: 50%;" data-value="50%"></div>
+          <div class="chart-bar" style="height: 0%;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0%;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0%;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0%;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0%;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0%;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0%;" data-value="0"></div>
         </div>
         <div class="chart-labels">
           <div class="chart-label">Mon</div>
@@ -164,16 +164,22 @@
     </div>
   </section>
 
-  <div id="event-dialog">
+  <div id="event-dialog" class="dialog">
     <div class="dialog-header">
       <h3>Add Event</h3>
       <button class="close-btn">&times;</button>
     </div>
     <form class="event-form">
       <input type="hidden" id="event-date">
-      <input type="text" id="event-name" placeholder="Event name" required>
-      <input type="time" id="event-time" required>
-      <button type="submit">Save</button>
+      <div class="form-group">
+        <label for="event-name">Event Name:</label>
+        <input type="text" id="event-name" placeholder="Event name" required>
+      </div>
+      <div class="form-group">
+        <label for="event-time">Time:</label>
+        <input type="time" id="event-time" required>
+      </div>
+      <button type="submit" class="save-btn">Save</button>
     </form>
   </div>
 </div>
