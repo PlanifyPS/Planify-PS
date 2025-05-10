@@ -1,5 +1,5 @@
 import { auth, db } from '../../../backend/utils/firebase_config.js';
-import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
 
 const monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
@@ -59,7 +59,6 @@ function groupSum(records, keyFn) {
 function loadHabitsProgressChart() {
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
-            // Si no hay usuario, asegurarse de mostrar 0 en lugar de 0%
             const chartBars = document.querySelectorAll('.chart-bar');
             chartBars.forEach(bar => {
                 bar.style.height = '0%';
@@ -125,6 +124,86 @@ function updateHomeChart(percentages, dayLabels, counts) {
     });
 }
 
+async function getEventsFromFirebase(userId, date = null) {
+    try {
+        let eventsQuery;
+
+        if (date) {
+            eventsQuery = query(
+                collection(db, 'Users', userId, 'events'),
+                where('date', '==', date)
+            );
+        } else {
+            eventsQuery = collection(db, 'Users', userId, 'events');
+        }
+
+        const querySnapshot = await getDocs(eventsQuery);
+
+        const events = {};
+        querySnapshot.forEach((doc) => {
+            const eventData = doc.data();
+            const eventDate = eventData.date;
+
+            if (!events[eventDate]) {
+                events[eventDate] = [];
+            }
+
+            events[eventDate].push({
+                id: doc.id,
+                name: eventData.name,
+                time: eventData.time || ''
+            });
+        });
+
+        return events;
+    } catch (error) {
+        console.error('Error getting events from Firebase:', error);
+        return {};
+    }
+}
+
+async function addEventToFirebase(userId, date, name, time) {
+    try {
+        const eventRef = await addDoc(collection(db, 'Users', userId, 'events'), {
+            date: date,
+            name: name,
+            time: time || '',
+            createdAt: new Date()
+        });
+
+        return eventRef.id;
+    } catch (error) {
+        console.error('Error adding event to Firebase:', error);
+        return null;
+    }
+}
+
+async function updateEventInFirebase(userId, eventId, name, time) {
+    try {
+        const eventRef = doc(db, 'Users', userId, 'events', eventId);
+        await updateDoc(eventRef, {
+            name: name,
+            time: time || '',
+            updatedAt: new Date()
+        });
+
+        return true;
+    } catch (error) {
+        console.error('Error updating event in Firebase:', error);
+        return false;
+    }
+}
+
+async function deleteEventFromFirebase(userId, eventId) {
+    try {
+        await deleteDoc(doc(db, 'Users', userId, 'events', eventId));
+        return true;
+    } catch (error) {
+        console.error('Error deleting event from Firebase:', error);
+        return false;
+    }
+}
+
 function setupEventDialogListeners() {
     const home = document.getElementById('home');
     const eventDialog = document.getElementById('event-dialog');
@@ -176,29 +255,29 @@ function setupEventDialogListeners() {
 
     editEventForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const eventId = parseInt(editEventId.value);
-        const date = editEventDate.value;
-        const name = editEventName.value;
-        const time = editEventTime.value;
 
-        const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                alert('You must be logged in to edit events');
+                return;
+            }
 
-        if (events[date]) {
-            const eventIndex = events[date].findIndex(event => event.id === eventId);
-            if (eventIndex !== -1) {
-                events[date][eventIndex] = {
-                    name,
-                    time,
-                    id: eventId
-                };
-                localStorage.setItem('calendarEvents', JSON.stringify(events));
+            const eventId = editEventId.value;
+            const name = editEventName.value;
+            const time = editEventTime.value;
+            const date = editEventDate.value;
 
-                displayEvents();
-                updateTaskList(date);
+            const success = await updateEventInFirebase(user.uid, eventId, name, time);
+
+            if (success) {
+                await displayEvents();
+                await updateTaskList(date);
                 editDialog.style.display = 'none';
                 home.classList.remove('modal-open');
+            } else {
+                alert('Failed to update event. Please try again.');
             }
-        }
+        });
     });
 
     addEventBtn.addEventListener('click', () => {
@@ -226,31 +305,34 @@ function setupEventDialogListeners() {
 
     eventForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const date = eventDate.value;
-        const name = eventName.value;
-        const time = eventTime.value;
 
-        const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-        const newEvent = { name, time, id: Date.now() };
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                alert('You must be logged in to add events');
+                return;
+            }
 
-        if (!events[date]) {
-            events[date] = [];
-        }
-        events[date].push(newEvent);
+            const date = eventDate.value;
+            const name = eventName.value;
+            const time = eventTime.value;
 
-        localStorage.setItem('calendarEvents', JSON.stringify(events));
+            const eventId = await addEventToFirebase(user.uid, date, name, time);
 
-        displayEvents();
-        updateTaskList(date);
-        eventDialog.style.display = 'none';
-        home.classList.remove('modal-open');
+            if (eventId) {
+                await displayEvents();
+                await updateTaskList(date);
+                eventDialog.style.display = 'none';
+                home.classList.remove('modal-open');
+            } else {
+                alert('Failed to add event. Please try again.');
+            }
+        });
     });
 
     const taskList = document.querySelector('.task-list');
     taskList.addEventListener('click', (e) => {
         const taskItem = e.target.closest('.task-item');
         if (!taskItem) return;
-
 
         if (taskItem.querySelector('span')?.textContent === 'There are no events') {
             return;
@@ -261,6 +343,11 @@ function setupEventDialogListeners() {
 
         const eventName = taskItem.querySelector('span:nth-child(2)').textContent;
         const eventTime = taskItem.querySelector('span:nth-child(3)').textContent;
+
+        // Only process if this is an event (not a task)
+        if (taskItem.querySelector('.task-icon').textContent !== '📆') {
+            return;
+        }
 
         const editBtn = document.createElement('button');
         editBtn.textContent = '✏️';
@@ -276,35 +363,59 @@ function setupEventDialogListeners() {
         taskItem.appendChild(editBtn);
         taskItem.appendChild(deleteBtn);
 
-        editBtn.addEventListener('click', () => {
-            const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-            const dateEvents = events[dateString] || [];
+        editBtn.addEventListener('click', async () => {
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    alert('You must be logged in to edit events');
+                    return;
+                }
 
-            const eventToEdit = dateEvents.find(event =>
-                event.name === eventName && event.time === eventTime
-            );
+                // Find the event in Firebase
+                const events = await getEventsFromFirebase(user.uid, dateString);
+                const dateEvents = events[dateString] || [];
 
-            if (eventToEdit) {
-                editEventId.value = eventToEdit.id;
-                editEventDate.value = dateString;
-                editEventName.value = eventToEdit.name;
-                editEventTime.value = eventToEdit.time;
+                const eventToEdit = dateEvents.find(event =>
+                    event.name === eventName && event.time === eventTime
+                );
 
-                editDialog.style.display = 'block';
-                home.classList.add('modal-open');
-            }
+                if (eventToEdit) {
+                    editEventId.value = eventToEdit.id;
+                    editEventDate.value = dateString;
+                    editEventName.value = eventToEdit.name;
+                    editEventTime.value = eventToEdit.time;
+
+                    editDialog.style.display = 'block';
+                    home.classList.add('modal-open');
+                }
+            });
         });
 
-        deleteBtn.addEventListener('click', () => {
-            const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-            const dateEvents = events[dateString] || [];
-            events[dateString] = dateEvents.filter(event =>
-                event.name !== eventName || event.time !== eventTime
-            );
-            localStorage.setItem('calendarEvents', JSON.stringify(events));
+        deleteBtn.addEventListener('click', async () => {
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    alert('You must be logged in to delete events');
+                    return;
+                }
 
-            displayEvents();
-            updateTaskList(dateString);
+                // Find the event in Firebase
+                const events = await getEventsFromFirebase(user.uid, dateString);
+                const dateEvents = events[dateString] || [];
+
+                const eventToDelete = dateEvents.find(event =>
+                    event.name === eventName && event.time === eventTime
+                );
+
+                if (eventToDelete) {
+                    const success = await deleteEventFromFirebase(user.uid, eventToDelete.id);
+
+                    if (success) {
+                        await displayEvents();
+                        await updateTaskList(dateString);
+                    } else {
+                        alert('Failed to delete event. Please try again.');
+                    }
+                }
+            });
         });
     });
 }
@@ -369,21 +480,38 @@ function initCalendar() {
     setupEventListeners();
 }
 
-function displayEvents() {
-    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-    const days = document.querySelectorAll('.day:not(.empty)');
+async function displayEvents() {
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            // Clear all events if not logged in
+            const days = document.querySelectorAll('.day:not(.empty)');
+            days.forEach(day => {
+                const eventsContainer = day.querySelector('.day-events');
+                eventsContainer.innerHTML = '';
+                day.classList.remove('has-events');
+            });
+            return;
+        }
 
-    days.forEach(day => {
-        const date = day.getAttribute('data-date');
-        const dayEvents = events[date] || [];
-        const eventsContainer = day.querySelector('.day-events');
+        try {
+            const events = await getEventsFromFirebase(user.uid);
+            const days = document.querySelectorAll('.day:not(.empty)');
 
-        eventsContainer.innerHTML = '';
-        day.classList.remove('has-events');
+            days.forEach(day => {
+                const date = day.getAttribute('data-date');
+                const dayEvents = events[date] || [];
+                const eventsContainer = day.querySelector('.day-events');
 
-        if (dayEvents.length > 0) {
-            day.classList.add('has-events');
-            eventsContainer.innerHTML = `<div class="event-dot" title="${dayEvents.length} event(s)"></div>`;
+                eventsContainer.innerHTML = '';
+                day.classList.remove('has-events');
+
+                if (dayEvents.length > 0) {
+                    day.classList.add('has-events');
+                    eventsContainer.innerHTML = `<div class="event-dot" title="${dayEvents.length} event(s)"></div>`;
+                }
+            });
+        } catch (error) {
+            console.error('Error displaying events:', error);
         }
     });
 }
@@ -418,233 +546,52 @@ function setupEventListeners() {
     });
 }
 
-function updateTaskList(dateString) {
-    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-    let dayEvents = events[dateString] || [];
-    const taskList = document.querySelector('.task-list');
+async function updateTaskList(dateString) {
+    onAuthStateChanged(auth, async (user) => {
+        try {
+            const events = await getEventsFromFirebase(user.uid, dateString);
+            let dayEvents = events[dateString] || [];
 
-    document.querySelector('.day.selected')?.classList.remove('selected');
+            document.querySelector('.day.selected')?.classList.remove('selected');
+            const selectedDay = document.querySelector(`.day[data-date="${dateString}"]`);
+            selectedDay?.classList.add('selected');
 
-    const selectedDay = document.querySelector(`.day[data-date="${dateString}"]`);
-    selectedDay?.classList.add('selected');
+            const taskList = document.querySelector('.task-list');
+            if (!taskList) return;
 
-    if (!taskList) return;
+            dayEvents.sort((a, b) => {
+                if (!a.time) return 1;
+                if (!b.time) return -1;
 
-    dayEvents.sort((a, b) => {
-        if (!a.time) return 1;
-        if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+            });
 
-        return a.time.localeCompare(b.time);
-    });
+            taskList.innerHTML = dayEvents.length > 0
+                ? dayEvents.map(event => `
+                    <div class="task-item">
+                        <div class="task-icon">📆</div>
+                        <span>${event.name}</span>
+                        <span>${event.time || ''}</span>
+                    </div>
+                `).join('')
+                : `<div class="task-item">
+                    <div class="task-icon">ℹ️</div>
+                    <span>There are no events</span>
+                    <span></span>
+                </div>`;
+        } catch (error) {
+            console.error('Error updating task list:', error);
 
-    taskList.innerHTML = dayEvents.length > 0
-        ? dayEvents.map(event => `
-            <div class="task-item">
-                <div class="task-icon">📆</div>
-                <span>${event.name}</span>
-                <span>${event.time || ''}</span>
-            </div>
-        `).join('')
-        : `<div class="task-item">
+            const taskList = document.querySelector('.task-list');
+            if (!taskList) return;
+
+            taskList.innerHTML = `<div class="task-item">
                 <div class="task-icon">ℹ️</div>
                 <span>There are no events</span>
                 <span></span>
             </div>`;
-}
-
-/*-------------------------  COSAS ALE -------------------------
-
-async function initCalendar() {
-
-    const today = new Date();
-    const calendarContainer = document.getElementById('calendar-container');
-
-    if (!calendarContainer) {
-        console.error('No se encontró el contenedor del calendario');
-        return;
-    }
-
-    calendarContainer.innerHTML = createCalendar(today.getFullYear(), today.getMonth());
-    await displayEvents();
-    setupEventListeners();
-    const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-    await updateTaskList(formattedDate);
-}
-
-function createCalendar(year, month) {
-    const today = new Date();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
-
-    let calendarHTML = `
-        <div class="calendar-header">
-            <button id="prev-month" class="calendar-nav-btn">←</button>
-            <h3>${monthNames[month]} ${year}</h3>
-            <button id="next-month" class="calendar-nav-btn">→</button>
-        </div>
-        <div class="weekdays">
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
-            <div>Sun</div>
-        </div>
-        <div class="days">
-    `;
-
-    let startingDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
-
-    for (let i = 0; i < startingDay; i++) {
-        calendarHTML += `<div class="day empty"></div>`;
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-        const isToday = day === today.getDate() &&
-            month === today.getMonth() &&
-            year === today.getFullYear();
-
-        calendarHTML += `
-            <div class="day ${isToday ? 'today' : ''}" data-date="${year}-${month+1}-${day}">
-                ${day}
-                <div class="day-events"></div>
-            </div>
-        `;
-    }
-
-    calendarHTML += `</div>`;
-    return calendarHTML;
-}
-
-async function displayEvents() {
-    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-    const userData = await getUserData(userUID);
-    const tasks = userData?.tasks ? Object.values(userData.tasks) : [];
-    const tasksInProgress = tasks.filter(t => t.completed === false);
-
-    // Agrupar tareas por fecha en formato YYYY-M-D (sin ceros a la izquierda, igual que en los data-date)
-    const taskDates = {};
-    for (const task of tasksInProgress) {
-        const due = new Date(task.dueDate);
-        const key = `${due.getFullYear()}-${due.getMonth() + 1}-${due.getDate()}`;
-
-        taskDates[key] = (taskDates[key] || 0) + 1;
-    }
-
-    const days = document.querySelectorAll('.day:not(.empty)');
-    days.forEach(day => {
-        const date = day.getAttribute('data-date');
-        const dayEvents = events[date] || [];
-        const taskCount = taskDates[date] || 0;
-
-        const totalItems = dayEvents.length + taskCount;
-
-        const eventsContainer = day.querySelector('.day-events');
-        eventsContainer.innerHTML = '';
-        day.classList.remove('has-events');
-
-        if (totalItems > 0) {
-            day.classList.add('has-events');
-            eventsContainer.innerHTML = `<div class="event-dot" title="${totalItems} evento(s)/tarea(s)"></div>`;
         }
     });
 }
-
-function setupEventListeners() {
-    document.addEventListener('click', async (e) => {
-        if (e.target.id === 'prev-month' || e.target.id === 'next-month') {
-            const header = document.querySelector('.calendar-header h3');
-            const [monthName, year] = header.textContent.split(' ');
-            const monthIndex = monthNames.indexOf(monthName);
-            const currentYear = parseInt(year);
-            const calendarContainer = document.getElementById('calendar-container');
-
-            let newMonth, newYear;
-
-            if (e.target.id === 'prev-month') {
-                newMonth = monthIndex === 0 ? 11 : monthIndex - 1;
-                newYear = monthIndex === 0 ? currentYear - 1 : currentYear;
-            } else {
-                newMonth = monthIndex === 11 ? 0 : monthIndex + 1;
-                newYear = monthIndex === 11 ? currentYear + 1 : currentYear;
-            }
-
-            calendarContainer.innerHTML = createCalendar(newYear, newMonth);
-            await displayEvents();
-        }
-
-        if (e.target.classList.contains('day') && !e.target.classList.contains('empty')) {
-            const date = e.target.getAttribute('data-date');
-            await updateTaskList(date);
-        }
-    });
-}
-
-async function updateTaskList(dateString) {
-    const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-
-    const dayEvents = events[dateString] || [];
-
-    const userData = await getUserData(userUID);
-    const tasks = userData?.tasks ? Object.values(userData.tasks) : [];
-
-    const formattedDate = new Date(dateString);
-    const isoDateString = formattedDate.toISOString().split('T')[0];
-
-    const tasksInProgress = tasks.filter(t => t.completed === false);
-
-    const dayTasks = tasksInProgress.filter(task => {
-        const taskDate = new Date(task.dueDate);
-        // const taskDateString = taskDate.toISOString().split('T')[0];
-        const taskDateString = `${taskDate.getFullYear()}-${String(taskDate.getMonth() + 1).padStart(2, '0')}-${String(taskDate.getDate()).padStart(2, '0')}`;
-        return taskDateString === isoDateString;
-
-    });
-
-
-    const combined = [
-        ...dayEvents.map(event => ({
-            type: 'event',
-            name: event.name,
-            time: event.time || ''
-        })),
-        ...dayTasks.map(task => ({
-            type: 'task',
-            name: task.title,
-            time: task.time || ''
-        }))
-    ];
-
-    // Ordenar por hora (vacíos al final)
-    combined.sort((a, b) => {
-        if (!a.time) return 1;
-        if (!b.time) return -1;
-        return a.time.localeCompare(b.time);
-    });
-
-    const taskList = document.querySelector('.task-list');
-    if (!taskList) return;
-
-    document.querySelector('.day.selected')?.classList.remove('selected');
-    document.querySelector(`.day[data-date="${dateString}"]`)?.classList.add('selected');
-
-    taskList.innerHTML = combined.length > 0 // muestra lista de eventos y tareas del día seleccionado con sus iconos.
-        ? combined.map(item => `
-            <div class="task-item">
-                <div class="task-icon">${item.type === 'event' ? '📆' : '<i class="fas fa-sticky-note" style="color: #219ebc;"></i>'}</div>
-                <span>${item.name}</span>
-                <span>${item.time}</span>
-            </div>
-        `).join('')
-        : `<div class="task-item">
-                <div class="task-icon">ℹ️</div>
-                <span>There are no events or tasks</span>
-                <span></span>
-           </div>`;
-}
-
- ------------------------------ FIN NUEVO COSAS ALE ------------------------------ */
-
 
 initHome();
