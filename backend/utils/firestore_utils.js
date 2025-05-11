@@ -1,7 +1,7 @@
 import {db} from "./firebase_config.js";
 import {
     addDoc,
-    collection,
+    collection, deleteDoc,
     deleteField,
     doc,
     getDoc,
@@ -147,8 +147,34 @@ export async function getForumMessagesFromFirebase(forumId) {
     try {
         const messageRef = collection(db, "Forums", forumId, "messages");
         const queryRef = query(messageRef, orderBy("timestamp", "asc"));
-        return await getDocs(queryRef);
+        const snapshot = await getDocs(queryRef);
+        return snapshot.docs;
     }catch (error) {
         console.error("Error saving messages:", error);
     }
 }
+
+
+export async function toggleMessageLike(forumId, messageId, userUID, liked) {
+    console.log(forumId, messageId,liked)
+    const reactionRef = doc(db, "Forums", forumId, "messages", messageId, "Reactions", userUID);
+    console.log("dentro")
+    if (liked) {
+        await setDoc(reactionRef, {
+            type: "like",
+            timestamp: new Date()
+        });
+        console.log("liked")
+    } else {
+        await deleteDoc(reactionRef); 
+    }
+}
+
+
+export async function checkIfMessageLiked(forumId, messageId, userUID) {
+    const reactionRef = doc(db, "Forums", forumId, "messages", messageId, "Reactions", userUID);
+    const docSnap = await getDoc(reactionRef);
+    return docSnap.exists(); 
+}
+
+

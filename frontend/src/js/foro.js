@@ -4,13 +4,38 @@ import {
     getAllForumsAvoidingUserForum, getForumMessages,
     getUserForum, sendMessage
 } from "../../../backend/utils/forum_utils.js";
-import {getForum} from "../../../backend/utils/firestore_utils.js";
+import {getForum, toggleMessageLike} from "../../../backend/utils/firestore_utils.js";
 
 const forumList = [];
 let currentForum = "Forum Name";
 const forumPosts = {};
 
-function renderMessage(msg) {
+function setupLikeButton(likeBtn, isLikedInitial, forumId, messageId, userUID) {
+    const heartIcon = likeBtn.querySelector("i");
+
+    if (isLikedInitial) {
+        likeBtn.classList.add("liked");
+        heartIcon.classList.remove("fa-regular");
+        heartIcon.classList.add("fa-solid");
+    } else {
+        likeBtn.classList.remove("liked");
+        heartIcon.classList.remove("fa-solid");
+        heartIcon.classList.add("fa-regular");
+    }
+
+    likeBtn.addEventListener("click", async () => {
+        const isNowLiked = likeBtn.classList.toggle("liked");
+
+        heartIcon.classList.toggle("fa-regular", !isNowLiked);
+        heartIcon.classList.toggle("fa-solid", isNowLiked);
+        console.log(isNowLiked);
+        await toggleMessageLike(forumId, messageId, userUID, isNowLiked);
+    });
+}
+
+
+function renderMessage(msg, forumId) {
+    console.log(msg)
     const template = document.getElementById("chat-message-template");
     const clone = template.content.cloneNode(true);
 
@@ -24,20 +49,29 @@ function renderMessage(msg) {
     clone.querySelector(".sender-name").textContent = msg.senderName;
     clone.querySelector(".message-body").textContent = msg.body;
 
+    const likeBtn = clone.querySelector(".like-btn");
+    setupLikeButton(likeBtn, msg.isLiked, forumId, msg.id, sessionStorage.getItem("uid"));
+    
+    
+    clone.querySelector(".reply-btn").addEventListener("click", () => {
+        const replyTo =  `"${msg.body}" by ${msg.senderName}`;
+        document.getElementById("chatInput").placeholder = `Replying to ${replyTo}`;
+    })
+
     wrapper.appendChild(bubble);
     return wrapper;
 }
 
 async function initChat(forumTitle) {
 
-    document.getElementById('chat-title').textContent = forumTitle;
+    
 
     const chatMessages = document.getElementById("chatMessages");
     chatMessages.innerHTML = "";
 
     const messages = await getForumMessages(forumTitle);
     messages.forEach(msg => {
-        const messageNode = renderMessage(msg);
+        const messageNode = renderMessage(msg, forumTitle,);
         chatMessages.appendChild(messageNode);
     });
 
@@ -49,6 +83,7 @@ async function initChat(forumTitle) {
 async function showMessage() {
     const chatInput = document.getElementById("chatInput");
     const chatMessages = document.getElementById("chatMessages");
+
     const message = chatInput.value.trim();
     if (!message) return;
 
@@ -57,7 +92,7 @@ async function showMessage() {
     chatMessages.appendChild(renderMessage({
         senderName: "You",
         body: message,
-    }));
+    },document.getElementById("chat-title").value));
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -66,10 +101,18 @@ async function showMessage() {
     chatInput.value = "";
 }
 
-async function initChatModal(forumTitle) {
+async function initChatModal(forumTitle, category) {
 
     document.getElementById('forumContainer').innerHTML = '';
     currentForum = forumTitle;
+    const titleElement = document.getElementById("chat-title");
+    titleElement.textContent = forumTitle;
+
+    const categoryElement = document.createElement('span');
+    categoryElement.textContent = ` ${category}`;
+    categoryElement.classList.add("forum-list-item-category");
+    categoryElement.classList.add(`category-${category}`);
+    titleElement.appendChild(categoryElement);
 
     document.getElementById('chatModal').style.display = 'flex';
     await initChat(forumTitle);
@@ -93,7 +136,7 @@ function addForumToList(forumTitle, category) {
     newForum.appendChild(categorySpan);
 
     newForum.addEventListener('click', async function () {
-        await initChatModal(forumTitle);
+        await initChatModal(forumTitle, category);
     });
 
     forumListElement.appendChild(newForum);

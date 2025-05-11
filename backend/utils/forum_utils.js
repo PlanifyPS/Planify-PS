@@ -1,4 +1,5 @@
 import {
+    checkIfMessageLiked,
     getAllDocumentsFromCollection,
     getForum, getForumMessagesFromFirebase,
     getUserData,
@@ -81,20 +82,21 @@ export async function sendMessage(forumId, messageBody){
     await sendForumMessage(forumId, sessionStorage.getItem("uid"), messageBody, sessionStorage.getItem("userName"));
 }
 
-export async function getForumMessages(forumId){
-
-    const forumData = await getForumMessagesFromFirebase(forumId);
+export async function getForumMessages(forumId) {
+    const forumData = await getForumMessagesFromFirebase(forumId); 
+    const userUID = sessionStorage.getItem("uid");
     const messages = [];
-    forumData.forEach(doc => {
+
+    for (const doc of forumData) {
         const data = doc.data();
+        const isLiked = await checkIfMessageLiked(forumId, doc.id, userUID);
         messages.push({
             id: doc.id,
             ...data,
-            senderName: data.sender === sessionStorage.getItem("uid") ? "You" : data.senderName,
-
+            isLiked,
+            senderName: data.sender === userUID ? "You" : data.senderName,
         });
-    });
+    }
 
     return messages;
-    
 }
