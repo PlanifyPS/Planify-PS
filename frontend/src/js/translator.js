@@ -20,25 +20,30 @@ i18next
     .init({
         fallbackLng: 'en',
         debug: true,
-        backend: { loadPath: 'locales/{{lng}}/translation.json' }
+        detection: {
+            order: ['localStorage','navigator'],
+            lookupLocalStorage: 'i18nextLng',
+            caches: ['localStorage']
+        },
+        backend: {
+            loadPath: 'locales/{{lng}}/translation.json'
+        }
     })
     .then(() => {
-        let lang = i18next.language.split('-')[0];
-        if (lang !== 'es' && lang !== 'en') lang = 'en';
-        return new Promise(res => i18next.changeLanguage(lang, () => res(lang)));
-    })
-    .then(lang => {
+        const lang = i18next.language.split('-')[0];
         updateContent();
         updateFlags(lang);
     })
     .catch(err => console.error('i18next init failed:', err));
 
 i18next.on('languageChanged', lng => {
+    const lang = lng.split('-')[0];
     updateContent();
-    updateFlags(lng);
+    updateFlags(lang);
 });
 
 window.addEventListener('hashchange', updateContent);
+window.addEventListener('DOMContentLoaded', updateContent);
 
 document.addEventListener('click', e => {
     const f = e.target.closest('.flag');
@@ -48,3 +53,9 @@ document.addEventListener('click', e => {
         i18next.changeLanguage(lng);
     }
 });
+
+const appEl = document.getElementById('app');
+if (appEl) {
+    new MutationObserver(() => updateContent())
+        .observe(appEl, { childList: true, subtree: true });
+}
