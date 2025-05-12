@@ -9,6 +9,8 @@ import {getForum, toggleMessageLike} from "../../../backend/utils/firestore_util
 const forumList = [];
 let currentForum = "Forum Name";
 const forumPosts = {};
+let replyPreviewData = null;
+
 
 function setupLikeButton(likeBtn, isLikedInitial, forumId, messageId, userUID) {
     const heartIcon = likeBtn.querySelector("i");
@@ -33,6 +35,27 @@ function setupLikeButton(likeBtn, isLikedInitial, forumId, messageId, userUID) {
     });
 }
 
+function handleReplyListener(msg){
+    const replyTo =  `"${msg.body}" by ${msg.senderName}`;
+    document.getElementById("chatInput").placeholder = `Replying to ${replyTo}`;
+
+    const replyPreview = document.getElementById("replyPreview");
+    const replyAuthor = replyPreview.querySelector(".reply-author");
+    const replyText = replyPreview.querySelector(".reply-text");
+
+    replyAuthor.textContent = msg.senderName + ":";
+    replyText.textContent = msg.body;
+
+    replyPreview.classList.remove("hidden");
+
+    // Guardar el ID del mensaje al que se está respondiendo
+    chatInput.dataset.replyTo = msg.id;
+    replyPreviewData = {
+        senderName: msg.senderName,
+        body: msg.body
+    };
+
+}
 
 function renderMessage(msg, forumId) {
     console.log(msg)
@@ -51,12 +74,21 @@ function renderMessage(msg, forumId) {
 
     const likeBtn = clone.querySelector(".like-btn");
     setupLikeButton(likeBtn, msg.isLiked, forumId, msg.id, sessionStorage.getItem("uid"));
-    
-    
+
+
     clone.querySelector(".reply-btn").addEventListener("click", () => {
-        const replyTo =  `"${msg.body}" by ${msg.senderName}`;
-        document.getElementById("chatInput").placeholder = `Replying to ${replyTo}`;
-    })
+
+        handleReplyListener(msg);
+    });
+    console.log(msg)
+    if (msg.replyPreview) {
+        console.log("dentro")
+        const replyRef = document.createElement("div");
+        replyRef.classList.add("reply-reference");
+        replyRef.innerHTML = `<strong>${msg.replyPreview.senderName}:</strong> ${msg.replyPreview.body}`;
+        bubble.prepend(replyRef);
+    }
+
 
     wrapper.appendChild(bubble);
     return wrapper;
@@ -64,7 +96,7 @@ function renderMessage(msg, forumId) {
 
 async function initChat(forumTitle) {
 
-    
+
 
     const chatMessages = document.getElementById("chatMessages");
     chatMessages.innerHTML = "";
@@ -83,22 +115,29 @@ async function initChat(forumTitle) {
 async function showMessage() {
     const chatInput = document.getElementById("chatInput");
     const chatMessages = document.getElementById("chatMessages");
+    const replyTo = chatInput.dataset.replyTo || null;
 
     const message = chatInput.value.trim();
     if (!message) return;
 
 
-
+    console.log(replyPreviewData )
     chatMessages.appendChild(renderMessage({
         senderName: "You",
         body: message,
+        replyTo: replyTo,
+        replyPreview:replyPreviewData,
     },document.getElementById("chat-title").value));
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    const forumTitle = document.getElementById('chat-title').textContent
-    await sendMessage(forumTitle, chatInput.value);
+    const forumTitle = document.getElementById('chat-title').firstChild.nodeValue.trim();
+    await sendMessage(forumTitle, chatInput.value, replyTo);
+
     chatInput.value = "";
+    replyPreviewData = null;
+    chatInput.removeAttribute("data-reply-to");
+    document.getElementById("replyPreview").classList.add("hidden");
 }
 
 async function initChatModal(forumTitle, category) {
@@ -122,7 +161,7 @@ function addForumToList(forumTitle, category) {
 
     const newForum = document.createElement('li');
 
-  
+
     const titleSpan = document.createElement('span');
     titleSpan.textContent = forumTitle;
     titleSpan.classList.add('forum-title');
@@ -189,7 +228,7 @@ async function joinForum() {
     addForumToList(forum.title, forum.category);
     searchForum.value = '';
     document.getElementById('searchResults').value = '';
-    
+
 }
 
 async function saveNewForum() {
@@ -210,8 +249,15 @@ async function setupForumListeners() {
         if (e.key === 'Enter') {
             showMessage();
         }
-    })
-   
+    });
+    document.getElementById("cancelReply").addEventListener("click", () => {
+        document.getElementById("replyPreview").classList.add("hidden");
+        document.getElementById("chatInput").removeAttribute("data-reply-to");
+        document.getElementById("chatInput").placeholder = "Write a message...";
+        replyPreviewData = null;
+    });
+
+
 }
 
 async function initHome() {

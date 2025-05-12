@@ -92,6 +92,13 @@
       <div id="chatMessages" class="modal-body">
 
       </div>
+      <div id="replyPreview" class="reply-preview hidden">
+        <div class="reply-content">
+          <span class="reply-author"></span>
+          <span class="reply-text"></span>
+        </div>
+        <button id="cancelReply" class="cancel-reply">✖</button>
+      </div>
       <div class="modal-footer">
         <input type="text" id="chatInput" placeholder="Write a message..." maxlength="300" />
         <button id="send-message" class="chat-send-message">Send</button>

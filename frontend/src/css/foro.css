@@ -258,18 +258,18 @@
     display: inline-block;
 }
 
-/* Mensaje ajeno (izquierda por defecto) */
+
 .chat-message-wrapper {
     display: flex;
     justify-content: flex-start;
 }
 
-/* Mensaje propio */
+
 .chat-message-wrapper.you {
     justify-content: flex-end;
 }
 
-/* Opcional: burbuja diferente para uno mismo */
+
 .chat-message-wrapper.you .chat-message-bubble {
     background-color: #dcedc8; /* verde claro */
 }
@@ -351,6 +351,54 @@ span.close:hover {
 .like-btn.liked i {
     color: red;
 }
+.reply-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f0f0f0;
+    border-left: 4px solid #007bff;
+    padding: 6px 10px;
+    font-size: 0.9em;
+    max-height: 50px;
+    overflow: hidden;
+}
 
+.reply-preview.hidden {
+    display: none;
+}
+
+.reply-content {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.reply-author {
+    font-weight: bold;
+    margin-right: 6px;
+}
+
+.cancel-reply {
+    background: none;
+    border: none;
+    font-size: 1em;
+    color: #888;
+    cursor: pointer;
+}
+.cancel-reply:hover {
+    color: red;
+}
+.reply-reference {
+    background-color: #f1f1f1;
+    font-size: 0.8em;
+    padding: 4px 8px;
+    margin-bottom: 6px;
+    border-left: 3px solid #ccc;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 

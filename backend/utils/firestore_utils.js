@@ -129,15 +129,19 @@ export const addPointsToUser = async (uid, pointsToAdd) => {
     }
 };
 
-export async function sendForumMessage(forumId, senderUid, messageBody, senderName) {
+export async function sendForumMessage(forumId, senderUid, messageBody, senderName, replyToMessageId = null) {
     try {
-        const messageRef = collection(db, "Forums", forumId, "messages");
-        await addDoc(messageRef, {
+        const message = {
             body:messageBody,
             sender: senderUid,
             senderName:senderName,
             timestamp: serverTimestamp(),
-        });
+        }
+        if(replyToMessageId) {
+            message.replyTo = replyToMessageId;
+        }
+        const messageRef = collection(db, "Forums", forumId, "messages");
+        await addDoc(messageRef, message);
     }catch (error) {
         console.error("Error saving messages:", error);
     }
@@ -156,17 +160,14 @@ export async function getForumMessagesFromFirebase(forumId) {
 
 
 export async function toggleMessageLike(forumId, messageId, userUID, liked) {
-    console.log(forumId, messageId,liked)
     const reactionRef = doc(db, "Forums", forumId, "messages", messageId, "Reactions", userUID);
-    console.log("dentro")
     if (liked) {
         await setDoc(reactionRef, {
             type: "like",
             timestamp: new Date()
         });
-        console.log("liked")
     } else {
-        await deleteDoc(reactionRef); 
+        await deleteDoc(reactionRef);
     }
 }
 

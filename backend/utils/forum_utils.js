@@ -78,23 +78,43 @@ export async function getAllForumsAvoidingUserForum(){
 
 
 }
-export async function sendMessage(forumId, messageBody){
-    await sendForumMessage(forumId, sessionStorage.getItem("uid"), messageBody, sessionStorage.getItem("userName"));
+export async function sendMessage(forumId, messageBody, replyToMessageId = null){
+    await sendForumMessage(forumId, sessionStorage.getItem("uid"), messageBody, sessionStorage.getItem("userName"), replyToMessageId);
 }
 
 export async function getForumMessages(forumId) {
-    const forumData = await getForumMessagesFromFirebase(forumId); 
+    const forumData = await getForumMessagesFromFirebase(forumId);
     const userUID = sessionStorage.getItem("uid");
+
+    // Cargar todos los mensajes primero
+    const rawMessages = forumData.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }));
+
+    // Luego enriquecemos con isLiked y replyPreview
     const messages = [];
 
-    for (const doc of forumData) {
-        const data = doc.data();
-        const isLiked = await checkIfMessageLiked(forumId, doc.id, userUID);
+    for (const msg of rawMessages) {
+        const isLiked = await checkIfMessageLiked(forumId, msg.id, userUID);
+
+        // Buscar el mensaje original si tiene replyTo
+        let replyPreview = null;
+        if (msg.replyTo) {
+            const original = rawMessages.find(m => m.id === msg.replyTo);
+            if (original) {
+                replyPreview = {
+                    senderName: original.senderName,
+                    body: original.body
+                };
+            }
+        }
+
         messages.push({
-            id: doc.id,
-            ...data,
+            ...msg,
             isLiked,
-            senderName: data.sender === userUID ? "You" : data.senderName,
+            senderName: msg.sender === userUID ? "You" : msg.senderName,
+            replyPreview
         });
     }
 
