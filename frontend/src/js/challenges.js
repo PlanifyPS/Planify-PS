@@ -204,11 +204,12 @@ async function openShareDialog() {
     dlg.showModal();
 
     const btns = dlg.querySelectorAll('.do-share');
-    if (!btns) return console.error('Share button not found');
+    if (!btns.length) return console.error('Share button not found');
 
     btns.forEach(btn => {
 
         btn.addEventListener('click', async e => {
+            const platform = btn.dataset.platform;
             const url = img.src;
             const text = encodeURIComponent("I just earned this medal! 🏅\n");
             if (navigator.canShare && navigator.canShare({files: []})) {
@@ -218,10 +219,27 @@ async function openShareDialog() {
                     const file = new File([blob], 'medal.png', {type: blob.type});
                     await navigator.share({title: 'My Medal', files: [file]});
                 } catch {
-                    window.open(`https://api.whatsapp.com/send?text=${text}%20${encodeURIComponent(url)}`, '_blank');
+                    console.error('Could not recognize share info');
                 }
             } else {
-                window.open(`https://api.whatsapp.com/send?text=${text}%20${encodeURIComponent(url)}`, '_blank');
+                let shareUrl = '';
+                switch (platform) {
+                    case 'whatsapp':
+                        shareUrl = `https://api.whatsapp.com/send?text=${text}%20${encodeURIComponent(url)}`;
+                        break;
+                    case 'twitter':
+                        shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`;
+                        break;
+                    case 'facebook':
+                        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                        break;
+                    case 'copy':
+                        navigator.clipboard.writeText(url)
+                            .then(() => alert('Link copied to clipboard!'))
+                            .catch(() => alert('Copy failed'));
+                        return;
+                }
+                window.open(shareUrl, '_blank');
             }
         })
     })
