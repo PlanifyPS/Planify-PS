@@ -104,3 +104,21 @@
     visibility: visible;
     opacity: 1;
 }
+
+.lang-switcher {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: flex-start;
+}
+.flag {
+    width: 24px;
+    height: auto;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.flag:hover, .flag.active {
+    opacity: 1;
+}
+

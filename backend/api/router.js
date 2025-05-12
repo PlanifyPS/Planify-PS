@@ -3,7 +3,8 @@ class Router {
         this.globalScripts = [
             'points.js',
             'sidebar.js',
-            'header.js'
+            'header.js',
+            'translator.js',
         ];
 
         this.routes = {
