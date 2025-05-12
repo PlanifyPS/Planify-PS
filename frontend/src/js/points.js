@@ -44,17 +44,26 @@ export async function addPoints(amount) {
     const uid = user.uid;
     const userRef = doc(db, "Users", uid);
     const snap = await getDoc(userRef);
-    const old = snap.exists() ? snap.data().points || 0 : 0;
-    const next = old + amount;
+    const data = snap.exists() ? snap.data() : {};
+    const oldPoints = data.points || 0;
+    const nextPoints = oldPoints + amount;
 
-    await updateDoc(userRef, { points: next });
+    await updateDoc(userRef, { points: nextPoints });
     await addDoc(
         collection(db, "Users", uid, "pointsHistory"),
-        { timestamp: serverTimestamp(), delta: amount, total: next }
+        {
+            timestamp: serverTimestamp(),
+            delta: amount,
+            total: nextPoints
+        }
     );
 
+    await updateStreakIfNeeded(data.lastTaskDate, data.streak);
+
+
     document.dispatchEvent(new Event("pointsUpdated"));
-    return next;
+    return nextPoints;
+
 }
 
 function updatePointsUI(pts) {
@@ -95,5 +104,23 @@ async function checkStreak(lastDate, streak) {
         updateStreakUI(0);
     }
 }
+
+async function updateStreakIfNeeded(lastDate, streak) {
+    const today = new Date().toDateString();
+    if (lastDate === today) return;
+
+    const y = new Date(); y.setDate(y.getDate() - 1);
+    const yesterday = y.toDateString();
+
+    let newStreak = (lastDate === yesterday) ? (streak || 0) + 1 : 1;
+
+    await updateDoc(doc(db, "Users", auth.currentUser.uid), {
+        streak: newStreak,
+        lastTaskDate: today
+    });
+
+    updateStreakUI(newStreak);
+}
+
 
 window.initPoints = initPoints;
