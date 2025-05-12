@@ -1,6 +1,18 @@
-import i18next        from 'https://cdn.jsdelivr.net/npm/i18next@21.9.2/+esm';
+import i18next         from 'https://cdn.jsdelivr.net/npm/i18next@21.9.2/+esm';
 import LanguageDetector from 'https://cdn.jsdelivr.net/npm/i18next-browser-languagedetector@6.1.5/+esm';
 import HttpBackend      from 'https://cdn.jsdelivr.net/npm/i18next-http-backend@1.4.4/+esm';
+
+function updateContent() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = i18next.t(el.getAttribute('data-i18n'));
+    });
+}
+
+function updateFlags(lang) {
+    document.querySelectorAll('.flag').forEach(f => f.classList.remove('active'));
+    const btn = document.getElementById(`lang-${lang}`);
+    if (btn) btn.classList.add('active');
+}
 
 i18next
     .use(HttpBackend)
@@ -8,30 +20,31 @@ i18next
     .init({
         fallbackLng: 'en',
         debug: true,
-        backend: {
-            loadPath: 'locales/{{lng}}/translation.json'
-        }
-    });
+        backend: { loadPath: 'locales/{{lng}}/translation.json' }
+    })
+    .then(() => {
+        let lang = i18next.language.split('-')[0];
+        if (lang !== 'es' && lang !== 'en') lang = 'en';
+        return new Promise(res => i18next.changeLanguage(lang, () => res(lang)));
+    })
+    .then(lang => {
+        updateContent();
+        updateFlags(lang);
+    })
+    .catch(err => console.error('i18next init failed:', err));
 
-function updateContent() {
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        el.textContent = i18next.t(key);
-    });
-}
-
-i18next.on('initialized', () => {
-    console.log('i18next listo, idioma:', i18next.language);
-    updateContent();
-});
 i18next.on('languageChanged', lng => {
-    console.log('i18next cambió a:', lng);
     updateContent();
+    updateFlags(lng);
 });
 
-window.addEventListener('hashchange', () => {
-    updateContent();
-});
+window.addEventListener('hashchange', updateContent);
 
-document.getElementById('lang-es').onclick = () => i18next.changeLanguage('es');
-document.getElementById('lang-en').onclick = () => i18next.changeLanguage('en');
+document.addEventListener('click', e => {
+    const f = e.target.closest('.flag');
+    if (!f) return;
+    const [, lng] = f.id.split('-');
+    if (lng === 'es' || lng === 'en') {
+        i18next.changeLanguage(lng);
+    }
+});
