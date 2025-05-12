@@ -271,6 +271,9 @@ function showChallengeDetails(challengeId) {
                     ${challenge.completed ? '<span class="completed-badge">Completed</span>' : ''}
                 </div>
             </div>
+            <button id="share-btn" class="btn share-btn">
+                <i class="fas fa-share-alt"></i> Share Medal
+            </button>
         </div>
     `;
 
@@ -287,6 +290,9 @@ function showChallengeDetails(challengeId) {
             completeChallenge(challengeId);
         });
     }
+
+    const shareBtn    = detailContainer.querySelector('#share-btn');
+    if (shareBtn) shareBtn.onclick = ()=> openShareDialog();
 }
 
 function acceptChallenge(challengeId) {
@@ -430,6 +436,42 @@ async function markCompletedChallenges() {
 window.addEventListener('hashchange', () => {
     if (window.location.hash.includes('challenges')) {
         initChallenges();
+    }
+});
+
+function openShareDialog() {
+    const dialog = document.getElementById('share-dialog');
+    const img   = document.getElementById('share-image');
+    const medal = document.querySelector('#challenge-detail .medal-img')?.src || 'assets/medal.png';
+    img.src = medal;
+    dialog.showModal();
+    dialog.style.display = 'block';
+}
+document.getElementById('share-dialog')?.addEventListener('click', e => {
+    const btn      = e.target.closest('[data-platform]');
+    const dialog   = document.getElementById('share-dialog');
+    if (!btn) return;
+    const text     = encodeURIComponent("I just earned this medal!");
+    const url      = encodeURIComponent(document.getElementById('share-image').src);
+    let shareUrl = '';
+    switch(btn.dataset.platform) {
+        case 'whatsapp': shareUrl = `https://api.whatsapp.com/send?text=${text}%20${url}`; break;
+        case 'twitter':  shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`; break;
+        case 'facebook': shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`; break;
+        case 'copy':     navigator.clipboard.writeText(document.getElementById('share-image').src); alert('Link copied'); return;
+    }
+    window.open(shareUrl,'_blank');
+});
+
+document.getElementById('share-dialog')?.addEventListener('close', () => {
+    document.getElementById('share-dialog').close();
+    document.getElementById('share-dialog').style.display = 'none';
+
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('challenges')) {
+        import('./shareMedal.js').then(m => m.initShareModal());
     }
 });
 

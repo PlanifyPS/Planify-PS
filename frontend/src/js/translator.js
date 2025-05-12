@@ -12,7 +12,10 @@ function updateContent() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
         el.textContent = i18next.t(el.getAttribute('data-i18n'));
     });
-    const lang = i18next.language.split('-')[0];
+    let raw = i18next.language;
+    if (Array.isArray(raw)) raw = raw[0];
+    if (typeof raw !== 'string') raw = i18next.options.fallbackLng || 'en';
+    const lang = raw.split('-')[0];
     updateFlags(lang);
 }
 
@@ -31,7 +34,11 @@ i18next
     .then(updateContent)
     .catch(err => console.error('i18next init failed:', err));
 
-i18next.on('languageChanged', updateContent);
+i18next.on('languageChanged', (lng) => {
+    const raw = Array.isArray(lng) ? lng[0] : lng;
+    updateContent();
+    updateFlags(raw.split('-')[0]);
+});
 
 window.addEventListener('hashchange', updateContent);
 window.addEventListener('DOMContentLoaded', updateContent);
