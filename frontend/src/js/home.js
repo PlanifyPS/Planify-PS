@@ -58,7 +58,12 @@ async function loadUserHabits() {
             const userSnap = await getDoc(userDoc);
 
             if (!userSnap.exists()) {
-                habitsGrid.innerHTML = '<p>No habits found. Add some habits to get started!</p>';
+                habitsGrid.innerHTML = `
+                    <div class="no-habits-message">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>No habits found. Add some habits to get started!</p>
+                    </div>
+                `;
                 return;
             }
 
@@ -67,7 +72,12 @@ async function loadUserHabits() {
 
             // If no habits are found
             if (Object.keys(habits).length === 0) {
-                habitsGrid.innerHTML = '<p>No habits found. Add some habits to get started!</p>';
+                habitsGrid.innerHTML = `
+                    <div class="no-habits-message">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>No habits found. Add some habits to get started!</p>
+                    </div>
+                `;
                 return;
             }
 
@@ -88,6 +98,15 @@ async function loadUserHabits() {
 
 function createHabitCard(habitId, habitData) {
     const iconClass = getHabitIcon(habitData.category);
+    const isCompleted = habitData.completed === true;
+
+    // Get today's date in YYYY-MM-DD format for checking completion
+    const today = new Date();
+    const todayString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+
+    // Check if habit is completed today (if habitData.completedDates exists and contains today)
+    const completedToday = habitData.completedDates &&
+        habitData.completedDates.includes(todayString);
 
     // Create the habit card element
     const habitCard = document.createElement('div');
@@ -99,9 +118,17 @@ function createHabitCard(habitId, habitData) {
             <span>${habitData.title}</span>
             <div class="habit-icon"><i class="${iconClass}"></i></div>
         </div>
-        <div class="habit-image">
+        <div class="habit-image ${completedToday ? 'completed' : ''}">
             <i class="${iconClass} habit-icon-large"></i>
             <span class="habit-label">${habitData.frequency || 'Daily'}</span>
+            ${completedToday ? '<div class="completed-badge"><i class="fas fa-check"></i></div>' : ''}
+        </div>
+        <div class="habit-details">
+            <div class="habit-description">${habitData.description || 'No description'}</div>
+            <div class="habit-category">${habitData.category || 'Other'}</div>
+            <div class="habit-status">
+                Status: ${isCompleted ? '<span class="status-completed">Completed today</span>' : '<span class="status-pending">Pending</span>'}
+            </div>
         </div>
     `;
 
@@ -109,19 +136,17 @@ function createHabitCard(habitId, habitData) {
 }
 
 function getHabitIcon(category) {
-    // Map categories to FontAwesome icons
     const iconMap = {
-        'exercise': 'fas fa-dumbbell',
-        'meditation': 'fas fa-brain',
-        'reading': 'fas fa-book',
-        'water': 'fas fa-tint',
-        'sleep': 'fas fa-bed',
-        'nutrition': 'fas fa-apple-alt',
-        'study': 'fas fa-graduation-cap',
-        'work': 'fas fa-briefcase'
+        'wellness': 'fas fa-heart',
+        'fitness': 'fas fa-dumbbell',
+        'education': 'fas fa-book',
+        'other': 'fas fa-star',
+        'social': 'fas fa-users',
+        'career': 'fas fa-briefcase'
     };
 
-    return iconMap[category?.toLowerCase()] || 'fas fa-check-circle'; // Default icon
+
+    return iconMap[category?.toLowerCase()] || 'fas fa-check-circle';
 }
 
 function getLastNDates(n) {
