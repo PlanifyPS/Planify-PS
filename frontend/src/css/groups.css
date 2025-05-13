@@ -368,14 +368,46 @@ dialog::backdrop {
     margin: 0;
 }
 
-.members-list li {
+.member-item {
+    display: flex;
+    align-items: center;
     padding: 0.5rem;
     border-bottom: 1px solid var(--shadow);
     cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 
-.members-list li:hover {
-    background: var(--light-bg);
+.member-item:hover {
+    background: var(--light-grey);
+}
+
+#members-list,
+.member-item {
+    overflow: visible;
+    position: relative;
+}
+
+.member-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 0.75rem;
+    transition: transform 0.3s ease-in-out;
+    transform-origin: center center;
+    display: inline-block;
+    z-index: 1;
+}
+
+.member-avatar:hover {
+    transform: scale(2.8) translateX(10px) rotate(-2deg);
+    border: 2px solid var(--light-blue);
+    z-index: 10;
+}
+
+.member-name {
+    font-weight: 500;
+    color: var(--dark-blue);
 }
 
 .member-chart {

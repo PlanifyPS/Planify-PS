@@ -57,11 +57,11 @@ async function loadGroupInformation() {
         inviteCodeEl.style.color = '03045EFF';
     }
 
-
-    // 2) Trae miembros y suma puntos
+    
     const snaps = await Promise.all(
         g.members.map(uid => getDoc(doc(db, 'Users', uid)))
     );
+
     members = snaps
         .filter(s=>s.exists())
         .map(s => {
@@ -77,13 +77,13 @@ async function loadGroupInformation() {
             return {
                 uid: s.id,
                 name: userName,
-                points: userData.points || 0
+                points: userData.points || 0,
+                image: userData.image
             };
         })
         .sort((a,b)=>b.points - a.points);
     totalPoints = members.reduce((sum,u)=> sum+u.points, 0);
 
-    // 3) Rellenar podio
     const [first,second,third] = [members[0],members[1],members[2]].filter(Boolean);
     const pods = { first, second, third };
     Object.entries(pods).forEach(([pos,u])=>{
@@ -93,18 +93,20 @@ async function loadGroupInformation() {
         el.querySelector('.points').textContent    = `${u.points} pts`;
     });
 
-    // 4) Lista de demás miembros
     const ul = document.getElementById('members-list');
     ul.innerHTML = '';
-    members.forEach(u=>{
+    members.forEach(u => {
         const li = document.createElement('li');
-        li.textContent = u.name;
         li.dataset.uid = u.uid;
-        li.addEventListener('click', ()=> selectMember(u));
+        li.classList.add('member-item');
+        li.innerHTML = `
+    <img src="/frontend/public/assets/${u.image}.webp" alt="${u.name}" class="member-avatar">
+    <span class="member-name">${u.name}</span>
+  `;
+        li.addEventListener('click', () => selectMember(u));
         ul.appendChild(li);
     });
 
-    // 5) Inicializa primer gráfico de historial
     await loadAllRecords();
     setupHistoryChart();
     document.getElementById('range-select')
