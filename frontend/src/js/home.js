@@ -1,5 +1,5 @@
 import { auth, db } from '../../../backend/utils/firebase_config.js';
-import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where, getDoc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
 
 const monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
@@ -8,6 +8,7 @@ function initHome() {
     if (document.readyState === 'complete') {
         initCalendar();
         setupEventDialogListeners();
+        loadUserHabits(); // Load habits
 
         const chartBars = document.querySelectorAll('.chart-bar');
         chartBars.forEach(bar => {
@@ -23,6 +24,8 @@ function initHome() {
         document.addEventListener('DOMContentLoaded', () => {
             initCalendar();
             setupEventDialogListeners();
+            loadUserHabits(); // Load habits
+
             const chartBars = document.querySelectorAll('.chart-bar');
             chartBars.forEach(bar => {
                 bar.setAttribute('data-value', '0');
@@ -35,6 +38,90 @@ function initHome() {
             updateTaskList(formattedDate);
         });
     }
+}
+
+async function loadUserHabits() {
+    const habitsGrid = document.querySelector('.habits-grid');
+
+    // Clear existing content
+    habitsGrid.innerHTML = '<p>Loading habits...</p>';
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            habitsGrid.innerHTML = '<p>Please log in to view your habits</p>';
+            return;
+        }
+
+        try {
+            // Get habits from user document
+            const userDoc = doc(db, 'Users', user.uid);
+            const userSnap = await getDoc(userDoc);
+
+            if (!userSnap.exists()) {
+                habitsGrid.innerHTML = '<p>No habits found. Add some habits to get started!</p>';
+                return;
+            }
+
+            const userData = userSnap.data();
+            const habits = userData.habits || {};
+
+            // If no habits are found
+            if (Object.keys(habits).length === 0) {
+                habitsGrid.innerHTML = '<p>No habits found. Add some habits to get started!</p>';
+                return;
+            }
+
+            // Clear the loading message
+            habitsGrid.innerHTML = '';
+
+            // Create a card for each habit
+            Object.entries(habits).forEach(([habitId, habitData]) => {
+                const habitCard = createHabitCard(habitId, habitData);
+                habitsGrid.appendChild(habitCard);
+            });
+        } catch (error) {
+            console.error('Error loading habits:', error);
+            habitsGrid.innerHTML = '<p>Error loading habits. Please try again later.</p>';
+        }
+    });
+}
+
+function createHabitCard(habitId, habitData) {
+    const iconClass = getHabitIcon(habitData.category);
+
+    // Create the habit card element
+    const habitCard = document.createElement('div');
+    habitCard.className = 'habit-card';
+    habitCard.setAttribute('data-habit-id', habitId);
+
+    habitCard.innerHTML = `
+        <div class="habit-header">
+            <span>${habitData.title}</span>
+            <div class="habit-icon"><i class="${iconClass}"></i></div>
+        </div>
+        <div class="habit-image">
+            <i class="${iconClass} habit-icon-large"></i>
+            <span class="habit-label">${habitData.frequency || 'Daily'}</span>
+        </div>
+    `;
+
+    return habitCard;
+}
+
+function getHabitIcon(category) {
+    // Map categories to FontAwesome icons
+    const iconMap = {
+        'exercise': 'fas fa-dumbbell',
+        'meditation': 'fas fa-brain',
+        'reading': 'fas fa-book',
+        'water': 'fas fa-tint',
+        'sleep': 'fas fa-bed',
+        'nutrition': 'fas fa-apple-alt',
+        'study': 'fas fa-graduation-cap',
+        'work': 'fas fa-briefcase'
+    };
+
+    return iconMap[category?.toLowerCase()] || 'fas fa-check-circle'; // Default icon
 }
 
 function getLastNDates(n) {
