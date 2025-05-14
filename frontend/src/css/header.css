@@ -122,3 +122,42 @@
     opacity: 1;
 }
 
+/* Funcionalidad de la campana */
+
+.notification-wrapper {
+    position: relative;
+}
+
+.notification-panel {
+    display: none;
+    position: absolute;
+    top: 45px;
+    right: 10px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    padding: 1rem;
+    width: 260px;
+    border-radius: 8px;
+    z-index: 999;
+}
+
+.notification-panel.show {
+    display: flex;
+}
+
+.notification-panel ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-panel li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.notification-panel li:last-child {
+    border-bottom: none;
+}
