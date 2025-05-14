@@ -186,7 +186,6 @@ async function checkFrequencyHabits() {
 
         if (!lastCompleted || hasPeriodPassed(lastCompleted, habit.frequency)) {
             habit.completed = false;
-            habit.lastCompleted = now;
 
             await saveUserData(userUID, {
                 [`habits.${habitId}`]: habit,
@@ -197,9 +196,116 @@ async function checkFrequencyHabits() {
 
 //Todo hasta aquí
 
+function hasPeriodElapsed(lastCompleted, frequency) {
+    if (!lastCompleted) return false;
+    const now = new Date();
+    const last = new Date(lastCompleted);
+
+    switch (frequency) {
+        case 'daily': {
+            const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+            return last < yesterday;
+        }
+
+        case 'weekly': {
+            const { week: wNow, year: yNow }   = getWeekYear(now);
+            const { week: wLast, year: yLast } = getWeekYear(last);
+            const lastWeekNum = yLast * 52 + wLast;
+            const prevWeekNum = yNow * 52 + wNow - 1;
+            return lastWeekNum < prevWeekNum;
+        }
+
+        case 'monthly': {
+            const prevMonth = (now.getFullYear() * 12 + now.getMonth()) - 1;
+            const lastMonth = (last.getFullYear() * 12 + last.getMonth());
+            return lastMonth < prevMonth;
+        }
+
+        default:
+            return false;
+    }
+}
+
+async function sendUserNotification(points, title) {
+    const container = document.getElementById("notification-container");
+    if (!container) return;
+
+    const toast = document.createElement("div");
+    toast.classList.add("notification", "penalty");
+    toast.innerHTML = `
+    <strong>${title}</strong><br>
+    You lost <strong>${points}</strong> point${points !== 1 ? "s" : ""}.`;
+    
+    container.appendChild(toast);
+    
+    void toast.offsetWidth;
+    toast.classList.add("show");
+    
+    setTimeout(() => {
+        toast.classList.remove("show");
+        toast.addEventListener("transitionend", () => {
+            toast.remove();
+        }, { once: true });
+    }, 4000);
+}
+
+async function checkAndApplyPenalties() {
+    const todayString = new Date().toDateString();
+    
+    for (const [habitId, habit] of Object.entries(habitsData)) {
+        const last = habit.lastCompleted?.toDate?.() || null;
+
+        //Todo añadir comprobacion para el aviso
+        console.log(habit.title)
+
+        if (!habit.completed && hasPeriodElapsed(last, habit.frequency)) {
+
+            const lastPenaltyDate = habit.lastPenaltyDate?.toDate?.();
+            
+            if (lastPenaltyDate?.toDateString() !== todayString) {
+                const points = determinePenaltyPoints(habit.frequency);
+                await addPoints((-points));
+                await sendUserNotification(points, habit.title);
+
+
+                const newStreak = (habit.missedStreak || 0) + 1;
+                habit.missedStreak = newStreak;
+                habit.lastPenaltyDate = serverTimestamp();
+
+                if (newStreak > 7) {
+                    // todo penalización por racha de penalizaciones
+                    console.log("Penalizacion tocha");
+                }
+                await saveUserData(userUID, {
+                    [`habits.${habitId}.missedStreak`]: habit.missedStreak,
+                    [`habits.${habitId}.lastPenaltyDate`]: habit.lastPenaltyDate,
+                });
+            }
+        }
+        else if (habit.completed){
+            if(habit.missedStreak){
+                habit.missedStreak = 0;
+                await saveUserData(userUID, {
+                    [`habits.${habitId}.missedStreak`]:0
+                })
+            }
+        }
+    }
+
+}
+function determinePenaltyPoints(frequency) {
+    switch (frequency) {
+        case "daily":   return 1;
+        case "weekly":  return 3;
+        case "monthly": return 5;
+        default:        return 1;
+    }
+}
+
 async function loadUserHabits() {
     const userData = await getUserData(userUID);
     habitsData = userData.habits;
+    checkAndApplyPenalties();
     await checkFrequencyHabits();
     await sortHabits();
 }

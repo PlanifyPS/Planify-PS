@@ -413,3 +413,40 @@
 .filter-dropdown {
     animation: fadeIn 0.2s ease-out forwards;
 }
+
+/* Container fijo en la esquina inferior derecha */
+#notification-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column-reverse; /* las nuevas aparecen abajo */
+    gap: 10px;
+    z-index: 2000;
+}
+
+/* Estilo de cada toast */
+.notification {
+    background-color: #333;
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-width: 280px;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Estado visible */
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Opcional: diferente para penalización */
+.notification.penalty {
+    background-color: #c62828;
+}
+
