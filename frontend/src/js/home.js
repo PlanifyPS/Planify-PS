@@ -694,12 +694,12 @@ async function updateTaskList(dateString) {
 }
 
 async function initNotificationToast() {
+    const notificationShown = sessionStorage.getItem('habitsNotificationShown');
+    if (notificationShown === 'true') return;
+    sessionStorage.setItem('habitsNotificationShown', 'true');
+
     const toast = document.getElementById('notification-toast');
     const closeBtn = document.getElementById('close-toast-button');
-
-    if (toast) {
-        toast.classList.add('hidden');
-    }
 
     onAuthStateChanged(auth, async (user) => {
         if (!user) return;
@@ -714,10 +714,9 @@ async function initNotificationToast() {
             const habits = userData.habits || {};
             const pendingHabits = Object.values(habits).filter(habit => habit.completed === false);
 
-
             if (pendingHabits.length > 0) {
                 if (toast && closeBtn) {
-                    toast.classList.remove('hidden');
+                    toast.classList.add('show');
                     closeBtn.addEventListener('click', () => {
                         toast.classList.add('hidden');
                     });

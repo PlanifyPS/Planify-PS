@@ -668,12 +668,12 @@
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    display: flex;
+    display: none;
     align-items: center;
     gap: 12px;
     font-size: 15px;
     max-width: 280px;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.5s ease;
 }
 
 .toast-close {
@@ -687,5 +687,9 @@
 .notification-toast.hidden {
     opacity: 0;
     pointer-events: none;
+}
+
+.notification-toast.show {
+    display: flex;
 }
 
