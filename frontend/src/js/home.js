@@ -2,7 +2,6 @@ import { auth, db } from '../../../backend/utils/firebase_config.js';
 import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where, getDoc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
 
-
 const monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
 
 function initHome() {
@@ -694,18 +693,40 @@ async function updateTaskList(dateString) {
     });
 }
 
-
-
-
 async function initNotificationToast() {
     const toast = document.getElementById('notification-toast');
     const closeBtn = document.getElementById('close-toast-button');
-    if (toast && closeBtn) {
-        toast.classList.remove('hidden');
-        closeBtn.addEventListener('click', () => {
-            toast.classList.add('hidden');
-        });
+
+    if (toast) {
+        toast.classList.add('hidden');
     }
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+
+        try {
+            const userDocRef = doc(db, 'Users', user.uid);
+            const userSnap = await getDoc(userDocRef);
+
+            if (!userSnap.exists()) return;
+
+            const userData = userSnap.data();
+            const habits = userData.habits || {};
+            const pendingHabits = Object.values(habits).filter(habit => habit.completed === false);
+
+
+            if (pendingHabits.length > 0) {
+                if (toast && closeBtn) {
+                    toast.classList.remove('hidden');
+                    closeBtn.addEventListener('click', () => {
+                        toast.classList.add('hidden');
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error showing notification toast:', error);
+        }
+    });
 }
 
 initHome();
