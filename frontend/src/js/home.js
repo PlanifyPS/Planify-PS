@@ -8,7 +8,7 @@ function initHome() {
     if (document.readyState === 'complete') {
         initCalendar();
         setupEventDialogListeners();
-        loadUserHabits(); // Load habits
+        loadUserHabits();
 
         const chartBars = document.querySelectorAll('.chart-bar');
         chartBars.forEach(bar => {
@@ -24,7 +24,7 @@ function initHome() {
         document.addEventListener('DOMContentLoaded', () => {
             initCalendar();
             setupEventDialogListeners();
-            loadUserHabits(); // Load habits
+            loadUserHabits();
 
             const chartBars = document.querySelectorAll('.chart-bar');
             chartBars.forEach(bar => {
@@ -43,17 +43,11 @@ function initHome() {
 async function loadUserHabits() {
     const habitsGrid = document.querySelector('.habits-grid');
 
-    // Clear existing content
     habitsGrid.innerHTML = '<p>Loading habits...</p>';
 
     onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            habitsGrid.innerHTML = '<p>Please log in to view your habits</p>';
-            return;
-        }
 
         try {
-            // Get habits from user document
             const userDoc = doc(db, 'Users', user.uid);
             const userSnap = await getDoc(userDoc);
 
@@ -70,7 +64,6 @@ async function loadUserHabits() {
             const userData = userSnap.data();
             const habits = userData.habits || {};
 
-            // If no habits are found
             if (Object.keys(habits).length === 0) {
                 habitsGrid.innerHTML = `
                     <div class="no-habits-message">
@@ -81,10 +74,8 @@ async function loadUserHabits() {
                 return;
             }
 
-            // Clear the loading message
             habitsGrid.innerHTML = '';
 
-            // Create a card for each habit
             Object.entries(habits).forEach(([habitId, habitData]) => {
                 const habitCard = createHabitCard(habitId, habitData);
                 habitsGrid.appendChild(habitCard);
@@ -100,15 +91,10 @@ function createHabitCard(habitId, habitData) {
     const iconClass = getHabitIcon(habitData.category);
     const isCompleted = habitData.completed === true;
 
-    // Get today's date in YYYY-MM-DD format for checking completion
     const today = new Date();
     const todayString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
-    // Check if habit is completed today (if habitData.completedDates exists and contains today)
-    const completedToday = habitData.completedDates &&
-        habitData.completedDates.includes(todayString);
 
-    // Create the habit card element
     const habitCard = document.createElement('div');
     habitCard.className = 'habit-card';
     habitCard.setAttribute('data-habit-id', habitId);
@@ -116,12 +102,11 @@ function createHabitCard(habitId, habitData) {
     habitCard.innerHTML = `
         <div class="habit-header">
             <span>${habitData.title}</span>
-            <div class="habit-icon"><i class="${iconClass}"></i></div>
         </div>
-        <div class="habit-image ${completedToday ? 'completed' : ''}">
+        <div class="habit-image ${isCompleted ? 'completed' : ''}">
             <i class="${iconClass} habit-icon-large"></i>
             <span class="habit-label">${habitData.frequency || 'Daily'}</span>
-            ${completedToday ? '<div class="completed-badge"><i class="fas fa-check"></i></div>' : ''}
+            ${isCompleted ? '<div class="completed-badge"><i class="fas fa-check"></i></div>' : ''}
         </div>
         <div class="habit-details">
             <div class="habit-description">${habitData.description || 'No description'}</div>
