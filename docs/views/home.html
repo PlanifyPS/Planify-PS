@@ -1,0 +1,76 @@
+<div id="home">
+  <section class="chart-section">
+    <div class="chart-container">
+      <div class="chart">
+        <div class="chart-title">Weekly Habits Progress</div>
+        <div class="chart-bars">
+          <div class="chart-bar" style="height: 0;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0;" data-value="0"></div>
+          <div class="chart-bar" style="height: 0;" data-value="0"></div>
+        </div>
+        <div class="chart-labels">
+          <div class="chart-label">Mon</div>
+          <div class="chart-label">Tue</div>
+          <div class="chart-label">Wed</div>
+          <div class="chart-label">Thu</div>
+          <div class="chart-label">Fri</div>
+          <div class="chart-label">Sat</div>
+          <div class="chart-label">Sun</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="habits-section">
+    <div class="habits-grid">
+      <!-- Habits will be dynamically loaded here -->
+      <p>Loading habits...</p>
+    </div>
+  </section>
+
+  <section class="calendar-section">
+    <div class="calendar-box">
+      <div class="calendar-title">
+        <h3>Calendar</h3>
+        <button id="add-event-btn" class="add-event-btn">+ Add Event</button>
+      </div>
+      <div id="calendar-container" class="calendar-image calendar-container"></div>
+      <h5>Pending events</h5>
+
+      <div class="task-list">
+      </div>
+    </div>
+  </section>
+
+  <div id="event-dialog" class="dialog">
+    <div class="dialog-header">
+      <h3>Add Event</h3>
+      <button class="close-btn">&times;</button>
+    </div>
+    <form class="event-form">
+      <input type="hidden" id="event-date">
+      <div class="form-group">
+        <label for="event-name">Event Name:</label>
+        <input type="text" id="event-name" placeholder="Event name" required>
+      </div>
+      <div class="form-group">
+        <label for="event-time">Time:</label>
+        <input type="time" id="event-time" required>
+      </div>
+      <button type="submit" class="save-btn">Save</button>
+    </form>
+  </div>
+</div>
+
+<div id="notification-toast" class="notification-toast">
+  <p class="toast-message">You have pending habits</p>
+  <button id="close-toast-button" class="toast-close">&times;</button>
+</div>
+
+
+
+

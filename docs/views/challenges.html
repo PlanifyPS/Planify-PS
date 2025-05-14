@@ -1,0 +1,58 @@
+<main id="challenges">
+    <div class="challenges-header">
+        <h1><i class="fas fa-trophy"></i> Weekly Challenges</h1>
+        <div class="challenges-controls">
+            <div class="search-filter">
+                <div class="search-box">
+                    <input type="text" id="search-challenges" placeholder="Search challenge...">
+                </div>
+                <select id="filter-challenges">
+                    <option value="all">All</option>
+                    <option value="completed">Completed</option>
+                    <option value="in-progress">In progress</option>
+                    <option value="pending">Pending</option>
+                </select>
+                <select id="filter-level">
+                    <option value="all">All levels</option>
+                    <option value="fácil">Easy</option>
+                    <option value="medio">Medium</option>
+                    <option value="difícil">Hard</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="challenge-layout">
+        <div id="cards-container" class="cards-grid"></div>
+        <div id="challenge-detail" class="detail-card">
+            <div class="empty-detail">
+                <i class="fas fa-flag"></i>
+                <h2>Select a Challenge</h2>
+                <p>Click on any challenge to see its details</p>
+            </div>
+        </div>
+    </div>
+</main>
+<dialog id="share-dialog">
+    <form method="dialog" class="share-dialog-form">
+        <h3>Share your medal!</h3>
+        <img id="share-image" src="assets/medal.png" alt="Your Medal" />
+        <div class="share-buttons">
+            <button class="do-share" type="button" data-platform="whatsapp">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </button>
+            <button class="do-share" type="button" data-platform="twitter">
+                <i class="fab fa-twitter"></i> Twitter
+            </button>
+            <button class="do-share" type="button" data-platform="facebook">
+                <i class="fab fa-facebook-f"></i> Facebook
+            </button>
+            <button class="do-share" type="button" data-platform="copy">
+                <i class="far fa-copy"></i> Copy Link
+            </button>
+        </div>
+        <div class="dialog-actions">
+            <button value="cancel">Close</button>
+        </div>
+    </form>
+</dialog>

@@ -1,0 +1,56 @@
+<main id="group-habits">
+    <div class="habits-header">
+        <h1><i class="fas fa-people-group"></i> Group Habits</h1>
+        <div class="habits-controls">
+            <input type="text" id="search-HabitsTasks" placeholder="Search…">
+            <button id="add-button" class="options-button">Add Habit</button>
+            <button id="filter-button" class="options-button">Filter</button>
+            <div id="filterDropdown" class="filter-dropdown" style="display:none;">
+                <label><input type="radio" name="category-filter" value="all" checked> All</label>
+                <label><input type="radio" name="category-filter" value="Wellness"> Wellness</label>
+                <label><input type="radio" name="category-filter" value="Fitness"> Fitness</label>
+                <label><input type="radio" name="category-filter" value="Education"> Education</label>
+                <label><input type="radio" name="category-filter" value="Career"> Career</label>
+                <label><input type="radio" name="category-filter" value="Social"> Social</label>
+                <label><input type="radio" name="category-filter" value="Other"> Other</label>
+            </div>
+        </div>
+    </div>
+
+    <div id="group-habits-layout">
+        <div id="group-habits-cards" class="cards-carousel"></div>
+             <div id="group-habit-detail" class="detail-panel">
+              <div class="empty-detail-group">
+                <i class="fas fa-people-arrows"></i>
+              <h2>Select a Group Habit</h2>
+                <p>Click one to see details and join!</p>
+             </div>
+             </div>
+    </div>
+    <div id="AddHabitModal" class="TaskModal" style="display:none;">
+        <div class="Task-modal-content">
+            <button id="closeHabitButton" class="closeTask">&times;</button>
+            <h2>Add New Habit</h2>
+            <label for="NewHabitTitle">Title</label>
+            <input type="text" id="NewHabitTitle" placeholder="My New Habit">
+            <label for="HabitDescription">Description</label>
+            <textarea id="HabitDescription" placeholder="Describe your Habit…"></textarea>
+            <label for="HabitFrequency">Frequency</label>
+            <select id="HabitFrequency">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+            </select>
+            <label for="HabitCategory">Category</label>
+            <select id="HabitCategory">
+                <option value="Wellness">Wellness</option>
+                <option value="Fitness">Fitness</option>
+                <option value="Education">Education</option>
+                <option value="Career">Career</option>
+                <option value="Social">Social</option>
+                <option value="Other">Other</option>
+            </select>
+            <button id="saveHabit" class="btn">Save Habit</button>
+        </div>
+    </div>
+</main>

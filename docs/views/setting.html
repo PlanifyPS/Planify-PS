@@ -1,0 +1,90 @@
+<main class="setting_container">
+    <div class="setting-content">
+        <div class="tabs">
+            <div class="tab" data-tab="settings">Settings</div>
+            <div class="tab" data-tab="profile">Profile</div>
+            <div class="indicator"></div>
+        </div>
+        <div class="content" id="settings">
+            <h2>Settings</h2>
+            <p>User settings and preferences.</p>
+            <div class="form-grid">
+                <div class="content" id="export">
+                    <h2>Export data</h2>
+                    <p>Generate a PDF or JSON file with your data.</p>
+                    <form id="export-form">
+                        <label for="export_format">Export Format:</label>
+                        <select id="export_format">
+                            <option value="pdf">PDF</option>
+                            <option value="json">JSON</option>
+                        </select>
+                        <label for="start_date">Start date:</label>
+                        <input type="date" id="start_date">
+                        <label for="end_date">Finish date:</label>
+                        <input type="date" id="end_date">
+                        <button type="submit" class="btn-submit">Generate File</button>
+                    </form>
+                    <div id="export-message" class="message"></div>
+                </div>
+                <div class="content right-panel">
+                    <div id="mode-dark">
+                        <h2>Display Preferences</h2>
+                        <p>Choose your preferred visual mode.</p>
+                        <label class="switch">
+                            <input type="checkbox" id="mode-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="notifications">
+                        <h2>Notifications</h2>
+                        <p>Enable or disable notifications.</p>
+                        <label class="switch">
+                            <input type="checkbox" id="notifications-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content" id="profile" style="display: none;">
+            <h2>Profile</h2>
+            <p>User information.</p>
+            <div class="avatar-section">
+                <img id="profile-avatar" src="/frontend/public/assets/avatar1.webp" alt="Current avatar" />
+                <button type="button" id="change-avatar-btn" class="btn-avatar">Change Avatar</button>
+            </div>
+            <dialog id="avatar-dialog">
+                <h3>Select your avatar</h3>
+                <div class="avatar-options" id="avatar-options">
+                </div>
+                <div class="dialog-actions">
+                    <button type="button" value="cancel" id="cancel-button">Cancel</button>
+                    <button type="button" value="default" id="avatar-save-btn">Save</button>
+                </div>
+            </dialog>
+            <div class="form-grid">
+                <div class="form-column">
+                    <label for="first_name">First Name:</label>
+                    <input type="text" id="first_name" placeholder="Sofia" required>
+                    <label for="Phone_Number">Phone Number:</label>
+                    <input type="tel" id="Phone_Number" placeholder="+88029489290" required>
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" placeholder="C/Federico Lorca, nº2" required>
+                    <label for="post_code">Post Code:</label>
+                    <input type="text" id="post_code" placeholder="44330" required>
+                </div>
+                <div class="form-column">
+                    <label for="last_name">Last Name:</label>
+                    <input type="text" id="last_name" placeholder="Santana" required>
+                    <label for="email_address">Email Address:</label>
+                    <input type="email" id="email_address" placeholder="animation@gmail.com" required>
+                    <label for="city">City:</label>
+                    <input type="text" id="city" placeholder="Las Palmas" required>
+                    <label for="Country">Country:</label>
+                    <input type="text" id="Country" placeholder="Spain" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit" id="save-profile">Update</button>
+        </div>
+    </div>
+</main>

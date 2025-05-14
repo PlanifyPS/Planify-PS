@@ -1,0 +1,111 @@
+<main class="contenderforo">
+  <header>
+    <h1 id="forumName">Forums</h1>
+    <div class="foro-search">
+      <input type="text" id="searchForum" placeholder="Search Forum...">
+      <button id="searchButton">Search</button>
+    </div>
+    <div id="searchResults" class="search-results"></div>
+  </header>
+  <div class="container">
+    <main>
+      <button id="createForum">Create Forum</button>
+      <button id="addPost">Add</button>
+      <section id="forumContainer">
+      </section>
+    </main>
+    <aside class="interest-forum">
+      <h2 id="ForumInterest"> Forums of interest</h2>
+      <ul id="forumList"></ul>
+    </aside>
+  </div>
+
+  <div id="postModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Create new post</h2>
+      <input type="text" id="postTitle" placeholder="Affair">
+      <textarea id="postContent" placeholder="Write your message..."></textarea>
+      <button id="savePost">Save</button>
+    </div>
+  </div>
+
+  <div id="forumModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="ForumCreation">Create a new forum</h2>
+
+      <div class="form-group">
+        <label for="forumTitle">Forum Name</label>
+        <input type="text" id="forumTitle" placeholder="Forum Name">
+      </div>
+
+      <div class="form-group">
+        <label for="ForumCategory">Category</label>
+        <select id="ForumCategory">
+          <option value="Wellness">Wellness</option>
+          <option value="Fitness">Fitness</option>
+          <option value="Education">Education</option>
+          <option value="Career">Career</option>
+          <option value="Social">Social</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <button id="saveForum">Save</button>
+    </div>
+  </div>
+
+
+  <template id="postTemplate">
+    <article class="post">
+      <h3 class="post-title"></h3>
+      <p class="post-content"></p>
+      <div class="post-footer">
+        <div class="user-info">
+          <img src="user.png" alt="User" class="user-photo">
+          <span class="user-name">Demo User</span>
+        </div>
+        <span class="post-date"></span>
+      </div>
+    </article>
+  </template>
+
+  <template id="chat-message-template">
+    <div class="chat-message-bubble">
+      <div class="sender-name"></div>
+      <div class="message-body"></div>
+      <div class="message-actions">
+        <button class="like-btn"><i class="fa-regular fa-heart"></i></button>
+        <button class="reply-btn"><i class="fa-solid fa-reply"></i></button>
+      </div>
+    </div>
+  </template>
+
+
+  <div id="chatModal" class="chat-modal">
+    <div class="modal-chat-content">
+      <button id="close-chat-button">&times;</button>
+      <div class="modal-header">
+        <h2 id="chat-title"></h2>
+      </div>
+      <div id="chatMessages" class="modal-body">
+
+      </div>
+      <div id="replyPreview" class="reply-preview hidden">
+        <div class="reply-content">
+          <span class="reply-author"></span>
+          <span class="reply-text"></span>
+        </div>
+        <button id="cancelReply" class="cancel-reply">✖</button>
+      </div>
+      <div class="modal-footer">
+        <input type="text" id="chatInput" placeholder="Write a message..." maxlength="300" />
+        <button id="send-message" class="chat-send-message">Send</button>
+      </div>
+    </div>
+  </div>
+
+
+
+</main>

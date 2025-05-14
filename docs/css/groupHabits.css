@@ -1,0 +1,474 @@
+.main-content {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.habits-content {
+    justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    background-color: var(--light-bg);
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 30px;
+    height: calc(100vh - 136px);
+    gap: 20px;
+}
+
+.habits-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.habits-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 20px;
+}
+
+.habits-list-title {
+    display: flex;
+    align-items: center;
+}
+
+.habits-list-header-options {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+}
+
+.options-button {
+    padding: 10px;
+    min-width: 5.5rem;
+    background-color: var(--blue-medium);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    margin: 0.5rem;
+}
+
+.options-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.options-button:active {
+    background-color: #004494;
+    transform: scale(0.95);
+}
+
+.user-habits {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    width: 100%;
+    height: 77vh;
+    gap: 8px;
+    padding-top: 8px;
+}
+
+.habits-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: 3px 5px 10px var(--shadow);
+    transition: transform 0.2s ease;
+    position: relative;
+    padding-left: 15px;
+    overflow: hidden;
+}
+
+.habit-completed {
+    background-color: var(--grey);
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.habits-list-item:hover {
+    transform: translateY(-3px);
+}
+
+.habits-list-item-options button {
+    border: none;
+    background: none;
+}
+
+.habits-task-title {
+    color: var(--dark-blue);
+    font-size: 1.2rem;
+    font-family: var(--heading-font), sans-serif;
+    font-weight: var(--semibold);
+}
+
+#search-HabitsTasks {
+    display: flex;
+    margin: 0;
+}
+
+.habits-list-item-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.habits-list-item-logo img {
+    width: 50px;
+    height: 50px;
+}
+
+.habits-list-item-options {
+    display: flex;
+    gap: 1rem;
+}
+
+.habits-item-description {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+}
+
+.habits-item-description_row_a {
+    flex-direction: column;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    height: 20%;
+}
+
+.habits-item-description_row_b {
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    height: 80%;
+}
+
+.habits-item-description_col_1,
+.habits-item-description_col_2 {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 50%;
+}
+
+.habits-tasks-streak,
+.habits-item-description_2,
+.habits-item-description_3,
+.habits-item-description_4 {
+    background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-lighter) 100%);
+    border-radius: 15px;
+    padding: 12px;
+    gap: 8px;
+    box-shadow: 0 4px 8px var(--shadow);
+    margin: 0;
+    transition: transform 0.2s ease;
+    align-content: center;
+    text-align: center;
+}
+
+.habits-tasks-streak {
+    height: 100%;
+}
+
+.habits-item-description_2 {
+    height: 70%;
+}
+
+.habits-item-description_3 {
+    height: 34%;
+}
+
+.habits-item-description_4 {
+    height: 100%;
+}
+
+.habits-tasks-streak:hover,
+.habits-item-description_2:hover,
+.habits-item-description_3:hover,
+.habits-item-description_4:hover {
+    transform: translateY(-3px);
+}
+
+.TaskModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.Task-modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.closeTask {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.Task-modal-content input,
+.Task-modal-content textarea,
+.Task-modal-content select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.Task-modal-content textarea {
+    resize: none;
+    height: 80px;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+#saveTask, #saveHabit {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+#saveTask:hover,
+#saveHabit:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.habitTask-options-icon {
+    font-size: 1.2rem;
+    color: var(--secondary-blue);
+}
+
+#check {
+    font-size: 1.5rem;
+}
+
+#cross {
+    font-size: 1.5rem;
+}
+
+.habits-list-item-category {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+    color: white;
+}
+
+.category-Wellness {
+    background-color: #8ecae6;
+}
+
+.category-Fitness {
+    background-color: #219ebc;
+}
+
+.category-Education {
+    background-color: #fb8500;
+}
+
+.category-Career {
+    background-color: #023047;
+}
+
+.category-Social {
+    background-color: #ffb703;
+}
+
+.category-Other {
+    background-color: #606c38;
+}
+
+.filter-dropdown {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    margin-top: 8px;
+    right: 90px;
+    min-width: 180px;
+    max-width: 220px;
+    font-family: var(--text-font), sans-serif;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.filter-dropdown label {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--dark-blue);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+
+.filter-dropdown label:hover {
+    background-color: rgba(0, 123, 255, 0.08);
+    padding-left: 5px;
+}
+
+.filter-dropdown input[type="radio"] {
+    margin-right: 10px;
+    accent-color: var(--blue-medium);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+
+.filter-dropdown label.selected {
+    font-weight: var(--semibold);
+    color: var(--blue-medium);
+    background-color: rgba(0, 123, 255, 0.08);
+}
+
+.filter-dropdown .category-divider {
+    height: 1px;
+    background-color: #eaeaea;
+    margin: 8px 0;
+}
+
+@media (max-width: 768px) {
+    .filter-dropdown {
+        right: 20px;
+        left: auto;
+        max-width: 85%;
+    }
+}
+
+.habits-list-item-indicator {
+    width: 4px;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 5px 0 0 5px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-dropdown {
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+
+
+
+#group-habits-layout {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh -  100px);
+    gap: 20px;
+    padding: 0 20px;
+}
+
+
+.cards-carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding-bottom: 10px;
+}
+.cards-carousel .card {
+    flex: 0 0 220px;
+    max-width: 220px;
+}
+
+.detail-panel {
+    flex: 1;
+    background: var(--light-bg);
+    border-radius: 12px;
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+
+.btn.edit-habit,
+.btn.delete-habit {
+    padding: 8px 12px;
+    margin-right: 8px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+.btn.edit-habit {
+    background-color: #f4a261;
+    color: #fff;
+}
+.btn.delete-habit {
+    background-color: #e63946;
+    color: #fff;
+}
+.btn.edit-habit:hover { opacity: 0.9; }
+.btn.delete-habit:hover { opacity: 0.9; }
+
+.card .card-header {
+    position: relative;
+}
+
+.delete-card-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(#e63946);
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.delete-card-btn:hover {
+    opacity: 1;
+}

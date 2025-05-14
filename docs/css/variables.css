@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    /* Colores base*/
+    --dark-blue: #03045E;
+    --main-blue: #0077B6;
+    --secondary-blue: #023E8A;
+    --light-blue: #90E0EF;
+    --dark-grey: #374151;
+    --light-grey: #F3F4F6;
+    --white: #FFFFFF;
+    --black: #000000;
+    --grey: #808080;
+    --background-color: #ddd;
+
+    --light-bg: var(--white);
+
+    --bg-primary: var(--white);
+    --bg-secondary: var(--light-grey);
+    --text-primary: var(--black);
+    --text-secondary: var(--dark-grey);
+    --border-color: #e0e0e0;
+    --accent-color: var(--main-blue);
+    --shadow: rgba(0, 0, 0, 0.1);
+    --card-bg: var(--white);
+    --input-bg: var(--white);
+
+    /* Tipografía */
+    --bold: 700;
+    --semibold: 600;
+    --regular: 400;
+    --heading-font: 'Montserrat', sans-serif;
+    --text-font: 'Roboto', sans-serif;
+
+    /* Escala azules */
+    --blue-darkest: #03045E;  /* Federal blue */
+    --blue-dark: #023E8A;     /* Marian blue */
+    --blue-medium: #0077B6;   /* Honolulu Blue */
+    --blue-green: #0096C7;    /* Blue Green */
+    --cyan: #00B4D8;          /* Pacific cyan */
+    --sky-blue: #48CAE4;      /* Vivid sky blue */
+    --blue-light: #90E0EF;    /* Non Photo blue */
+    --blue-lighter: #ADE8F4;  /* Non Photo blue */
+    --cyan-lightest: #CAF0F8; /* Light cyan */
+
+    /* Tamaños */
+    --tablet: 768px;
+    --mobile: 480px;
+    --desktop: 1024px;
+}
+
+/* Variables para dark mode */
+.dark-mode {
+    --bg-primary: #1E1E1E;
+    --bg-secondary: #444444;
+    --text-primary: #F5F5F5;
+    --text-secondary: #CCCCCC;
+    --border-color: #444444;
+    --accent-color: var(--blue-green);
+    --shadow: rgba(0, 0, 0, 0.3);
+    --card-bg: #2D2D2D;
+    --input-bg: #2D2D2D;
+    --background-color: #121212;
+    --light-bg: var(--grey);
+}
+
+body,
+#sidebar-container,
+#main-header,
+.card,
+input,
+select,
+textarea,
+button {
+    transition: background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}

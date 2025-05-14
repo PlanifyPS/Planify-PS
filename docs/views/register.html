@@ -1,0 +1,42 @@
+<main id="register">
+  <div class="container right-panel-active">
+
+    <div class="container__form container--signup">
+      <form action="#" class="form" id="signup-form">
+        <h2 class="form__title">Sign Up</h2>
+        <input type="text" id="signup-username" placeholder="User" class="input" />
+        <input type="email" id="signup-email" placeholder="Email" class="input" />
+        <input type="password" id="signup-password" placeholder="Password" class="input" />
+        <input type="password" id="signup-repeat-password" placeholder="Repeat Password" class="input" />
+        <button type="submit" class="btn">Sign Up</button>
+        <button type="button" class="switch-btn btn" id="switchToLogin">Log In</button>
+      </form>
+    </div>
+
+    <div class="container__form container--login">
+      <form action="#" class="form" id="login-form">
+        <h2 class="form__title">Log In</h2>
+        <input type="email" id="login-email" placeholder="Email" class="input" />
+        <input type="password" id="login-password" placeholder="Password" class="input" />
+        <button type="button" id="forgot-password" class="link">Forgot your password?</button>
+        <button type="submit" class="btn">Log In</button>
+        <button class="googleSignIn googleSignIn--white" id="google-login">
+          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/8399/G-on-clear.svg" alt="Google logo">
+          <span class="googleSignIn__text">Log in with Google</span>
+        </button>
+        <button type="button" class="btn switch-btn" id="switchToSignUp">Sign Up</button>
+      </form>
+    </div>
+
+    <div class="container__overlay">
+      <div class="overlay">
+        <div class="overlay__panel overlay--left">
+          <button class="btn" id="logIn">Log In</button>
+        </div>
+        <div class="overlay__panel overlay--right">
+          <button class="btn" id="signUp">Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,349 @@
+.analytics-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 15px;
+    padding: 20px;
+    background-color: var(--light-bg);
+    height: 100%;
+}
+
+.analytics-header{
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0;
+    color: var(--dark-blue);
+}
+
+.analytics-subheader{
+    font-size: 15px;
+    font-style: italic;
+}
+
+.analytics-user-graphics {
+    display: flex;
+    flex-direction: column;
+    padding: 5px 10px;
+    flex-grow: 1;
+    gap: 10px;
+}
+
+.large-analytics {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    padding: 10px;
+    gap: 10px;
+    flex-grow: 2;
+    min-height: 280px;
+    background-color: var(--white);
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    height: 100%;
+}
+
+.graphics-container {
+    display: flex;
+    gap: 15px;
+    flex-grow: 1;
+    margin-bottom: 20px;
+}
+
+#habits-BarChart, #tasks-BarChart {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    height: 100%;
+    background-color: transparent;
+    position: relative;
+    padding: 20px 15px 10px 10px;
+}
+
+.bars-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 90%;
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+.days-labels-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 20px;
+    margin-top: 5px;
+}
+
+.day-label {
+    color: #0077B6;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    width: 14%;
+}
+
+.bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 14%;
+    position: relative;
+}
+
+.bar-container {
+    width: 28px;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.value-label {
+    color: #0077B6;
+    font-size: 13px;
+    font-weight: bold;
+    position: absolute;
+    top: -20px;
+}
+
+.y-axis-label {
+    position: absolute;
+    left: -20px;
+    top: 40%;
+    transform: rotate(-90deg);
+    color: #0077B6;
+    font-size: 12px;
+    font-weight: bold;
+    padding-bottom: 45px;
+}
+
+.TasksHabits-counter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    height: 100%;
+    gap: 10px;
+}
+
+.counter-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+    width: 100%;
+}
+
+.counter-container div {
+    font-size: 24px;
+    text-align: center;
+    margin: 5px 0;
+    color: #0077B6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background-color: #E5F8FC;
+    border-radius: 15px;
+}
+
+.counter-container i {
+    font-size: 22px;
+    padding: 5px;
+}
+
+.circle-analytics {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    background-color: var(--white);
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
+    min-height: 180px;
+    width: 60%;
+    padding: 10px;
+}
+
+#habits-circle-progress, #tasks-circle-progress {
+    margin: 10px;
+    width: 200px;
+    height: 200px;
+}
+
+.circle-progress-text {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.bars-container::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.CurrentHabitStreak-counter i {
+    color: red;
+}
+
+.HabitsCompletedToday-counter i {
+    color: #4CAF50;
+}
+
+.TotalHabits-counter i {
+    color: #FFD700;
+}
+
+.InProgressHabits-counter i {
+    color: grey;
+}
+
+.MaxHabitStreak-counter i {
+    color: #fd33b1;
+}
+
+.toDecide-counter i {
+    color: #e78254;
+}
+
+.tooltip {
+    visibility: hidden;
+    opacity: 0;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 8px;
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 999;
+    transition: opacity 0.3s ease;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+.tooltip-container:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+#habits-BarChart, #tasks-BarChart {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    background: var(--white);
+    padding: 10px;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+    border-radius: 8px;
+}
+.circle-analytics {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30%;
+    min-height: 300px;
+}
+.circle-analytics canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 200px;
+    max-height: 200px;
+}
+
+.TasksHabits-counter .counter-container span {
+    font-size: 16px;
+    margin-left: 5px;
+}
+
+.large-analytics {
+    justify-content: space-evenly;
+    padding: 20px;
+}
+#habits-BarChart,
+#tasks-BarChart {
+    width: 100% !important;
+    height: 350px !important;
+    max-width: 800px;
+}
+.circle-analytics {
+    width: 35% !important;
+    min-height: 350px !important;
+}
+
+.large-analytics canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
+}
+
+.TasksHabits-counter .counter-container div {
+    background: linear-gradient(135deg, var(--blue-medium) 0%, var(--light-blue) 100%);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    color: white;
+    font-size: 22px;
+    padding: 5px;
+    transition: transform .2s, box-shadow .2s;
+}
+.TasksHabits-counter .counter-container div:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.TasksHabits-counter .counter-container i {
+    font-size: 20px;
+    padding: 8px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    color: white;
+    margin-right: 8px;
+}
+
+.tooltip-container {
+    position: relative;
+}
+.tooltip {
+    bottom: 140%;
+    background-color: rgba(0,0,0,0.75);
+    font-size: 11px;
+    padding: 4px 6px;
+}
+.tooltip::after {
+    border-color: rgba(0,0,0,0.75) transparent transparent transparent;
+}
+.tooltip-container:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (max-width: 900px) {
+    .large-analytics {
+        flex-direction: column;
+        align-items: center;
+    }
+    .circle-analytics {
+        width: 60% !important;
+        margin-top: 20px;
+    }
+}
+
