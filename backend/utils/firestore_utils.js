@@ -141,7 +141,8 @@ export async function sendForumMessage(forumId, senderUid, messageBody, senderNa
             message.replyTo = replyToMessageId;
         }
         const messageRef = collection(db, "Forums", forumId, "messages");
-        await addDoc(messageRef, message);
+        const docRef = await addDoc(messageRef, message);
+        return docRef.id;
     }catch (error) {
         console.error("Error saving messages:", error);
     }

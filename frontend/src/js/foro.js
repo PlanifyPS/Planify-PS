@@ -30,7 +30,7 @@ function setupLikeButton(likeBtn, isLikedInitial, forumId, messageId, userUID) {
 
         heartIcon.classList.toggle("fa-regular", !isNowLiked);
         heartIcon.classList.toggle("fa-solid", isNowLiked);
-        console.log(isNowLiked);
+
         await toggleMessageLike(forumId, messageId, userUID, isNowLiked);
     });
 }
@@ -58,7 +58,7 @@ function handleReplyListener(msg){
 }
 
 function renderMessage(msg, forumId) {
-    console.log(msg)
+  
     const template = document.getElementById("chat-message-template");
     const clone = template.content.cloneNode(true);
 
@@ -80,11 +80,14 @@ function renderMessage(msg, forumId) {
 
         handleReplyListener(msg);
     });
-    console.log(msg)
+   
     if (msg.replyPreview) {
-        console.log("dentro")
+      
         const replyRef = document.createElement("div");
         replyRef.classList.add("reply-reference");
+        if(msg.replyPreview.senderName === sessionStorage.getItem("userName")){
+            msg.replyPreview.senderName = "You"
+        }
         replyRef.innerHTML = `<strong>${msg.replyPreview.senderName}:</strong> ${msg.replyPreview.body}`;
         bubble.prepend(replyRef);
     }
@@ -120,19 +123,21 @@ async function showMessage() {
     const message = chatInput.value.trim();
     if (!message) return;
 
+    const forumTitle = document.getElementById('chat-title').firstChild.nodeValue.trim();
+    const messageId = await sendMessage(forumTitle, chatInput.value, replyTo);
 
-    console.log(replyPreviewData )
+    
     chatMessages.appendChild(renderMessage({
+        id: messageId,
         senderName: "You",
         body: message,
         replyTo: replyTo,
         replyPreview:replyPreviewData,
-    },document.getElementById("chat-title").value));
+    },forumTitle));
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    const forumTitle = document.getElementById('chat-title').firstChild.nodeValue.trim();
-    await sendMessage(forumTitle, chatInput.value, replyTo);
+
 
     chatInput.value = "";
     replyPreviewData = null;
@@ -273,7 +278,7 @@ async function initHome() {
 }
 
 document.getElementById('close-chat-button').addEventListener("click", function() {
-    console.log('close-chat-button');
+    
     document.getElementById('chatModal').style.display = 'none';
 })
 

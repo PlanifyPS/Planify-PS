@@ -79,7 +79,7 @@ export async function getAllForumsAvoidingUserForum(){
 
 }
 export async function sendMessage(forumId, messageBody, replyToMessageId = null){
-    await sendForumMessage(forumId, sessionStorage.getItem("uid"), messageBody, sessionStorage.getItem("userName"), replyToMessageId);
+   return  await sendForumMessage(forumId, sessionStorage.getItem("uid"), messageBody, sessionStorage.getItem("userName"), replyToMessageId);
 }
 
 export async function getForumMessages(forumId) {
