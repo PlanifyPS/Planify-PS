@@ -2,6 +2,7 @@ import { auth, db } from '../../../backend/utils/firebase_config.js';
 import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where, getDoc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
 
+
 const monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
 
 function initHome() {
@@ -20,6 +21,7 @@ function initHome() {
         const today = new Date();
         const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
         updateTaskList(formattedDate);
+        initNotificationToast();
     } else {
         document.addEventListener('DOMContentLoaded', () => {
             initCalendar();
@@ -36,6 +38,7 @@ function initHome() {
             const today = new Date();
             const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
             updateTaskList(formattedDate);
+            initNotificationToast();
         });
     }
 }
@@ -689,6 +692,20 @@ async function updateTaskList(dateString) {
             </div>`;
         }
     });
+}
+
+
+
+
+async function initNotificationToast() {
+    const toast = document.getElementById('notification-toast');
+    const closeBtn = document.getElementById('close-toast-button');
+    if (toast && closeBtn) {
+        toast.classList.remove('hidden');
+        closeBtn.addEventListener('click', () => {
+            toast.classList.add('hidden');
+        });
+    }
 }
 
 initHome();

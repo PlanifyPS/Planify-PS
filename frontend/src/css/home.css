@@ -655,3 +655,37 @@
         grid-template-rows: repeat(8, 1fr);
     }
 }
+
+
+
+.notification-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--main-blue);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    max-width: 280px;
+    transition: opacity 0.3s ease;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.notification-toast.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
