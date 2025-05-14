@@ -48,43 +48,50 @@ export function initHeader() {
 
 async function loadNotifications(uid) {
     const notifList = document.getElementById('notification-list');
-
     if (!notifList) return;
+    notifList.innerHTML = "";
 
     try {
-        /*
-        const tasksRef = collection(db, "Users", uid, "Tasks");
-        const habitsRef = collection(db, "Users", uid, "Habits");
-        const snapshotTasks = await getDocs(tasksRef);
-        const snapshotHabits = await getDocs(habitsRef);
-        const today = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(today.getDate() + 1);
-
-        const tasksExpiring = snapshotTasks.docs.filter(doc => {
-            const data = doc.data();
-            if (!data.dueDate?.toDate) return false;
-            const due = data.dueDate.toDate();
-            const diffDays = (due - today) / (1000 * 60 * 60 * 24);
-            return diffDays >= 0 && diffDays <= 1;
-        });
-         */
-
         const userDocRef = doc(db, 'Users', uid);
         const userSnap = await getDoc(userDocRef);
-
         if (!userSnap.exists()) return;
-
         const userData = userSnap.data();
+
+        //Habits
         const habits = userData.habits || {};
         const pendingHabits = Object.values(habits).filter(habit => habit.completed === false);
 
         if (pendingHabits.length === 0) {
-            notifList.innerHTML = `<li>There are no pending habits.</li>`;
+            notifList.innerHTML += `<li>There are no pending habits.</li>`;
         } else if (pendingHabits.length === 1) {
-            notifList.innerHTML = `<li>There is 1 pending habit.</li>`;
+            notifList.innerHTML += `<li>There is 1 pending habit.</li>`;
         } else {
-            notifList.innerHTML = `<li>There are ${pendingHabits.length} pending habits.</li>`;
+            notifList.innerHTML += `<li>There are ${pendingHabits.length} pending habits.</li>`;
+        }
+
+        //Tasks
+        const tasks = userData.tasks || {};
+        const pendingTasks = Object.values(tasks).filter(task => task.completed === false);
+
+        const tasksExpiring = pendingTasks; // esto es temporal, esto debería ser lo que está comentado abajo
+        /*
+        const today = new Date();
+        const tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+
+        const tasksExpiring = pendingTasks.filter(pendingTask => {
+            const taskDueDate = pendingTask.dueDate;
+            const diffDays = (taskDueDate - today) / (1000 * 60 * 60 * 24);
+            return diffDays >= 0 && diffDays <= 1;
+        });
+        */
+
+        if (tasksExpiring.length === 0) {
+            notifList.innerHTML += `<li>There are no pending tasks.</li>`;
+        } else if (tasksExpiring.length === 1) {
+            notifList.innerHTML += `<li>There is 1 pending task.</li>`;
+        } else {
+            notifList.innerHTML += `<li>There are ${tasksExpiring.length} pending tasks.</li>`;
         }
 
     } catch (err) {
