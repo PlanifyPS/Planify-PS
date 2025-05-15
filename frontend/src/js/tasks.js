@@ -698,22 +698,26 @@ async function checkAndApplyPenalties() {
         console.log(task.title);
 
         if (!task.completed && task.dueDate < todayString) {
-            let points = 2
-            await addPoints((-points));
-            await sendUserNotification(points, task.title);
+            const lastPenaltyDate = task.lastPenaltyDate?.toDate?.() ||null;
 
-            const newStreak = (task.missedStreak || 0) + 1;
-            task.missedStreak = newStreak;
-            task.lastPenaltyDate = serverTimestamp();
+            if (lastPenaltyDate?.toDateString() !== todayString) {
+                let points = 2
+                await addPoints((-points));
+                await sendUserNotification(points, task.title);
 
-            if (newStreak > 7) {
-                console.log("Penalizacion tocha");
+                const newStreak = (task.missedStreak || 0) + 1;
+                task.missedStreak = newStreak;
+                task.lastPenaltyDate = serverTimestamp();
+
+                if (newStreak > 7) {
+                    console.log("Penalizacion tocha");
+                }
+
+                await saveUserData(userUID, {
+                    [`tasks.${taskId}.missedStreak`]: task.missedStreak,
+                    [`tasks.${taskId}.lastPenaltyDate`]: task.lastPenaltyDate,
+                });
             }
-
-            await saveUserData(userUID, {
-                [`tasks.${taskId}.missedStreak`]: task.missedStreak,
-                [`tasks.${taskId}.lastPenaltyDate`]: task.lastPenaltyDate,
-            });
         }
         else if (task.completed){
             if(task.missedStreak){
