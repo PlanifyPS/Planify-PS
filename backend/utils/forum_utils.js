@@ -7,6 +7,8 @@ import {
     saveForumUser,
     saveUserData, sendForumMessage
 } from "./firestore_utils.js";
+import {collection, onSnapshot, orderBy, query} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import {db} from "./firebase_config.js";
 
 
 
@@ -82,41 +84,70 @@ export async function sendMessage(forumId, messageBody, replyToMessageId = null)
    return  await sendForumMessage(forumId, sessionStorage.getItem("uid"), messageBody, sessionStorage.getItem("userName"), replyToMessageId);
 }
 
-export async function getForumMessages(forumId) {
-    const forumData = await getForumMessagesFromFirebase(forumId);
-    const userUID = sessionStorage.getItem("uid");
+export function subscribeToForumMessagesIncremental(forumId, onInitial, onNew) {
+    const messagesRef = collection(db, "Forums", forumId, "messages");
+    const q = query(messagesRef, orderBy("timestamp"));
+    let firstLoad = true;
 
-    // Cargar todos los mensajes primero
-    const rawMessages = forumData.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-    }));
+    
+    const allMessages = [];
 
-    // Luego enriquecemos con isLiked y replyPreview
-    const messages = [];
+    const unsubscribe = onSnapshot(q, async snapshot => {
+        if (firstLoad) {
 
-    for (const msg of rawMessages) {
-        const isLiked = await checkIfMessageLiked(forumId, msg.id, userUID);
+            const allMessagesToEnriched = await Promise.all(
+                snapshot.docs.map(async doc => {
+                    const data = doc.data();
+                    const isLiked = await checkIfMessageLiked(forumId, doc.id, sessionStorage.getItem("uid"));
+                    return { id: doc.id,
+                        ...data, 
+                        isLiked,
+                        senderName:data.senderName === sessionStorage.getItem("userName") ? "You" : data.senderName,
+                        };
+                })
+            );
 
-        // Buscar el mensaje original si tiene replyTo
-        let replyPreview = null;
-        if (msg.replyTo) {
-            const original = rawMessages.find(m => m.id === msg.replyTo);
-            if (original) {
-                replyPreview = {
-                    senderName: original.senderName,
-                    body: original.body
-                };
+            allMessagesToEnriched.forEach(msg => {
+                const original = allMessagesToEnriched.find(m => m.id === msg.replyTo);
+                msg.replyPreview = original
+                    ? { senderName: original.senderName, body: original.body }
+                    : null;
+            });
+
+            allMessages.push(...allMessagesToEnriched);
+            await onInitial(allMessagesToEnriched);
+            firstLoad = false;
+        } else {
+
+            const added = snapshot.docChanges()
+                .filter(c => c.type === "added")
+                .map(c => c.doc);
+
+            if (added.length) {
+                const newMessagesToEnriched = await Promise.all(
+                    added.map(async doc => {
+                        const messageData = doc.data();
+                        const isLiked = await checkIfMessageLiked(forumId, doc.id, sessionStorage.getItem("uid"));
+                        return { id: doc.id,
+                            ...messageData,
+                            isLiked,
+                            senderName:messageData.senderName === sessionStorage.getItem("userName") ? "You" : messageData.senderName,
+                            };
+                    })
+                );
+
+                newMessagesToEnriched.forEach(msg => {
+                    const original = allMessages.find(m => m.id === msg.replyTo);
+                    msg.replyPreview = original
+                        ? { senderName: original.senderName, body: original.body }
+                        : null;
+                });
+
+                allMessages.push(...newMessagesToEnriched);
+                await onNew(newMessagesToEnriched);
             }
         }
+    }, err => console.error("Realtime messages error:", err));
 
-        messages.push({
-            ...msg,
-            isLiked,
-            senderName: msg.sender === userUID ? "You" : msg.senderName,
-            replyPreview
-        });
-    }
-
-    return messages;
+    return unsubscribe;
 }

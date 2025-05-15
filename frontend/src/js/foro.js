@@ -1,15 +1,16 @@
 import {
     addUserToForum,
     createForum,
-    getAllForumsAvoidingUserForum, getForumMessages,
-    getUserForum, sendMessage
+    getAllForumsAvoidingUserForum,
+    getUserForum, sendMessage, subscribeToForumMessagesIncremental
 } from "../../../backend/utils/forum_utils.js";
-import {getForum, toggleMessageLike} from "../../../backend/utils/firestore_utils.js";
+import {checkIfMessageLiked, getForum, toggleMessageLike} from "../../../backend/utils/firestore_utils.js";
 
 const forumList = [];
 let currentForum = "Forum Name";
 const forumPosts = {};
 let replyPreviewData = null;
+let unsubscribeMessages = null;
 
 
 function setupLikeButton(likeBtn, isLikedInitial, forumId, messageId, userUID) {
@@ -97,23 +98,6 @@ function renderMessage(msg, forumId) {
     return wrapper;
 }
 
-async function initChat(forumTitle) {
-
-
-
-    const chatMessages = document.getElementById("chatMessages");
-    chatMessages.innerHTML = "";
-
-    const messages = await getForumMessages(forumTitle);
-    messages.forEach(msg => {
-        const messageNode = renderMessage(msg, forumTitle,);
-        chatMessages.appendChild(messageNode);
-    });
-
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-
-
-}
 
 async function showMessage() {
     const chatInput = document.getElementById("chatInput");
@@ -124,17 +108,10 @@ async function showMessage() {
     if (!message) return;
 
     const forumTitle = document.getElementById('chat-title').firstChild.nodeValue.trim();
-    const messageId = await sendMessage(forumTitle, chatInput.value, replyTo);
+    await sendMessage(forumTitle, chatInput.value, replyTo);
 
     
-    chatMessages.appendChild(renderMessage({
-        id: messageId,
-        senderName: "You",
-        body: message,
-        replyTo: replyTo,
-        replyPreview:replyPreviewData,
-    },forumTitle));
-
+    
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
 
@@ -158,9 +135,33 @@ async function initChatModal(forumTitle, category) {
     categoryElement.classList.add(`category-${category}`);
     titleElement.appendChild(categoryElement);
 
-    document.getElementById('chatModal').style.display = 'flex';
-    await initChat(forumTitle);
+    const chatModal = document.getElementById('chatModal');
+    chatModal.style.display = 'flex';
+
+
+    if (unsubscribeMessages) unsubscribeMessages();
+
+
+    unsubscribeMessages = subscribeToForumMessagesIncremental(
+        forumTitle,
+        renderInitial,
+         appendNew
+      );
+
 }
+function renderInitial(allMsgs) {
+    const container = document.getElementById("chatMessages");
+    container.innerHTML = "";
+    allMsgs.forEach(m => container.appendChild(renderMessage(m, currentForum)));
+    container.scrollTop = container.scrollHeight;
+}
+
+function appendNew(newMsgs) {
+    const container = document.getElementById("chatMessages");
+    newMsgs.forEach(m => container.appendChild(renderMessage(m, currentForum)));
+    container.scrollTop = container.scrollHeight;
+}
+
 function addForumToList(forumTitle, category) {
     const forumListElement = document.getElementById('forumList');
 
@@ -260,6 +261,10 @@ async function setupForumListeners() {
         document.getElementById("chatInput").removeAttribute("data-reply-to");
         document.getElementById("chatInput").placeholder = "Write a message...";
         replyPreviewData = null;
+    });
+    document.getElementById('close-chat-button').addEventListener("click", () => {
+        if (unsubscribeMessages) unsubscribeMessages();
+        document.getElementById('chatModal').style.display = 'none';
     });
 
 
