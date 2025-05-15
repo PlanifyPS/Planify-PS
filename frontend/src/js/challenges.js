@@ -212,7 +212,7 @@ async function openShareDialog() {
             const platform = btn.dataset.platform;
             // URL fija de tu app en localhost
             const url = 'http://localhost:63342/Planify-PS/frontend/public/index.html';
-            const text = encodeURIComponent("I just earned this medal! 🏅\n");
+            const text = encodeURIComponent("I´m in Planify!! I just earned this medal!. Do you want to join too? 🏅\n");
 
             if (navigator.canShare && navigator.canShare({ files: [] })) {
                 try {
