@@ -164,13 +164,12 @@ function showChallengeDetails(id) {
           ${c.completed?`<span class="completed-badge">Completed</span>`:``}
         </div>
       </div>
-      <button id="share-btn" class="btn share-btn"><i class="fas fa-share-alt"></i> Share Medal</button>
+      <!-- el botón de compartir ha sido eliminado -->
     </div>`;
     d.querySelector('.accept-challenge')?.addEventListener('click',()=>{
         c.accepted = true; showChallengeDetails(id); filterChallenges();
     });
     d.querySelector('.complete-challenge')?.addEventListener('click',()=>completeChallenge(c));
-    d.querySelector('#share-btn')?.addEventListener('click',openShareDialog);
 }
 
 async function completeChallenge(c) {
@@ -180,6 +179,8 @@ async function completeChallenge(c) {
     addPoints(c.points);
     showChallengeDetails(c.id);
     filterChallenges();
+    // al completar, abrimos automáticamente el diálogo de compartir
+    openShareDialog();
 }
 
 async function addPoints(n) {
@@ -207,17 +208,18 @@ async function openShareDialog() {
     if (!btns.length) return console.error('Share button not found');
 
     btns.forEach(btn => {
-
         btn.addEventListener('click', async e => {
             const platform = btn.dataset.platform;
-            const url = img.src;
+            // URL fija de tu app en localhost
+            const url = 'http://localhost:63342/Planify-PS/frontend/public/index.html';
             const text = encodeURIComponent("I just earned this medal! 🏅\n");
-            if (navigator.canShare && navigator.canShare({files: []})) {
+
+            if (navigator.canShare && navigator.canShare({ files: [] })) {
                 try {
-                    const resp = await fetch(url);
+                    const resp = await fetch(img.src);
                     const blob = await resp.blob();
-                    const file = new File([blob], 'medal.png', {type: blob.type});
-                    await navigator.share({title: 'My Medal', files: [file]});
+                    const file = new File([blob], 'medal.png', { type: blob.type });
+                    await navigator.share({ title: 'My Medal', text, url, files: [file] });
                 } catch {
                     console.error('Could not recognize share info');
                 }
@@ -241,8 +243,8 @@ async function openShareDialog() {
                 }
                 window.open(shareUrl, '_blank');
             }
-        })
-    })
+        });
+    });
 }
 
 window.addEventListener('hashchange',()=>{
