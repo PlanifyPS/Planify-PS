@@ -137,7 +137,7 @@ async function saveHabit() {
 
 //Todo refactorizar desde aquí
 
-function getWeekYear(date) {
+export function getWeekYear(date) {
     const d = new Date(date.getTime());
     d.setHours(0, 0, 0, 0);
     d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
@@ -196,7 +196,7 @@ async function checkFrequencyHabits() {
 
 //Todo hasta aquí
 
-function hasPeriodElapsed(lastCompleted, frequency) {
+export function hasPeriodElapsed(lastCompleted, frequency) {
     if (!lastCompleted) return false;
     const now = new Date();
     const last = new Date(lastCompleted);
@@ -226,7 +226,7 @@ function hasPeriodElapsed(lastCompleted, frequency) {
     }
 }
 
-async function sendUserNotification(points, title) {
+export async function sendUserNotification(points, title) {
     const container = document.getElementById("notification-container");
     if (!container) return;
 
@@ -305,7 +305,7 @@ function determinePenaltyPoints(frequency) {
 async function loadUserHabits() {
     const userData = await getUserData(userUID);
     habitsData = userData.habits;
-    checkAndApplyPenalties();
+    await checkAndApplyPenalties();
     await checkFrequencyHabits();
     await sortHabits();
 }

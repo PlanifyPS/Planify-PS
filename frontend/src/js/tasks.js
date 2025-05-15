@@ -3,6 +3,7 @@ import { addDoc, getDocs, collection, serverTimestamp } from "https://www.gstati
 import { db } from "/backend/utils/firebase_config.js";
 import { addPoints } from './points.js';
 import Chart from 'https://esm.run/chart.js/auto';
+import {sendUserNotification} from "./habits.js";
 
 let tasksData;
 let editingTaskId = null;
@@ -147,6 +148,7 @@ async function saveTask() {
 async function loadUserTasks() {
     const userData = await getUserData(userUID);
     tasksData = userData.tasks;
+    await checkAndApplyPenalties();
     await sortTasks();
 }
 
@@ -564,14 +566,11 @@ async function updateTaskList(dateString) {
            </div>`;
 }
 
-// ------------------------------ FIN CALENDARIO ------------------------------
-
-// ------------------------------ INICIO GRÁFICO COMPLETADAS/PENDIENTES ------------------------------
-
 let tasksCompletedPieChart;
 
 async function initPiecompleted() {
     await loadTasksPiecompleted(userUID);
+
 
 }
 
@@ -612,10 +611,6 @@ async function loadTasksPiecompleted(uid) {
     // 3) Dibujar gráfico
     drawPie('circle-progress', tasksDone, tasksInProgress);
 }
-
-// ------------------------------ FIN GRÁFICO COMPLETADAS/PENDIENTES ------------------------------
-
-// ------------------------------ INICIO GRÁFICO POR CATEGORÍAS ------------------------------
 
 async function initPieByCategory() {
     await loadTasksPieByCategory(userUID);
@@ -689,16 +684,47 @@ async function loadTasksPieByCategory(uid) {
     const userData = await getUserData(uid);
     const tasks = userData.tasks || {};
 
-    // Filtramos solo las tareas que no están completadas
     const incompleteTasks = Object.values(tasks).filter(task => !task.completed);
 
-    // Contamos por categoría
     const categoryCounts = groupSumByCategory(incompleteTasks);
 
-    // Dibujamos el gráfico
     drawPieByCategory('circle-categories', categoryCounts);
 }
 
-// ------------------------------ FIN GRÁFICO POR CATEGORÍAS------------------------------
+async function checkAndApplyPenalties() {
+    const todayString = new Date().toDateString();
+
+    for (const [taskId, task] of Object.entries(tasksData)) {
+        console.log(task.title);
+
+        if (!task.completed && task.dueDate < todayString) {
+            let points = 2
+            await addPoints((-points));
+            await sendUserNotification(points, task.title);
+
+            const newStreak = (task.missedStreak || 0) + 1;
+            task.missedStreak = newStreak;
+            task.lastPenaltyDate = serverTimestamp();
+
+            if (newStreak > 7) {
+                console.log("Penalizacion tocha");
+            }
+
+            await saveUserData(userUID, {
+                [`tasks.${taskId}.missedStreak`]: task.missedStreak,
+                [`tasks.${taskId}.lastPenaltyDate`]: task.lastPenaltyDate,
+            });
+        }
+        else if (task.completed){
+            if(task.missedStreak){
+                task.missedStreak = 0;
+                await saveUserData(userUID, {
+                    [`tasks.${taskId}.missedStreak`]:0
+                })
+            }
+        }
+    }
+
+}
 
 initHome();
