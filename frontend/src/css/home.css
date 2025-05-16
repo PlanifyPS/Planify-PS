@@ -662,6 +662,7 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
+    width: 240px;
     background-color: var(--main-blue);
     color: white;
     padding: 10px 20px;
@@ -673,7 +674,11 @@
     gap: 12px;
     font-size: 15px;
     max-width: 280px;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.notification-toast.stacked {
+    transform: translateY(-75px);
 }
 
 .toast-close {

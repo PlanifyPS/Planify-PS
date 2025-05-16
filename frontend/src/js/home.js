@@ -698,8 +698,10 @@ async function initNotificationToast() {
     if (notificationShown === 'true') return;
     sessionStorage.setItem('habitsNotificationShown', 'true');
 
-    const toast = document.getElementById('notification-toast');
-    const closeBtn = document.getElementById('close-toast-button');
+    const habitsToast = document.getElementById('habits-notification-toast');
+    const habitsCloseButton = document.getElementById('habits-close-toast-button');
+    const tasksToast = document.getElementById('tasks-notification-toast');
+    const tasksCloseButton = document.getElementById('tasks-close-toast-button');
 
     onAuthStateChanged(auth, async (user) => {
         if (!user) return;
@@ -711,17 +713,41 @@ async function initNotificationToast() {
             if (!userSnap.exists()) return;
 
             const userData = userSnap.data();
+
+            //habits
             const habits = userData.habits || {};
             const pendingHabits = Object.values(habits).filter(habit => habit.completed === false);
 
             if (pendingHabits.length > 0) {
-                if (toast && closeBtn) {
-                    toast.classList.add('show');
-                    closeBtn.addEventListener('click', () => {
-                        toast.classList.add('hidden');
+                if (habitsToast && habitsCloseButton) {
+                    habitsToast.classList.add('show');
+                    habitsCloseButton.addEventListener('click', () => {
+                        habitsToast.classList.add('hidden');
+                        if (pendingTasks.length > 0) {
+                            setTimeout(() => {
+                                tasksToast.classList.remove('stacked');
+                            }, 300);
+                        }
                     });
                 }
             }
+
+            //tasks
+            const tasks = userData.tasks || {};
+            const pendingTasks = Object.values(tasks).filter(task => task.completed === false);
+
+            if (pendingTasks.length > 0) {
+                if (tasksToast && tasksCloseButton) {
+                    if (pendingHabits.length > 0) {
+                        tasksToast.classList.add('stacked');
+                    }
+                    tasksToast.classList.add('show');
+                    tasksCloseButton.addEventListener('click', () => {
+                        tasksToast.classList.add('hidden');
+                    });
+                }
+            }
+
         } catch (error) {
             console.error('Error showing notification toast:', error);
         }
