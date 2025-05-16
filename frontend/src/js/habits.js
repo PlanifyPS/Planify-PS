@@ -7,6 +7,8 @@ import Chart from 'https://esm.run/chart.js/auto';
 const userUID = sessionStorage.getItem("uid");
 export let habitsData;
 let editingHabitId = null;
+const warningMs = 2*60*60*1000;
+
 
 async function initHome() {
     async function initAll() {
@@ -249,6 +251,51 @@ export async function sendUserNotification(points, title) {
     }, 4000);
 }
 
+
+export function timeLeftForPeriod(lastCompleted, frequency) {
+    if (!lastCompleted) return Infinity;
+    const now = Date.now();
+    const last = lastCompleted.getTime();
+
+    switch (frequency) {
+        case 'daily':
+            return Math.max(0, 24 * 60 * 60 * 1000 - (now - last));
+        case 'weekly':
+            return Math.max(0, 7 * 24 * 60 * 60 * 1000 - (now - last));
+        case 'monthly':
+            return Math.max(0, 30 * 24 * 60 * 60 * 1000 - (now - last));
+        default:
+            return Infinity;
+    }
+}
+
+function shouldWarn(last, frequency) {
+    const timeLeft = timeLeftForPeriod(last,frequency);
+    return timeLeft > 0 && timeLeft <= warningMs;
+
+}
+//Todo esta función se debe combinar con sendUserNotification para abstraerlas
+function sendUserWarning(body, type) {
+    const container = document.getElementById("notification-container");
+    if (!container) return;
+
+    const toast = document.createElement("div");
+    toast.classList.add("notification", type);
+    toast.innerHTML = body;
+
+    container.appendChild(toast);
+
+    void toast.offsetWidth;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        toast.addEventListener("transitionend", () => {
+            toast.remove();
+        }, { once: true });
+    }, 4000);
+}
+
 async function checkAndApplyPenalties() {
     const todayString = new Date().toDateString();
     
@@ -256,7 +303,6 @@ async function checkAndApplyPenalties() {
         const last = habit.lastCompleted?.toDate?.() || null;
 
         //Todo añadir comprobacion para el aviso
-        console.log(habit.title)
 
         if (!habit.completed && hasPeriodElapsed(last, habit.frequency)) {
 
@@ -280,6 +326,11 @@ async function checkAndApplyPenalties() {
                     [`habits.${habitId}.missedStreak`]: habit.missedStreak,
                     [`habits.${habitId}.lastPenaltyDate`]: habit.lastPenaltyDate,
                 });
+            }
+            //Todo si el habito no se ha completado hoy y faltan 2 horas o menos para que se le aplique penalizacion mostrar notificacion
+            else if(shouldWarn(last, habit.frequency)){
+                const message = `<strong>Warning</strong><br><strong>${habit.title}</strong> is close to being breached  `;
+                sendUserWarning(message,"warning");
             }
         }
         else if (habit.completed){
