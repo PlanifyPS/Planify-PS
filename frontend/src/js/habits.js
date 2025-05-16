@@ -235,7 +235,7 @@ export async function sendUserNotification(points, title) {
     const toast = document.createElement("div");
     toast.classList.add("notification", "penalty");
     toast.innerHTML = `
-    <strong>${title}</strong><br>
+    <strong>Incomplete Habit: ${title}</strong><br>
     You lost <strong>${points}</strong> point${points !== 1 ? "s" : ""}.`;
     
     container.appendChild(toast);
@@ -328,7 +328,7 @@ async function checkAndApplyPenalties() {
                 });
             }
             //Todo si el habito no se ha completado hoy y faltan 2 horas o menos para que se le aplique penalizacion mostrar notificacion
-            else if(shouldWarn(last, habit.frequency)){
+            else if(true || shouldWarn(last, habit.frequency)){
                 const message = `<strong>Warning</strong><br><strong>${habit.title}</strong> is close to being breached  `;
                 sendUserWarning(message,"warning");
             }
