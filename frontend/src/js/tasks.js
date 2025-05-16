@@ -3,14 +3,13 @@ import { addDoc, getDocs, collection, serverTimestamp } from "https://www.gstati
 import { db } from "/backend/utils/firebase_config.js";
 import { addPoints } from './points.js';
 import Chart from 'https://esm.run/chart.js/auto';
-import {sendUserNotification} from "./habits.js";
 
 let tasksData;
 let editingTaskId = null;
 
 const userUID = sessionStorage.getItem("uid");
 
-async function initHome() {
+async function initHomeTask() {
     async function initAll() {
         initTextContent();
         initModal();
@@ -148,7 +147,7 @@ async function saveTask() {
 async function loadUserTasks() {
     const userData = await getUserData(userUID);
     tasksData = userData.tasks;
-    await checkAndApplyPenalties();
+    await checkAndApplyPenaltiesTask();
     await sortTasks();
 }
 
@@ -691,11 +690,33 @@ async function loadTasksPieByCategory(uid) {
     drawPieByCategory('circle-categories', categoryCounts);
 }
 
-async function checkAndApplyPenalties() {
+async function sendUserNotificationTask(points, title) {
+    const container = document.getElementById("notification-container");
+    if (!container) return;
+
+    const toast = document.createElement("div");
+    toast.classList.add("notification", "penalty");
+    toast.innerHTML = `
+    <strong>${title}</strong><br>
+    You lost <strong>${points}</strong> point${points !== 1 ? "s" : ""}.`;
+
+    container.appendChild(toast);
+
+    void toast.offsetWidth;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        toast.addEventListener("transitionend", () => {
+            toast.remove();
+        }, { once: true });
+    }, 4000);
+}
+
+async function checkAndApplyPenaltiesTask() {
     const todayString = new Date().toDateString();
 
     for (const [taskId, task] of Object.entries(tasksData)) {
-        console.log(task.title);
 
         if (!task.completed && task.dueDate < todayString) {
             const lastPenaltyDate = task.lastPenaltyDate?.toDate?.() ||null;
@@ -703,7 +724,7 @@ async function checkAndApplyPenalties() {
             if (lastPenaltyDate?.toDateString() !== todayString) {
                 let points = 2
                 await addPoints((-points));
-                await sendUserNotification(points, task.title);
+                await sendUserNotificationTask(points, task.title);
 
                 const newStreak = (task.missedStreak || 0) + 1;
                 task.missedStreak = newStreak;
@@ -731,4 +752,4 @@ async function checkAndApplyPenalties() {
 
 }
 
-initHome();
+initHomeTask();
