@@ -1,6 +1,6 @@
 import { auth, db } from '../../../backend/utils/firebase_config.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
-import {doc, getDoc, updateDoc, arrayUnion, setDoc} from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+import {doc, getDoc, updateDoc, arrayUnion} from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 
 export function initHeader() {
     const imgEl = document.getElementById('avatar-img');
@@ -13,11 +13,9 @@ export function initHeader() {
         return;
     }
 
-    // Store user data
     let userData = null;
     let userId = null;
 
-    // Initialize the store modal
     initStoreModal();
 
 
@@ -86,8 +84,8 @@ function initStoreModal() {
     if (!document.getElementById('store-modal')) {
         const modalHTML = `
         <div id="store-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
+            <div class="modal-content-header">
+                <div class="modal-main-header">
                     <h2>Store</h2>
                     <span class="close-modal">&times;</span>
                 </div>
@@ -96,28 +94,62 @@ function initStoreModal() {
                         <p>Your points: <span id="modal-points">0</span></p>
                     </div>
                     <div class="store-items">
+                        <!-- FISH Avatars -->
                         <div class="store-item" data-item="avatar1-fish" data-price="100">
-                            <img src="/frontend/public/assets/avatar1-fish.webp" alt="Avatar 1">
+                            <img src="/frontend/public/assets/avatar1-fish.webp" alt="Avatar 1 Fish">
                             <p>Fisherman 1</p>
                             <p class="item-price">100pts</p>
                             <button class="buy-button">Buy</button>
                         </div>
-                        <div class="store-item" data-item="avatar4-fish" data-price="200">
-                            <img src="/frontend/public/assets/avatar4-fish.webp" alt="Avatar 4">
-                            <p>Fisherman 4</p>
+                        <div class="store-item" data-item="avatar2-fish" data-price="150">
+                            <img src="/frontend/public/assets/avatar2-fish.webp" alt="Avatar 2 Fish">
+                            <p>Fisherman 2</p>
+                            <p class="item-price">150pts</p>
+                            <button class="buy-button">Buy</button>
+                        </div>
+                        <div class="store-item" data-item="avatar3-fish" data-price="200">
+                            <img src="/frontend/public/assets/avatar3-fish.webp" alt="Avatar 3 Fish">
+                            <p>Fisherman 3</p>
                             <p class="item-price">200pts</p>
                             <button class="buy-button">Buy</button>
                         </div>
-                        <div class="store-item" data-item="avatar3" data-price="300">
-                            <img src="/frontend/public/assets/avatar3.webp" alt="Avatar 3">
-                            <p>Avatar 3</p>
-                            <p class="item-price">300pts</p>
+                        <div class="store-item" data-item="avatar4-fish" data-price="250">
+                            <img src="/frontend/public/assets/avatar4-fish.webp" alt="Avatar 4 Fish">
+                            <p>Fisherman 4</p>
+                            <p class="item-price">250pts</p>
+                            <button class="buy-button">Buy</button>
+                        </div>
+    
+                        <!-- CINEMA Avatars -->
+                        <div class="store-item" data-item="avatar1-cinema" data-price="100">
+                            <img src="/frontend/public/assets/avatar1-cinema.webp" alt="Avatar 1 Cinema">
+                            <p>Cinema 1</p>
+                            <p class="item-price">100pts</p>
+                            <button class="buy-button">Buy</button>
+                        </div>
+                        <div class="store-item" data-item="avatar2-cinema" data-price="150">
+                            <img src="/frontend/public/assets/avatar2-cinema.webp" alt="Avatar 2 Cinema">
+                            <p>Cinema 2</p>
+                            <p class="item-price">150pts</p>
+                            <button class="buy-button">Buy</button>
+                        </div>
+                        <div class="store-item" data-item="avatar3-cinema" data-price="200">
+                            <img src="/frontend/public/assets/avatar3-cinema.webp" alt="Avatar 3 Cinema">
+                            <p>Cinema 3</p>
+                            <p class="item-price">200pts</p>
+                            <button class="buy-button">Buy</button>
+                        </div>
+                        <div class="store-item" data-item="avatar4-cinema" data-price="250">
+                            <img src="/frontend/public/assets/avatar4-cinema.webp" alt="Avatar 4 Cinema">
+                            <p>Cinema 4</p>
+                            <p class="item-price">250pts</p>
                             <button class="buy-button">Buy</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>`;
+
 
         const modalContainer = document.createElement('div');
         modalContainer.innerHTML = modalHTML;
@@ -149,40 +181,7 @@ function openStoreModal(userData, userId) {
         modalPoints.textContent = userData.points || 0;
     }
 
-    const storeItems = modal.querySelectorAll('.store-item');
-    storeItems.forEach(item => {
-        const itemName = item.dataset.item;
-        const itemPrice = parseInt(item.dataset.price);
-        const buyButton = item.querySelector('button');
-
-        const newButton = buyButton.cloneNode(true);
-        buyButton.parentNode.replaceChild(newButton, buyButton);
-
-        const isOwned = userData.purchasedItems && userData.purchasedItems.includes(itemName);
-
-        if (isOwned) {
-            newButton.classList.remove('buy-button');
-
-            if (userData.image === itemName) {
-                newButton.textContent = 'Equipped';
-                newButton.disabled = true;
-                newButton.classList.add('equipped-button');
-            } else {
-                newButton.textContent = 'Equip';
-                newButton.disabled = false;
-                newButton.classList.add('equip-button');
-                newButton.addEventListener('click', async () => {
-                    await equipItem(itemName, userData, userId);
-                });
-            }
-        } else {
-            newButton.classList.add('buy-button');
-            newButton.textContent = 'Buy';
-            newButton.addEventListener('click', async () => {
-                await purchaseItem(itemName, itemPrice, userData, userId);
-            });
-        }
-    });
+    updateStoreButtons(userData, userId);
 
     modal.style.display = 'block';
 }
@@ -240,7 +239,7 @@ async function purchaseItem(itemName, itemPrice, userData, userId) {
             imgEl.src = `/frontend/public/assets/${itemName}.webp`;
         }
 
-        updateStoreButtons(userData);
+        updateStoreButtons(userData, userId);
         alert('Purchase successful!');
     } catch (err) {
         console.error('[store] Error purchasing item:', err);
@@ -267,7 +266,7 @@ async function equipItem(itemName, userData, userId) {
             imgEl.src = `/frontend/public/assets/${itemName}.webp`;
         }
 
-        updateStoreButtons(userData);
+        updateStoreButtons(userData, userId);
 
         alert('Avatar equipped!');
     } catch (err) {
@@ -276,14 +275,19 @@ async function equipItem(itemName, userData, userId) {
     }
 }
 
-function updateStoreButtons(userData) {
+function updateStoreButtons(userData, userId) {
+    if (!userData) return;
+
     const storeItems = document.querySelectorAll('.store-item');
     storeItems.forEach(item => {
         const itemName = item.dataset.item;
+        const itemPrice = parseInt(item.dataset.price);
         const button = item.querySelector('button');
 
-        const newButton = button.cloneNode(true);
-        button.parentNode.replaceChild(newButton, button);
+        const newButton = document.createElement('button');
+        if (button) {
+            button.parentNode.replaceChild(newButton, button);
+        }
 
         newButton.classList.remove('buy-button', 'equip-button', 'equipped-button');
 
@@ -306,12 +310,11 @@ function updateStoreButtons(userData) {
             newButton.textContent = 'Buy';
             newButton.classList.add('buy-button');
             newButton.addEventListener('click', () => {
-                purchaseItem(itemName, parseInt(item.dataset.price), userData, userId);
+                purchaseItem(itemName, itemPrice, userData, userId);
             });
         }
     });
 }
-
 
 async function loadNotifications(uid) {
     const notifList = document.getElementById('notification-list');

@@ -10,6 +10,7 @@ const avatarList = ['avatar1','avatar2','avatar3','avatar4','avatar5'];
 
 let currentUserUid = null;
 let selectedAvatar = null;
+let userPurchasedItems = [];
 
 export function initProfile() {
     onAuthStateChanged(auth, async (user) => {
@@ -23,6 +24,7 @@ export function initProfile() {
         const snap = await getDoc(doc(db, "Users", currentUserUid));
         if (snap.exists()) {
             selectedAvatar = snap.data().image || avatarList[0];
+            userPurchasedItems = snap.data().purchasedItems || [];
         } else {
             selectedAvatar = avatarList[0];
         }
@@ -41,10 +43,13 @@ function initAvatarDialog() {
     const grid      = document.getElementById("avatar-options");
     const btnSave   = document.getElementById("avatar-save-btn");
 
+    grid.innerHTML = '';
+
     avatarList.forEach(name => {
         const img = document.createElement("img");
         img.src           = `/frontend/public/assets/${name}.webp`;
         img.dataset.name  = name;
+        img.alt           = name;
         if (name === selectedAvatar) img.classList.add("selected");
         img.addEventListener("click", () => {
             grid.querySelectorAll("img").forEach(i => i.classList.remove("selected"));
@@ -53,6 +58,26 @@ function initAvatarDialog() {
         });
         grid.appendChild(img);
     });
+
+    if (userPurchasedItems && userPurchasedItems.length > 0) {
+        const purchasedAvatars = userPurchasedItems.filter(item => item.startsWith('avatar') || item.includes('avatar'));
+
+        purchasedAvatars.forEach(avatarName => {
+            if (!avatarList.includes(avatarName)) {
+                const img = document.createElement("img");
+                img.src           = `/frontend/public/assets/${avatarName}.webp`;
+                img.dataset.name  = avatarName;
+                img.alt           = avatarName;
+                if (avatarName === selectedAvatar) img.classList.add("selected");
+                img.addEventListener("click", () => {
+                    grid.querySelectorAll("img").forEach(i => i.classList.remove("selected"));
+                    img.classList.add("selected");
+                    selectedAvatar = avatarName;
+                });
+                grid.appendChild(img);
+            }
+        });
+    }
 
     btnOpen.addEventListener("click", () => dialog.showModal());
 
