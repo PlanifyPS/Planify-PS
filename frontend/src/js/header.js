@@ -95,54 +95,54 @@ function initStoreModal() {
                     </div>
                     <div class="store-items">
                         <!-- FISH Avatars -->
-                        <div class="store-item" data-item="avatar1-fish" data-price="100">
+                        <div class="store-item" data-item="avatar1-fish" data-price="500">
                             <img src="/frontend/public/assets/avatar1-fish.webp" alt="Avatar 1 Fish">
                             <p>Fisherman 1</p>
-                            <p class="item-price">100pts</p>
+                            <p class="item-price">500<i class="fa-regular fa-gem"></i></p>
                             <button class="buy-button">Buy</button>
                         </div>
-                        <div class="store-item" data-item="avatar2-fish" data-price="150">
+                        <div class="store-item" data-item="avatar2-fish" data-price="750">
                             <img src="/frontend/public/assets/avatar2-fish.webp" alt="Avatar 2 Fish">
                             <p>Fisherman 2</p>
-                            <p class="item-price">150pts</p>
+                            <p class="item-price">750<i class="fa-regular fa-gem"></i></p>
                             <button class="buy-button">Buy</button>
                         </div>
-                        <div class="store-item" data-item="avatar3-fish" data-price="200">
+                        <div class="store-item" data-item="avatar3-fish" data-price="800">
                             <img src="/frontend/public/assets/avatar3-fish.webp" alt="Avatar 3 Fish">
                             <p>Fisherman 3</p>
-                            <p class="item-price">200pts</p>
+                            <p class="item-price">800<i class="fa-regular fa-gem"></i></p>
                             <button class="buy-button">Buy</button>
                         </div>
-                        <div class="store-item" data-item="avatar4-fish" data-price="250">
+                        <div class="store-item" data-item="avatar4-fish" data-price="1500">
                             <img src="/frontend/public/assets/avatar4-fish.webp" alt="Avatar 4 Fish">
                             <p>Fisherman 4</p>
-                            <p class="item-price">250pts</p>
+                            <p class="item-price">1500<i class="fa-regular fa-gem"></i></p>
                             <button class="buy-button">Buy</button>
                         </div>
     
                         <!-- CINEMA Avatars -->
-                        <div class="store-item" data-item="avatar1-cinema" data-price="100">
+                        <div class="store-item" data-item="avatar1-cinema" data-price="5000">
                             <img src="/frontend/public/assets/avatar1-cinema.webp" alt="Avatar 1 Cinema">
                             <p>Cinema 1</p>
-                            <p class="item-price">100pts</p>
+                            <p class="item-price">5000<i class="fa-regular fa-gem"></i></p>
                             <button class="buy-button">Buy</button>
                         </div>
-                        <div class="store-item" data-item="avatar2-cinema" data-price="150">
+                        <div class="store-item" data-item="avatar2-cinema" data-price="1500">
                             <img src="/frontend/public/assets/avatar2-cinema.webp" alt="Avatar 2 Cinema">
                             <p>Cinema 2</p>
-                            <p class="item-price">150pts</p>
+                            <p class="item-price">1500<i class="fa-regular fa-gem"></i></p>
                             <button class="buy-button">Buy</button>
                         </div>
-                        <div class="store-item" data-item="avatar3-cinema" data-price="200">
+                        <div class="store-item" data-item="avatar3-cinema" data-price="2000">
                             <img src="/frontend/public/assets/avatar3-cinema.webp" alt="Avatar 3 Cinema">
                             <p>Cinema 3</p>
-                            <p class="item-price">200pts</p>
+                            <p class="item-price">2000<i class="fa-regular fa-gem"></i></p>
                             <button class="buy-button">Buy</button>
                         </div>
-                        <div class="store-item" data-item="avatar4-cinema" data-price="250">
+                        <div class="store-item" data-item="avatar4-cinema" data-price="2500">
                             <img src="/frontend/public/assets/avatar4-cinema.webp" alt="Avatar 4 Cinema">
                             <p>Cinema 4</p>
-                            <p class="item-price">250pts</p>
+                            <p class="item-price">2500<i class="fa-regular fa-gem"></i></p>
                             <button class="buy-button">Buy</button>
                         </div>
                     </div>
