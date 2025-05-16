@@ -60,47 +60,54 @@ export async function addPoints(amount) {
 
     await updateStreakIfNeeded(data.lastTaskDate, data.streak);
 
-
     document.dispatchEvent(new Event("pointsUpdated"));
     return nextPoints;
-
 }
 
 function updatePointsUI(pts) {
-    document.querySelectorAll("#points").forEach(el => el.textContent = pts + "pts");
+    document.querySelectorAll("#points").forEach(el => el.textContent = pts + " pts");
 }
 
 function updateMedals(pts) {
     const m = document.getElementById("medals-container");
     if (!m) return;
     m.innerHTML = "";
-    const medals = Math.floor(pts / 50);
-    for (let i = 0; i < medals; i++) {
+    // Total medals earned (one per 50 points)
+    const totalMedals = Math.floor(pts / 50);
+    // Show only up to 2 before resetting on the 3rd
+    const displayMedals = totalMedals % 3;
+    for (let i = 0; i < displayMedals; i++) {
         const iEl = document.createElement("i");
         iEl.className = "fa-solid fa-medal";
         m.appendChild(iEl);
     }
-    updateRank(medals);
+    // Still compute rank based on total medals
+    updateRank(totalMedals);
 }
 
 function updateRank(medals) {
     const r = document.getElementById("rank-display");
     if (!r) return;
-    const ranks = ["Beginner","Apprentice","Novice","Intermediate","Advanced","Expert","Master","Elite","Legend","Mythical"];
-    r.textContent = `Range: ${ranks[Math.min(Math.floor(medals/3), ranks.length-1)]}`;
+    const ranks = [
+        "Beginner","Apprentice","Novice","Intermediate","Advanced",
+        "Expert","Master","Elite","Legend","Mythical"
+    ];
+    // Rank index increases every 3 medals
+    const idx = Math.min(Math.floor(medals / 3), ranks.length - 1);
+    r.textContent = `Range: ${ranks[idx]}`;
 }
 
-function updateStreakUI(streak=0) {
+function updateStreakUI(streak = 0) {
     const s = document.getElementById("streak");
     if (s) s.textContent = streak;
 }
 
 async function checkStreak(lastDate, streak) {
     const today = new Date().toDateString();
-    const y = new Date(); y.setDate(y.getDate()-1);
+    const y = new Date(); y.setDate(y.getDate() - 1);
     const yesterday = y.toDateString();
-    if (lastDate!==today && lastDate!==yesterday) {
-        await updateDoc(doc(db,"Users",auth.currentUser.uid),{ streak:0 });
+    if (lastDate !== today && lastDate !== yesterday) {
+        await updateDoc(doc(db, "Users", auth.currentUser.uid), { streak: 0 });
         updateStreakUI(0);
     }
 }
@@ -112,7 +119,7 @@ async function updateStreakIfNeeded(lastDate, streak) {
     const y = new Date(); y.setDate(y.getDate() - 1);
     const yesterday = y.toDateString();
 
-    let newStreak = (lastDate === yesterday) ? (streak || 0) + 1 : 1;
+    const newStreak = (lastDate === yesterday) ? (streak || 0) + 1 : 1;
 
     await updateDoc(doc(db, "Users", auth.currentUser.uid), {
         streak: newStreak,
@@ -121,6 +128,5 @@ async function updateStreakIfNeeded(lastDate, streak) {
 
     updateStreakUI(newStreak);
 }
-
 
 window.initPoints = initPoints;
