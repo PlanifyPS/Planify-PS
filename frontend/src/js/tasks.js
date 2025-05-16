@@ -749,7 +749,6 @@ async function checkAndApplyPenaltiesTask() {
             }
         }
     }
-
 }
 
 initHomeTask();
