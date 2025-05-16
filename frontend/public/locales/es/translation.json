@@ -4,11 +4,20 @@
   "points": "Puntos",
   "range": "Rango",
   "groups": "Grupos",
+  "groups-list": "Lista de Grupos",
   "habits": "Hábitos",
   "tasks": "Tareas",
   "analytics": "Analíticas",
   "forums": "Foros",
+  "forums-interest": "Foros de Interés",
   "challenges": "Desafíos",
   "settings": "Configuración y Perfil",
-  "logout": "Cerrar Sesión"
+  "profile": "Perfil",
+  "setting": "Configuración",
+  "logout": "Cerrar Sesión",
+  "calendar": "Calendario",
+  "weekly-habits-progress": "Progreso de Hábitos Semanales",
+  "analytics-description-habits": "Hábitos Diarios Completos en los Últimos 7 Días",
+  "analytics-description-tasks": "Tareas Diarias Completas en los Últimos 7 Días",
+  "weekly-challenges": "Desafíos Semanales"
 }

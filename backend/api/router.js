@@ -107,6 +107,7 @@ class Router {
         ];
 
         await this.loadScripts(scriptsToLoad);
+        if (window.updateContent) window.updateContent();
     }
 
     async loadComponents() {
