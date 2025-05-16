@@ -343,18 +343,16 @@ async function loadNotifications(uid) {
         const tasks = userData.tasks || {};
         const pendingTasks = Object.values(tasks).filter(task => task.completed === false);
 
-        const tasksExpiring = pendingTasks; // esto es temporal, esto debería ser lo que está comentado abajo
-        /*
         const today = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(today.getDate() + 1);
+        today.setHours(0, 0, 0, 0);
 
         const tasksExpiring = pendingTasks.filter(pendingTask => {
-            const taskDueDate = pendingTask.dueDate;
+            const taskDueDate = new Date(pendingTask.dueDate);
+            taskDueDate.setHours(0, 0, 0, 0);
             const diffDays = (taskDueDate - today) / (1000 * 60 * 60 * 24);
-            return diffDays >= 0 && diffDays <= 1;
+            return diffDays >= 0 && diffDays <= 2;
         });
-        */
+
 
         if (tasksExpiring.length === 0) {
             notifList.innerHTML += `<li>There are no pending tasks.</li>`;

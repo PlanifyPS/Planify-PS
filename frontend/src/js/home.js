@@ -736,7 +736,17 @@ async function initNotificationToast() {
             const tasks = userData.tasks || {};
             const pendingTasks = Object.values(tasks).filter(task => task.completed === false);
 
-            if (pendingTasks.length > 0) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const tasksExpiring = pendingTasks.filter(pendingTask => {
+                const taskDueDate = new Date(pendingTask.dueDate);
+                taskDueDate.setHours(0, 0, 0, 0);
+                const diffDays = (taskDueDate - today) / (1000 * 60 * 60 * 24);
+                return diffDays >= 0 && diffDays <= 2;
+            });
+
+            if (tasksExpiring.length > 0) {
                 if (tasksToast && tasksCloseButton) {
                     if (pendingHabits.length > 0) {
                         tasksToast.classList.add('stacked');
