@@ -71,9 +71,20 @@ export function initHeader() {
         }
     });
 
-    const storeButton = document.querySelector('.header-button:nth-child(3)');
+    const storeButton = document.querySelector('#store-button');
     if (storeButton) {
-        storeButton.addEventListener('click', () => {
+        storeButton.addEventListener('click', async () => {
+            if (userId) {
+                try {
+                    const userRef = doc(db, 'Users', userId);
+                    const userSnap = await getDoc(userRef);
+                    if (userSnap.exists()) {
+                        userData = userSnap.data();
+                    }
+                } catch (err) {
+                    console.error('[header] error refreshing user data:', err);
+                }
+            }
             openStoreModal(userData, userId);
         });
     }

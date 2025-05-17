@@ -24,17 +24,23 @@
   </div>
 
   <div class="notification-wrapper">
-    <button id="notification-toggle" class="header-button">
+    <button id="notification-toggle" class="header-button tooltip-container">
       <i class="fa-solid fa-bell header-icon"></i>
+      <span class="tooltip-header">Notifications</span>
     </button>
     <div id="notification-panel" class="notification-panel">
       <ul id="notification-list"></ul>
     </div>
   </div>
 
-  <button class="header-button" id="store-button"><i class="fa-solid fa-store header-icon"></i></button>
-  <a href="#/setting" class="header-button-user">
+  <button id="store-button" class="header-button tooltip-container">
+    <i class="fa-solid fa-store header-icon"></i>
+    <span class="tooltip-header">Store</span>
+  </button>
+
+  <a href="#/setting" class="header-button-user tooltip-container">
     <img id="avatar-img" class="header-avatar" src="/frontend/public/assets/avatar1.webp" alt="User avatar" />
+    <span class="tooltip-header">Settings</span>
   </a>
 
 </div>
