@@ -65,6 +65,15 @@ export function initHeader() {
                 });
             }
 
+            document.addEventListener('click', (event) => {
+                if (!notifPanel.classList.contains('show')) return;
+
+                const isClickInside = notifPanel.contains(event.target) || notifBtn.contains(event.target);
+                if (!isClickInside) {
+                    notifPanel.classList.remove('show');
+                }
+            });
+
         } catch (err) {
             console.error('[header] error loading avatar:', err);
             imgEl.style.display = 'none';
