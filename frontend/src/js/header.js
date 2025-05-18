@@ -375,11 +375,11 @@ async function loadNotifications(uid) {
 
 
         if (tasksExpiring.length === 0) {
-            notifList.innerHTML += `<li>There are no pending tasks.</li>`;
+            notifList.innerHTML += `<li>There are no imminent  tasks.</li>`;
         } else if (tasksExpiring.length === 1) {
-            notifList.innerHTML += `<li>There is 1 pending task.</li>`;
+            notifList.innerHTML += `<li>There is 1 imminent  task.</li>`;
         } else {
-            notifList.innerHTML += `<li>There are ${tasksExpiring.length} pending tasks.</li>`;
+            notifList.innerHTML += `<li>There are ${tasksExpiring.length} imminent  tasks.</li>`;
         }
 
     } catch (err) {
