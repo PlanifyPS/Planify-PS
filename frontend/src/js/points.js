@@ -72,29 +72,30 @@ function updateMedals(pts) {
     const m = document.getElementById("medals-container");
     if (!m) return;
     m.innerHTML = "";
-    // Total medals earned (one per 50 points)
     const totalMedals = Math.floor(pts / 50);
-    // Show only up to 2 before resetting on the 3rd
     const displayMedals = totalMedals % 3;
     for (let i = 0; i < displayMedals; i++) {
         const iEl = document.createElement("i");
         iEl.className = "fa-solid fa-medal";
         m.appendChild(iEl);
     }
-    // Still compute rank based on total medals
     updateRank(totalMedals);
 }
 
 function updateRank(medals) {
     const r = document.getElementById("rank-display");
     if (!r) return;
+    if(medals <0){
+        r.textContent = 'Range: Inferno';
+        return;
+    }
     const ranks = [
         "Beginner","Apprentice","Novice","Intermediate","Advanced",
         "Expert","Master","Elite","Legend","Mythical"
     ];
-    // Rank index increases every 3 medals
     const idx = Math.min(Math.floor(medals / 3), ranks.length - 1);
     r.textContent = `Range: ${ranks[idx]}`;
+
 }
 
 function updateStreakUI(streak = 0) {
