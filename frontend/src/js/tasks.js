@@ -732,24 +732,26 @@ async function checkAndApplyPenaltiesTask() {
         const lastPenaltyString = lastPenaltyDateObj?.toDateString();
 
         if (!task.completed) {
+            const newStreak = (task.missedStreak || 0) + 1;
+            task.missedStreak = newStreak;
+
             if (lastPenaltyString !== dueDateString) {
-                const penalty = 2;
+                task.lastPenaltyDate = serverTimestamp();
+                let penalty;
+
+                if (newStreak > 7) {
+                    penalty = 5;
+                } else{
+                    penalty = 2;
+                }
+
                 await addPoints(-penalty);
                 await sendUserNotificationTask(penalty, task.title);
 
-                const newStreak = (task.missedStreak || 0) + 1;
-                task.missedStreak = newStreak;
-                task.lastPenaltyDate = serverTimestamp();
-
-                if (newStreak > 7) {
-                    console.log("¡Penalización fuerte tras 7 días sin completar!");
-                }
-
-                await saveUserData(userUID, {
-                    [`tasks.${taskId}.missedStreak`]: newStreak,
-                    [`tasks.${taskId}.lastPenaltyDate`]: task.lastPenaltyDate,
-                });
+                await saveUserData(userUID, {[`tasks.${taskId}.lastPenaltyDate`]: task.lastPenaltyDate});
             }
+
+            await saveUserData(userUID, {[`tasks.${taskId}.missedStreak`]: newStreak});
         } else {
             if (task.missedStreak) {
                 task.missedStreak = 0;
