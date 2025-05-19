@@ -8,6 +8,7 @@ const userUID = sessionStorage.getItem("uid");
 export let habitsData;
 let editingHabitId = null;
 const warningMs = 2*60*60*1000;
+const notifyPREF = localStorage.getItem('notifications') === 'true';
 
 
 async function initHome() {
@@ -296,6 +297,26 @@ function sendUserWarning(body, type) {
     }, 4000);
 }
 
+function showMotivationalMessage(habitTitle, streak) {
+    const message = `Let’s get back on track! You’ve missed <strong>${streak}</strong> days of <em>${habitTitle}</em>. You can do it!`;
+
+    const banner = document.createElement("div");
+    banner.className = "motivational-banner";
+    banner.innerHTML = message;
+
+    document.body.appendChild(banner);
+
+
+    void banner.offsetWidth;
+    banner.classList.add("visible");
+
+
+    setTimeout(() => {
+        banner.classList.remove("visible");
+        banner.addEventListener("transitionend", () => banner.remove(), { once: true });
+    }, 5000);
+}
+
 async function checkAndApplyPenalties() {
     const todayString = new Date().toDateString();
     
@@ -311,24 +332,24 @@ async function checkAndApplyPenalties() {
             if (lastPenaltyDate?.toDateString() !== todayString) {
                 const points = determinePenaltyPoints(habit.frequency);
                 await addPoints((-points));
-                await sendUserNotification(points, habit.title);
+                if(notifyPREF){await sendUserNotification(points, habit.title);}
+
 
 
                 const newStreak = (habit.missedStreak || 0) + 1;
                 habit.missedStreak = newStreak;
                 habit.lastPenaltyDate = serverTimestamp();
 
-                if (newStreak > 7) {
-                    // todo penalización por racha de penalizaciones
-                    console.log("Penalizacion tocha");
+                if (newStreak > 7 && notifyPREF) {
+                    showMotivationalMessage(habit.title, newStreak)
                 }
                 await saveUserData(userUID, {
                     [`habits.${habitId}.missedStreak`]: habit.missedStreak,
                     [`habits.${habitId}.lastPenaltyDate`]: habit.lastPenaltyDate,
                 });
             }
-            //Todo si el habito no se ha completado hoy y faltan 2 horas o menos para que se le aplique penalizacion mostrar notificacion
-            else if(shouldWarn(last, habit.frequency)){
+
+            else if(shouldWarn(last, habit.frequency) && notifyPREF){
                 const message = `<strong>Warning</strong><br><strong>${habit.title}</strong> is close to being breached  `;
                 sendUserWarning(message,"warning");
             }
