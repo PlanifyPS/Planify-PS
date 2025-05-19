@@ -21,7 +21,6 @@ i18next
     .use(LanguageDetector)
     .init({
         fallbackLng: 'en',
-        debug: true,
         detection: {
             order: ['localStorage','navigator'],
             lookupLocalStorage: 'i18nextLng',

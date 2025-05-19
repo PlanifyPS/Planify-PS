@@ -731,37 +731,27 @@ async function checkAndApplyPenaltiesTask() {
         }
         const lastPenaltyString = lastPenaltyDateObj?.toDateString();
 
-        if (!task.completed) {
+        if (!task.completed && lastPenaltyString !== dueDateString) {
             const newStreak = (task.missedStreak || 0) + 1;
-            task.missedStreak = newStreak;
+            const penalty = newStreak > 7 ? 5 : 2;
+            await addPoints(-penalty);
+            await sendUserNotificationTask(penalty, task.title);
 
-            if (lastPenaltyString !== dueDateString) {
-                task.lastPenaltyDate = serverTimestamp();
-                let penalty;
+            task.missedStreak     = newStreak;
+            task.lastPenaltyDate = serverTimestamp();
 
-                if (newStreak > 7) {
-                    penalty = 5;
-                } else{
-                    penalty = 2;
-                }
-
-                await addPoints(-penalty);
-                await sendUserNotificationTask(penalty, task.title);
-
-                await saveUserData(userUID, {[`tasks.${taskId}.lastPenaltyDate`]: task.lastPenaltyDate});
-            }
-
-            await saveUserData(userUID, {[`tasks.${taskId}.missedStreak`]: newStreak});
-        } else {
-            if (task.missedStreak) {
-                task.missedStreak = 0;
-                await saveUserData(userUID, {
-                    [`tasks.${taskId}.missedStreak`]: 0
-                });
-            }
+            await saveUserData(userUID, {
+                [`tasks.${taskId}.missedStreak`]:     newStreak,
+                [`tasks.${taskId}.lastPenaltyDate`]: task.lastPenaltyDate
+            });
+        }
+        else if (task.completed && task.missedStreak) {
+            task.missedStreak = 0;
+            await saveUserData(userUID, {
+                [`tasks.${taskId}.missedStreak`]: 0
+            });
         }
     }
 }
-
 
 initHomeTask();
