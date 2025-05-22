@@ -714,44 +714,21 @@ async function sendUserNotificationTask(points, title) {
 }
 
 async function checkAndApplyPenaltiesTask() {
-    const now = new Date();
+    const now          = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
     for (const [taskId, task] of Object.entries(tasksData)) {
         const dueDateObj = new Date(task.dueDate);
         if (dueDateObj >= startOfToday) continue;
-
-        const dueDateString = dueDateObj.toDateString();
-
-        let lastPenaltyDateObj = null;
-        if (task.lastPenaltyDate) {
-            lastPenaltyDateObj = typeof task.lastPenaltyDate.toDate === 'function'
-                ? task.lastPenaltyDate.toDate()
-                : new Date(task.lastPenaltyDate);
-        }
-        const lastPenaltyString = lastPenaltyDateObj?.toDateString();
-
-        if (!task.completed && lastPenaltyString !== dueDateString) {
-            const newStreak = (task.missedStreak || 0) + 1;
-            const penalty = newStreak > 7 ? 5 : 2;
-            await addPoints(-penalty);
-            await sendUserNotificationTask(penalty, task.title);
-
-            task.missedStreak     = newStreak;
-            task.lastPenaltyDate = serverTimestamp();
-
-            await saveUserData(userUID, {
-                [`tasks.${taskId}.missedStreak`]:     newStreak,
-                [`tasks.${taskId}.lastPenaltyDate`]: task.lastPenaltyDate
-            });
-        }
-        else if (task.completed && task.missedStreak) {
-            task.missedStreak = 0;
-            await saveUserData(userUID, {
-                [`tasks.${taskId}.missedStreak`]: 0
-            });
-        }
+        if (task.completed || (task.missedStreak || 0) > 0) continue;
+        const penalty    = 2;
+        await addPoints(-penalty);
+        await sendUserNotificationTask(penalty, task.title);
+        task.missedStreak = 1;
+        await saveUserData(userUID, {
+            [`tasks.${taskId}.missedStreak`]: 1
+        });
     }
 }
+
 
 initHomeTask();
